@@ -7,9 +7,19 @@
 	"author": "Christoforos Varakliotis <c.varakliotis@gmail.com>",
 	"license": "MIT",
 	"private": false,
+	"scripts": {
+		"prettier": "prettier --write \"src/**/*.{js,ts,jsx,tsx}\""
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "pretty-quick --staged"
+		}
+	},
 	"devDependencies": {
 		"@types/react": "^16.9.23",
+		"husky": "^4.2.3",
 		"prettier": "^1.19.1",
+		"pretty-quick": "^2.0.1",
 		"react": "^16.13.0",
 		"react-dom": "^16.13.0",
 		"rxdb": "^8.7.5",
