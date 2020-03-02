@@ -8,7 +8,8 @@
 	"license": "MIT",
 	"private": false,
 	"scripts": {
-		"prettier": "prettier --write \"src/**/*.{js,ts,jsx,tsx}\""
+		"prettier": "prettier --write \"src/**/*.{js,ts,jsx,tsx}\"",
+		"lint": "eslint \"src/**/*.{js,ts,jsx,tsx}\" --ignore-path .gitignore"
 	},
 	"husky": {
 		"hooks": {
@@ -17,6 +18,10 @@
 	},
 	"devDependencies": {
 		"@types/react": "^16.9.23",
+		"@typescript-eslint/eslint-plugin": "^2.21.0",
+		"@typescript-eslint/parser": "^2.21.0",
+		"eslint": "^6.8.0",
+		"eslint-plugin-react": "^7.18.3",
 		"husky": "^4.2.3",
 		"prettier": "^1.19.1",
 		"pretty-quick": "^2.0.1",
