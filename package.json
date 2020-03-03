@@ -10,7 +10,7 @@
 	"scripts": {
 		"prettier": "prettier --write \"src/**/*.{js,ts,jsx,tsx}\"",
 		"lint": "eslint \"src/**/*.{js,ts,jsx,tsx}\" --ignore-path .gitignore",
-		"test": "yarn jest"
+		"test": "yarn jest --forceExit"
 	},
 	"husky": {
 		"hooks": {
@@ -26,6 +26,7 @@
 		"eslint-plugin-react": "^7.18.3",
 		"husky": "^4.2.3",
 		"jest": "^25.1.0",
+		"pouchdb-adapter-memory": "^7.2.1",
 		"prettier": "^1.19.1",
 		"pretty-quick": "^2.0.1",
 		"react": "^16.13.0",
