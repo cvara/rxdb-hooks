@@ -3,14 +3,20 @@ import memoryAdapter from 'pouchdb-adapter-memory';
 
 RxDB.plugin(memoryAdapter);
 
+interface Character {
+	name: string;
+	affiliation: string;
+}
+
 export const setup = async (
+	documents: Character[],
 	collectionName = 'test_collection'
 ): Promise<RxDatabase> => {
 	const db = await RxDB.create({
 		name: 'test_database',
 		adapter: 'memory',
 	});
-	await db.collection({
+	const collection = await db.collection({
 		name: collectionName,
 		schema: {
 			title: 'characters',
@@ -27,6 +33,7 @@ export const setup = async (
 			},
 		},
 	});
+	await collection.bulkInsert(documents);
 	return db;
 };
 
