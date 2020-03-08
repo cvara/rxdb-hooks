@@ -345,9 +345,48 @@ describe('useRxData', () => {
 		done();
 	});
 
-	it('should handle missing collection', async done => {
+	it('should handle missing query', async done => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(() => undefined, []);
+			const {
+				result: characters,
+				isFetching,
+				exhausted,
+				fetchMore,
+			} = useRxData('characters', queryConstructor);
+
+			return (
+				<Consumer
+					characters={characters as Character[]}
+					isFetching={isFetching}
+					exhausted={exhausted}
+					fetchMore={fetchMore}
+				/>
+			);
+		};
+		render(
+			<Provider db={db}>
+				<Child />
+			</Provider>
+		);
+
+		// dom should remain in loading state
+		expect(screen.getByText('loading')).toBeInTheDocument();
+		try {
+			await waitForDomChange({ timeout: 500 });
+		} catch (err) {
+			expect(screen.getByText('loading')).toBeInTheDocument();
+		}
+
+		done();
+	});
+
+	it('should handle missing collection', async done => {
+		const Child: FC = () => {
+			const queryConstructor = useCallback(
+				(c: RxCollection) => c.find(),
+				[]
+			);
 			const {
 				result: characters,
 				isFetching,
@@ -372,7 +411,7 @@ describe('useRxData', () => {
 		// dom should remain in loading state
 		expect(screen.getByText('loading')).toBeInTheDocument();
 		try {
-			await waitForDomChange({ timeout: 1000 });
+			await waitForDomChange({ timeout: 500 });
 		} catch (err) {
 			expect(screen.getByText('loading')).toBeInTheDocument();
 		}
@@ -382,7 +421,10 @@ describe('useRxData', () => {
 
 	it('should handle missing database', async done => {
 		const Child: FC = () => {
-			const queryConstructor = useCallback(() => undefined, []);
+			const queryConstructor = useCallback(
+				(c: RxCollection) => c.find(),
+				[]
+			);
 			const {
 				result: characters,
 				isFetching,
@@ -407,7 +449,7 @@ describe('useRxData', () => {
 		// dom should remain in loading state
 		expect(screen.getByText('loading')).toBeInTheDocument();
 		try {
-			await waitForDomChange({ timeout: 1000 });
+			await waitForDomChange({ timeout: 500 });
 		} catch (err) {
 			expect(screen.getByText('loading')).toBeInTheDocument();
 		}
