@@ -77,6 +77,9 @@ describe('useRxData', () => {
 			expect(screen.getByText(doc.name)).toBeInTheDocument();
 		});
 
+		// should be exhausted (no limit defined)
+		expect(screen.getByText('exhausted')).toBeInTheDocument();
+
 		done();
 	});
 });

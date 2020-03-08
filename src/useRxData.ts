@@ -77,7 +77,7 @@ const useRxData = <T>(
 				unstable_batchedUpdates(() => {
 					setResult(docs);
 					setIsFetching(false);
-					setExhausted(docs.length < limit);
+					setExhausted(!limit || docs.length < limit);
 				});
 			}
 		);
