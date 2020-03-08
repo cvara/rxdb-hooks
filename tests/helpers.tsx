@@ -30,6 +30,7 @@ export const setup = async (
 				},
 				name: {
 					type: 'string',
+					index: true,
 				},
 				affiliation: {
 					type: 'string',
@@ -77,8 +78,10 @@ export const Consumer: FC<ConsumerProps> = ({
 	return (
 		<div>
 			<ul>
-				{characters.map(character => (
-					<li key={character.name}>{character.name}</li>
+				{characters.map((character, index) => (
+					<li key={index} data-index={index}>
+						{character.name}
+					</li>
 				))}
 			</ul>
 			<div>{exhausted ? 'exhausted' : null}</div>
@@ -87,6 +90,16 @@ export const Consumer: FC<ConsumerProps> = ({
 			<button onClick={handleMore}>more</button>
 		</div>
 	);
+};
+
+export const sortByNameAsc = (a: Character, b: Character): number => {
+	if (a.name < b.name) {
+		return -1;
+	}
+	if (a.name > b.name) {
+		return 1;
+	}
+	return 0;
 };
 
 export default RxDB;

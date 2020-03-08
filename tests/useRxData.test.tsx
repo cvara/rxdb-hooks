@@ -1,5 +1,5 @@
 import React, { FC, useCallback } from 'react';
-import { setup, teardown, Consumer } from './helpers';
+import { setup, teardown, Consumer, sortByNameAsc } from './helpers';
 import {
 	render,
 	screen,
@@ -206,6 +206,47 @@ describe('useRxData', () => {
 		});
 		bulkDocs.slice(pageSize).forEach(doc => {
 			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
+		});
+
+		done();
+	});
+
+	it('should read sorted data from a collection', async done => {
+		const Child: FC = () => {
+			const queryConstructor = useCallback(
+				(c: RxCollection) => c.find(),
+				[]
+			);
+			const { result: characters, isFetching, exhausted } = useRxData(
+				'characters',
+				queryConstructor,
+				{
+					sort: 'name|asc',
+				}
+			);
+			return (
+				<Consumer
+					characters={characters}
+					isFetching={isFetching}
+					exhausted={exhausted}
+				/>
+			);
+		};
+		render(
+			<Provider db={db}>
+				<Child />
+			</Provider>
+		);
+
+		// wait for data
+		await waitForDomChange();
+
+		const sortedDocs = bulkDocs.slice(0).sort(sortByNameAsc);
+		// data should now be rendered in ascending name order
+		sortedDocs.forEach((doc, index) => {
+			expect(Number(screen.queryByText(doc.name).dataset.index)).toBe(
+				index
+			);
 		});
 
 		done();
