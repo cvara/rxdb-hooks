@@ -1,5 +1,5 @@
-import React, { FunctionComponent, useCallback } from 'react';
-import { setup, teardown } from './rxdb';
+import React, { FC, useCallback } from 'react';
+import { setup, teardown, Consumer } from './helpers';
 import { render, screen, waitForDomChange } from '@testing-library/react';
 import { RxDatabase, RxCollection } from 'rxdb';
 import useRxData from '../src/useRxData';
@@ -16,6 +16,18 @@ describe('useRxData', () => {
 			name: 'Yoda',
 			affiliation: 'Jedi',
 		},
+		{
+			name: 'Darth Sidius',
+			affiliation: 'Sith',
+		},
+		{
+			name: 'Obi-Wan Kenobi',
+			affiliation: 'Jedi',
+		},
+		{
+			name: 'Qui-Gon Jin',
+			affiliation: 'Jedi',
+		},
 	];
 
 	beforeAll(async done => {
@@ -29,36 +41,30 @@ describe('useRxData', () => {
 	});
 
 	it('should read data from collection', async done => {
-		const Child: FunctionComponent = () => {
+		const Child: FC = () => {
 			const queryConstructor = useCallback(
 				(c: RxCollection) => c.find(),
 				[]
 			);
-			const { result: characters, isFetching } = useRxData(
+			const { result: characters, isFetching, exhausted } = useRxData(
 				'characters',
 				queryConstructor
 			);
 
-			if (isFetching) {
-				return <div>loading</div>;
-			}
-
 			return (
-				<ul>
-					{characters.map(character => (
-						<li key={character.name}>{character.name}</li>
-					))}
-				</ul>
+				<Consumer
+					characters={characters}
+					isFetching={isFetching}
+					exhausted={exhausted}
+				/>
 			);
 		};
 
-		const Parent: FunctionComponent = () => (
+		render(
 			<Provider db={db}>
 				<Child />
 			</Provider>
 		);
-
-		render(<Parent />);
 
 		// should render in loading state
 		expect(screen.getByText('loading')).toBeInTheDocument();

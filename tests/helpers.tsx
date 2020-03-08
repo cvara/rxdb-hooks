@@ -1,3 +1,4 @@
+import React, { FC } from 'react';
 import RxDB, { RxDatabase } from 'rxdb';
 import memoryAdapter from 'pouchdb-adapter-memory';
 
@@ -41,6 +42,51 @@ export const teardown = async (db: RxDatabase): Promise<void> => {
 	if (RxDB.isRxDatabase(db)) {
 		db.remove();
 	}
+};
+
+interface ConsumerProps {
+	characters: Character[];
+	isFetching: boolean;
+	exhausted: boolean;
+	resetList?: () => void;
+	fetchMore?: () => void;
+}
+
+export const Consumer: FC<ConsumerProps> = ({
+	characters,
+	isFetching,
+	exhausted,
+	resetList,
+	fetchMore,
+}) => {
+	const handleReset = (): void => {
+		if (typeof resetList === 'function') {
+			resetList();
+		}
+	};
+
+	const handleMore = (): void => {
+		if (typeof fetchMore === 'function') {
+			resetList();
+		}
+	};
+
+	if (isFetching) {
+		return <div>loading</div>;
+	}
+
+	return (
+		<div>
+			<ul>
+				{characters.map(character => (
+					<li key={character.name}>{character.name}</li>
+				))}
+			</ul>
+			<div>{exhausted ? 'exhausted' : null}</div>
+			<button onClick={handleReset}>rest</button>
+			<button onClick={handleMore}>more</button>
+		</div>
+	);
 };
 
 export default RxDB;
