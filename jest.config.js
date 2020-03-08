@@ -11,4 +11,7 @@ module.exports = {
 		},
 	},
 	setupFilesAfterEnv: ['./jest.setup.ts'],
+	collectCoverage: true,
+	collectCoverageFrom: ['./src/**/*.ts'],
+	coverageReporters: ['text', 'html'],
 };
