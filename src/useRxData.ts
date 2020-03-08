@@ -20,7 +20,8 @@ interface RxData<T> {
 
 interface UseRxDataOptions {
 	pageSize?: number;
-	sort?: string;
+	sortBy?: string;
+	sortOrder?: 'asc' | 'desc';
 }
 
 type QueryConstructor<T> = (
@@ -86,7 +87,7 @@ const useRxData = <T>(
 	queryConstructor?: QueryConstructor<T>,
 	options: UseRxDataOptions = {}
 ): RxData<T> => {
-	const { pageSize = 0, sort } = options;
+	const { pageSize = 0, sortBy, sortOrder = 'desc' } = options;
 
 	const collection = useRxCollection<T>(collectionName);
 
@@ -130,8 +131,7 @@ const useRxData = <T>(
 			query = query.limit(state.limit);
 		}
 
-		if (sort) {
-			const [sortBy, sortOrder = 'desc'] = sort.split('|');
+		if (sortBy) {
 			query = query.sort({
 				[sortBy]: sortOrder,
 			});
@@ -153,7 +153,7 @@ const useRxData = <T>(
 		return (): void => {
 			sub.unsubscribe();
 		};
-	}, [queryConstructor, collection, state.limit, sort]);
+	}, [queryConstructor, collection, state.limit, sortBy, sortOrder]);
 
 	return {
 		...state,

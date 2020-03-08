@@ -228,7 +228,8 @@ describe('useRxData', () => {
 				'characters',
 				queryConstructor,
 				{
-					sort: 'name|asc',
+					sortBy: 'name',
+					sortOrder: 'asc',
 				}
 			);
 			return (
@@ -269,7 +270,7 @@ describe('useRxData', () => {
 				'characters',
 				queryConstructor,
 				{
-					sort: 'name', // omitting sort order
+					sortBy: 'name', // omitting sort order
 				}
 			);
 			return (
