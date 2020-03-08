@@ -4,7 +4,7 @@ import memoryAdapter from 'pouchdb-adapter-memory';
 
 RxDB.plugin(memoryAdapter);
 
-interface Character {
+export interface Character {
 	name: string;
 	affiliation: string;
 }
@@ -98,6 +98,16 @@ export const sortByNameAsc = (a: Character, b: Character): number => {
 	}
 	if (a.name > b.name) {
 		return 1;
+	}
+	return 0;
+};
+
+export const sortByNameDesc = (a: Character, b: Character): number => {
+	if (a.name < b.name) {
+		return 1;
+	}
+	if (a.name > b.name) {
+		return -1;
 	}
 	return 0;
 };

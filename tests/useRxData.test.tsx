@@ -1,5 +1,12 @@
 import React, { FC, useCallback } from 'react';
-import { setup, teardown, Consumer, sortByNameAsc } from './helpers';
+import {
+	setup,
+	teardown,
+	Consumer,
+	sortByNameAsc,
+	sortByNameDesc,
+	Character,
+} from './helpers';
 import {
 	render,
 	screen,
@@ -248,6 +255,162 @@ describe('useRxData', () => {
 				index
 			);
 		});
+
+		done();
+	});
+
+	it('should default to desc sort order', async done => {
+		const Child: FC = () => {
+			const queryConstructor = useCallback(
+				(c: RxCollection) => c.find(),
+				[]
+			);
+			const { result: characters, isFetching, exhausted } = useRxData(
+				'characters',
+				queryConstructor,
+				{
+					sort: 'name', // omitting sort order
+				}
+			);
+			return (
+				<Consumer
+					characters={characters}
+					isFetching={isFetching}
+					exhausted={exhausted}
+				/>
+			);
+		};
+		render(
+			<Provider db={db}>
+				<Child />
+			</Provider>
+		);
+
+		// wait for data
+		await waitForDomChange();
+
+		const sortedDocs = bulkDocs.slice(0).sort(sortByNameDesc);
+		// data should now be rendered in ascending name order
+		sortedDocs.forEach((doc, index) => {
+			expect(Number(screen.queryByText(doc.name).dataset.index)).toBe(
+				index
+			);
+		});
+
+		done();
+	});
+
+	it('should always convert results to array', async done => {
+		const idToSearchFor = '1';
+		const Child: FC = () => {
+			const queryConstructor = useCallback(
+				(c: RxCollection) =>
+					c
+						.findOne()
+						.where('_id')
+						.equals('1'),
+				[]
+			);
+			const {
+				result: characters,
+				isFetching,
+				exhausted,
+				fetchMore,
+			} = useRxData('characters', queryConstructor);
+			return (
+				<Consumer
+					characters={characters as Character[]}
+					isFetching={isFetching}
+					exhausted={exhausted}
+					fetchMore={fetchMore}
+				/>
+			);
+		};
+		render(
+			<Provider db={db}>
+				<Child />
+			</Provider>
+		);
+
+		await waitForDomChange();
+
+		bulkDocs.forEach(doc => {
+			if (doc._id === idToSearchFor) {
+				expect(screen.getByText(doc.name)).toBeInTheDocument();
+			} else {
+				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
+			}
+		});
+
+		done();
+	});
+
+	it('should handle missing collection', async done => {
+		const Child: FC = () => {
+			const queryConstructor = useCallback(() => undefined, []);
+			const {
+				result: characters,
+				isFetching,
+				exhausted,
+				fetchMore,
+			} = useRxData('does_not_exist', queryConstructor);
+			return (
+				<Consumer
+					characters={characters as Character[]}
+					isFetching={isFetching}
+					exhausted={exhausted}
+					fetchMore={fetchMore}
+				/>
+			);
+		};
+		render(
+			<Provider db={db}>
+				<Child />
+			</Provider>
+		);
+
+		// dom should remain in loading state
+		expect(screen.getByText('loading')).toBeInTheDocument();
+		try {
+			await waitForDomChange({ timeout: 1000 });
+		} catch (err) {
+			expect(screen.getByText('loading')).toBeInTheDocument();
+		}
+
+		done();
+	});
+
+	it('should handle missing database', async done => {
+		const Child: FC = () => {
+			const queryConstructor = useCallback(() => undefined, []);
+			const {
+				result: characters,
+				isFetching,
+				exhausted,
+				fetchMore,
+			} = useRxData('characters', queryConstructor);
+			return (
+				<Consumer
+					characters={characters as Character[]}
+					isFetching={isFetching}
+					exhausted={exhausted}
+					fetchMore={fetchMore}
+				/>
+			);
+		};
+		render(
+			<Provider db={undefined}>
+				<Child />
+			</Provider>
+		);
+
+		// dom should remain in loading state
+		expect(screen.getByText('loading')).toBeInTheDocument();
+		try {
+			await waitForDomChange({ timeout: 1000 });
+		} catch (err) {
+			expect(screen.getByText('loading')).toBeInTheDocument();
+		}
 
 		done();
 	});

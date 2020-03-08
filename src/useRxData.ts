@@ -12,14 +12,18 @@ interface RxData<T> {
 	resetList: () => void;
 }
 
-interface UseRxDataOptions {
+export interface UseRxDataOptions {
 	pageSize?: number;
 	sort?: string;
 }
 
+export type QueryConstructor<T> = (
+	collection: RxCollection<T>
+) => RxQuery<T> | undefined;
+
 const useRxData = <T>(
 	collectionName: string,
-	queryConstructor?: (collection: RxCollection<T>) => RxQuery<T>,
+	queryConstructor?: QueryConstructor<T>,
 	{ pageSize = 0, sort }: UseRxDataOptions = {}
 ): RxData<T> => {
 	const collection = useRxCollection<T>(collectionName);
@@ -60,7 +64,7 @@ const useRxData = <T>(
 			query = query.limit(limit);
 		}
 		if (sort) {
-			const [sortBy, sortOrder = 'desc'] = (sort || '').split('|');
+			const [sortBy, sortOrder = 'desc'] = sort.split('|');
 			query = query.sort({
 				[sortBy]: sortOrder,
 			});
