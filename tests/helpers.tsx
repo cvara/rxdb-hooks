@@ -24,9 +24,12 @@ export const setup = async (
 			version: 0,
 			type: 'object',
 			properties: {
-				name: {
+				_id: {
 					type: 'string',
 					primary: true,
+				},
+				name: {
+					type: 'string',
 				},
 				affiliation: {
 					type: 'string',
@@ -67,13 +70,9 @@ export const Consumer: FC<ConsumerProps> = ({
 
 	const handleMore = (): void => {
 		if (typeof fetchMore === 'function') {
-			resetList();
+			fetchMore();
 		}
 	};
-
-	if (isFetching) {
-		return <div>loading</div>;
-	}
 
 	return (
 		<div>
@@ -83,7 +82,8 @@ export const Consumer: FC<ConsumerProps> = ({
 				))}
 			</ul>
 			<div>{exhausted ? 'exhausted' : null}</div>
-			<button onClick={handleReset}>rest</button>
+			<div>{isFetching ? 'loading' : null}</div>
+			<button onClick={handleReset}>reset</button>
 			<button onClick={handleMore}>more</button>
 		</div>
 	);
