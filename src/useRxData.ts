@@ -1,8 +1,14 @@
 /* eslint @typescript-eslint/camelcase: 0 */
-import { useState, useEffect, useCallback } from 'react';
-import { unstable_batchedUpdates } from 'react-dom';
+import { useEffect, useCallback, useReducer, Reducer } from 'react';
 import { RxCollection, RxQuery, isRxQuery, RxDocument } from 'rxdb';
 import useRxCollection from './useRxCollection';
+
+interface RxState<T> {
+	result: T[];
+	isFetching: boolean;
+	exhausted: boolean;
+	limit: number;
+}
 
 interface RxData<T> {
 	result: T[];
@@ -12,88 +18,145 @@ interface RxData<T> {
 	resetList: () => void;
 }
 
-export interface UseRxDataOptions {
+interface UseRxDataOptions {
 	pageSize?: number;
 	sort?: string;
 }
 
-export type QueryConstructor<T> = (
+type QueryConstructor<T> = (
 	collection: RxCollection<T>
 ) => RxQuery<T> | undefined;
 
+enum ActionType {
+	Reset = 'Reset',
+	FetchMore = 'FetchMore',
+	FetchSuccess = 'FetchSuccess',
+}
+
+interface ResetAction {
+	type: ActionType.Reset;
+	pageSize: number;
+}
+
+interface FetchMoreAction {
+	type: ActionType.FetchMore;
+	pageSize: number;
+}
+
+interface FetchSuccessAction<T> {
+	type: ActionType.FetchSuccess;
+	docs: T[];
+}
+
+type AnyAction<T> = ResetAction | FetchMoreAction | FetchSuccessAction<T>;
+
+const reducer = <T>(state: RxState<T>, action: AnyAction<T>): RxState<T> => {
+	switch (action.type) {
+		case ActionType.Reset:
+			return {
+				...state,
+				result: [],
+				isFetching: true,
+				limit: action.pageSize,
+			};
+		case ActionType.FetchMore:
+			return {
+				...state,
+				isFetching: true,
+				limit: state.limit + action.pageSize,
+			};
+		case ActionType.FetchSuccess:
+			return {
+				...state,
+				result: action.docs,
+				isFetching: false,
+				exhausted: !state.limit || action.docs.length < state.limit,
+			};
+	}
+};
+
+/**
+ * Subscribes to specified query and provides results, also providing:
+ *  - state indicators for fetching and list depletion
+ *  - a fetchMore callback function for pagination support
+ *  - a resetList callback function for conveniently reseting list data
+ */
 const useRxData = <T>(
 	collectionName: string,
 	queryConstructor?: QueryConstructor<T>,
-	{ pageSize = 0, sort }: UseRxDataOptions = {}
+	options: UseRxDataOptions = {}
 ): RxData<T> => {
+	const { pageSize = 0, sort } = options;
+
 	const collection = useRxCollection<T>(collectionName);
 
-	const [result, setResult] = useState<T[]>([]);
-	const [limit, setLimit] = useState<number>(pageSize);
-	// absorbs initial delay until collection becomes available
-	const [isFetching, setIsFetching] = useState(true);
-	const [exhausted, setExhausted] = useState(true);
+	const initialState = {
+		result: [],
+		limit: pageSize,
+		isFetching: true,
+		exhausted: true,
+	};
+
+	const [state, dispatch] = useReducer<Reducer<RxState<T>, AnyAction<T>>>(
+		reducer,
+		initialState
+	);
 
 	const fetchMore = useCallback(() => {
-		// avoid increasing the limit again in the midst of a pending query
-		if (!limit || isFetching) {
+		if (!state.limit || state.isFetching) {
 			return;
 		}
-		setIsFetching(true);
-		setLimit(prevLimit => prevLimit + pageSize);
-	}, [limit, isFetching]);
+		dispatch({ type: ActionType.FetchMore, pageSize });
+	}, [state.limit, state.isFetching]);
 
 	const resetList = useCallback(() => {
-		if (limit && limit > pageSize) {
-			setResult([]);
-			setIsFetching(true);
-			setLimit(pageSize);
+		if (!state.limit || state.limit <= pageSize) {
+			return;
 		}
-	}, [pageSize, limit]);
+		dispatch({ type: ActionType.Reset, pageSize });
+	}, [pageSize, state.limit]);
 
 	useEffect(() => {
 		if (!collection || typeof queryConstructor !== 'function') {
 			return;
 		}
-		// build query
+
 		let query = queryConstructor(collection);
 		if (!isRxQuery(query)) {
 			return;
 		}
-		if (limit) {
-			query = query.limit(limit);
+
+		if (state.limit) {
+			query = query.limit(state.limit);
 		}
+
 		if (sort) {
 			const [sortBy, sortOrder = 'desc'] = sort.split('|');
 			query = query.sort({
 				[sortBy]: sortOrder,
 			});
 		}
-		// subscribe to query, updating state
+
 		const sub = query.$.subscribe(
 			(documents: RxDocument<T>[] | RxDocument<T>) => {
-				// make sure an array is always returned
 				const docs = (Array.isArray(documents)
 					? documents
 					: [documents]
 				).map(doc => doc.toJSON());
-
-				unstable_batchedUpdates(() => {
-					setResult(docs);
-					setIsFetching(false);
-					setExhausted(!limit || docs.length < limit);
+				dispatch({
+					type: ActionType.FetchSuccess,
+					docs,
 				});
 			}
 		);
+
 		return (): void => {
 			sub.unsubscribe();
 		};
-	}, [queryConstructor, collection, limit, sort]);
+	}, [queryConstructor, collection, state.limit, sort]);
 
 	return {
-		result,
-		isFetching,
-		exhausted,
+		...state,
 		fetchMore,
 		resetList,
 	};
