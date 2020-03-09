@@ -1,6 +1,7 @@
 {
 	"extends": "./tsconfig",
 	"compilerOptions": {
-	  "types": ["jest"],
-	},
+	  "target": "es6",
+	  "types": ["jest"]
+	}
   }

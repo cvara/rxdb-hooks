@@ -11,6 +11,7 @@
 		"prettier": "prettier --write \"src/**/*.{js,ts,jsx,tsx}\"",
 		"lint": "eslint \"src/**/*.{js,ts,jsx,tsx}\" --ignore-path .gitignore",
 		"test": "yarn jest --forceExit",
+		"build": "rimraf dist && tsc --project tsconfig.json",
 		"typecheck": "tsc --noEmit"
 	},
 	"husky": {
@@ -36,6 +37,7 @@
 		"react": "^16.13.0",
 		"react-dom": "^16.13.0",
 		"react-test-renderer": "^16.13.0",
+		"rimraf": "^3.0.2",
 		"rxdb": "^8.7.5",
 		"ts-jest": "^25.2.1",
 		"typescript": "^3.8.3"
