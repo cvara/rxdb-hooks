@@ -6,6 +6,7 @@ A simple set of hooks for integrating a React application with RxDB.
 - [Usage](#usage)
 - [API](#api)
 	- [`useRxData`](#userxdata)
+	- [`useRxDocument`](#userxdocument)
 	- [`useRxCollection`](#userxcollection)
 	- [`useRxDB`](#userxdb)
 	- [`Provider`](#provider)
@@ -19,6 +20,8 @@ A simple set of hooks for integrating a React application with RxDB.
 ## API
 
 ### `useRxData`
+
+### `useRxDocument`
 
 ### `useRxCollection`
 

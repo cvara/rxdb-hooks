@@ -3,7 +3,7 @@ import { RxDatabase } from 'rxdb';
 import Context from './context';
 
 const useRxDB = (): RxDatabase => {
-	const db = useContext(Context);
+	const { db } = useContext(Context);
 	return db;
 };
 

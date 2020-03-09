@@ -2,7 +2,7 @@ import React, { FC, useCallback } from 'react';
 import {
 	setup,
 	teardown,
-	Consumer,
+	CharacterList,
 	sortByNameAsc,
 	sortByNameDesc,
 	Character,
@@ -21,27 +21,27 @@ describe('useRxData', () => {
 	let db: RxDatabase;
 	const bulkDocs = [
 		{
-			_id: '1',
+			id: '1',
 			name: 'Darth Vader',
 			affiliation: 'Sith',
 		},
 		{
-			_id: '2',
+			id: '2',
 			name: 'Yoda',
 			affiliation: 'Jedi',
 		},
 		{
-			_id: '3',
+			id: '3',
 			name: 'Darth Sidius',
 			affiliation: 'Sith',
 		},
 		{
-			_id: '4',
+			id: '4',
 			name: 'Obi-Wan Kenobi',
 			affiliation: 'Jedi',
 		},
 		{
-			_id: '5',
+			id: '5',
 			name: 'Qui-Gon Jin',
 			affiliation: 'Jedi',
 		},
@@ -69,7 +69,7 @@ describe('useRxData', () => {
 			);
 
 			return (
-				<Consumer
+				<CharacterList
 					characters={characters}
 					isFetching={isFetching}
 					exhausted={exhausted}
@@ -119,7 +119,7 @@ describe('useRxData', () => {
 			});
 
 			return (
-				<Consumer
+				<CharacterList
 					characters={characters}
 					isFetching={isFetching}
 					exhausted={exhausted}
@@ -233,7 +233,7 @@ describe('useRxData', () => {
 				}
 			);
 			return (
-				<Consumer
+				<CharacterList
 					characters={characters}
 					isFetching={isFetching}
 					exhausted={exhausted}
@@ -274,7 +274,7 @@ describe('useRxData', () => {
 				}
 			);
 			return (
-				<Consumer
+				<CharacterList
 					characters={characters}
 					isFetching={isFetching}
 					exhausted={exhausted}
@@ -308,7 +308,7 @@ describe('useRxData', () => {
 				(c: RxCollection) =>
 					c
 						.findOne()
-						.where('_id')
+						.where('id')
 						.equals('1'),
 				[]
 			);
@@ -319,7 +319,7 @@ describe('useRxData', () => {
 				fetchMore,
 			} = useRxData('characters', queryConstructor);
 			return (
-				<Consumer
+				<CharacterList
 					characters={characters as Character[]}
 					isFetching={isFetching}
 					exhausted={exhausted}
@@ -336,7 +336,7 @@ describe('useRxData', () => {
 		await waitForDomChange();
 
 		bulkDocs.forEach(doc => {
-			if (doc._id === idToSearchFor) {
+			if (doc.id === idToSearchFor) {
 				expect(screen.getByText(doc.name)).toBeInTheDocument();
 			} else {
 				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
@@ -357,7 +357,7 @@ describe('useRxData', () => {
 			} = useRxData('characters', queryConstructor);
 
 			return (
-				<Consumer
+				<CharacterList
 					characters={characters as Character[]}
 					isFetching={isFetching}
 					exhausted={exhausted}
@@ -395,7 +395,7 @@ describe('useRxData', () => {
 				fetchMore,
 			} = useRxData('does_not_exist', queryConstructor);
 			return (
-				<Consumer
+				<CharacterList
 					characters={characters as Character[]}
 					isFetching={isFetching}
 					exhausted={exhausted}
@@ -433,7 +433,7 @@ describe('useRxData', () => {
 				fetchMore,
 			} = useRxData('characters', queryConstructor);
 			return (
-				<Consumer
+				<CharacterList
 					characters={characters as Character[]}
 					isFetching={isFetching}
 					exhausted={exhausted}

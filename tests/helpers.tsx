@@ -24,7 +24,7 @@ export const setup = async (
 			version: 0,
 			type: 'object',
 			properties: {
-				_id: {
+				id: {
 					type: 'string',
 					primary: true,
 				},
@@ -48,7 +48,7 @@ export const teardown = async (db: RxDatabase): Promise<void> => {
 	}
 };
 
-interface ConsumerProps {
+interface CharacterListProps {
 	characters: Character[];
 	isFetching: boolean;
 	exhausted: boolean;
@@ -56,7 +56,7 @@ interface ConsumerProps {
 	fetchMore?: () => void;
 }
 
-export const Consumer: FC<ConsumerProps> = ({
+export const CharacterList: FC<CharacterListProps> = ({
 	characters,
 	isFetching,
 	exhausted,
@@ -88,6 +88,20 @@ export const Consumer: FC<ConsumerProps> = ({
 			<div>{isFetching ? 'loading' : null}</div>
 			<button onClick={handleReset}>reset</button>
 			<button onClick={handleMore}>more</button>
+		</div>
+	);
+};
+
+interface CharacterProps {
+	character?: Character;
+	isFetching: boolean;
+}
+
+export const Character: FC<CharacterProps> = ({ character, isFetching }) => {
+	return (
+		<div>
+			<div>{character ? character.name : null}</div>
+			<div>{isFetching ? 'loading' : null}</div>
 		</div>
 	);
 };
