@@ -10,7 +10,8 @@
 	"scripts": {
 		"prettier": "prettier --write \"src/**/*.{js,ts,jsx,tsx}\"",
 		"lint": "eslint \"src/**/*.{js,ts,jsx,tsx}\" --ignore-path .gitignore",
-		"test": "yarn jest --forceExit"
+		"test": "yarn jest --forceExit",
+		"typecheck": "tsc --noEmit"
 	},
 	"husky": {
 		"hooks": {

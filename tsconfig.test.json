@@ -1,16 +1,6 @@
 {
+	"extends": "./tsconfig",
 	"compilerOptions": {
-	  "jsx": "react",
-	  "module": "commonjs",
-	  "target": "es6",
-	  "moduleResolution": "node",
-	  "allowSyntheticDefaultImports": true,
-	  "esModuleInterop": true,
-	  "lib": ["es6", "dom"],
 	  "types": ["jest"],
-	  "skipLibCheck": true
 	},
-	"exclude": [
-	  "node_modules"
-	]
   }
