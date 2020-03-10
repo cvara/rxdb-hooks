@@ -8,23 +8,32 @@ interface RxDocumentRet<T> {
 	isFetching: boolean;
 }
 
+interface UseRxDocumentOptions {
+	idAttribute?: string;
+}
+
 const useRxDocument = <T>(
 	collectionName: string,
-	id?: string
+	id?: string,
+	options: UseRxDocumentOptions = {}
 ): RxDocumentRet<T> => {
-	const { idAttribute } = useContext(Context);
+	const context = useContext(Context);
+	const idAttribute = options.idAttribute || context.idAttribute;
+
 	const queryConstructor = useCallback(
 		(c: RxCollection<T>) =>
 			c
 				.find()
 				.where(idAttribute)
 				.equals(id),
-		[id]
+		[id, idAttribute]
 	);
+
 	const { result, isFetching } = useData<T>(
 		collectionName,
 		id ? queryConstructor : undefined
 	);
+
 	return { result: result[0], isFetching };
 };
 

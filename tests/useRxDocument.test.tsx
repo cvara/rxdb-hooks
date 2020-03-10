@@ -127,7 +127,7 @@ describe('useRxDocument', () => {
 		done();
 	});
 
-	it('should allow custom id attributes', async done => {
+	it('should allow custom id attributes through Provider context', async done => {
 		const Child: FC = () => {
 			const { result: character, isFetching } = useRxDocument<Character>(
 				'characters',
@@ -152,6 +152,32 @@ describe('useRxDocument', () => {
 		expect(screen.queryByText('Yoda')).toBeInTheDocument();
 
 		done();
+	});
+
+	it('should allow custom id attributes through options', async done => {
+		const Child: FC = () => {
+			const { result: character, isFetching } = useRxDocument<Character>(
+				'characters',
+				'Yoda',
+				{ idAttribute: 'name' }
+			);
+
+			return <Character character={character} isFetching={isFetching} />;
+		};
+
+		render(
+			<Provider db={db}>
+				<Child />
+			</Provider>
+		);
+
+		// should render in loading state
+		expect(screen.getByText('loading')).toBeInTheDocument();
+
+		// wait for data
+		await waitForDomChange();
+
+		expect(screen.queryByText('Yoda')).toBeInTheDocument();
 
 		done();
 	});
