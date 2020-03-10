@@ -126,7 +126,7 @@ function useRxData<T>(
 			return;
 		}
 		dispatch({ type: ActionType.FetchMore, pageSize });
-	}, [state.limit, state.isFetching]);
+	}, [state.limit, state.isFetching, state.exhausted]);
 
 	const resetList = useCallback(() => {
 		if (!state.limit || state.limit <= pageSize) {
