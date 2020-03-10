@@ -63,10 +63,9 @@ describe('useRxData', () => {
 				(c: RxCollection) => c.find(),
 				[]
 			);
-			const { result: characters, isFetching, exhausted } = useRxData(
-				'characters',
-				queryConstructor
-			);
+			const { result: characters, isFetching, exhausted } = useRxData<
+				Character
+			>('characters', queryConstructor);
 
 			return (
 				<CharacterList
@@ -115,7 +114,7 @@ describe('useRxData', () => {
 				exhausted,
 				fetchMore,
 				resetList,
-			} = useRxData('characters', queryConstructor, {
+			} = useRxData<Character>('characters', queryConstructor, {
 				pageSize,
 			});
 
@@ -225,14 +224,12 @@ describe('useRxData', () => {
 				(c: RxCollection) => c.find(),
 				[]
 			);
-			const { result: characters, isFetching, exhausted } = useRxData(
-				'characters',
-				queryConstructor,
-				{
-					sortBy: 'name',
-					sortOrder: 'asc',
-				}
-			);
+			const { result: characters, isFetching, exhausted } = useRxData<
+				Character
+			>('characters', queryConstructor, {
+				sortBy: 'name',
+				sortOrder: 'asc',
+			});
 			return (
 				<CharacterList
 					characters={characters}
@@ -267,13 +264,11 @@ describe('useRxData', () => {
 				(c: RxCollection) => c.find(),
 				[]
 			);
-			const { result: characters, isFetching, exhausted } = useRxData(
-				'characters',
-				queryConstructor,
-				{
-					sortBy: 'name', // omitting sort order
-				}
-			);
+			const { result: characters, isFetching, exhausted } = useRxData<
+				Character
+			>('characters', queryConstructor, {
+				sortBy: 'name', // omitting sort order
+			});
 			return (
 				<CharacterList
 					characters={characters}
@@ -318,7 +313,7 @@ describe('useRxData', () => {
 				isFetching,
 				exhausted,
 				fetchMore,
-			} = useRxData('characters', queryConstructor);
+			} = useRxData<Character>('characters', queryConstructor);
 			return (
 				<CharacterList
 					characters={characters as Character[]}
@@ -355,7 +350,7 @@ describe('useRxData', () => {
 				isFetching,
 				exhausted,
 				fetchMore,
-			} = useRxData('characters', queryConstructor);
+			} = useRxData<Character>('characters', queryConstructor);
 
 			return (
 				<CharacterList
@@ -394,7 +389,7 @@ describe('useRxData', () => {
 				isFetching,
 				exhausted,
 				fetchMore,
-			} = useRxData('does_not_exist', queryConstructor);
+			} = useRxData<Character>('does_not_exist', queryConstructor);
 			return (
 				<CharacterList
 					characters={characters as Character[]}
@@ -432,7 +427,7 @@ describe('useRxData', () => {
 				isFetching,
 				exhausted,
 				fetchMore,
-			} = useRxData('characters', queryConstructor);
+			} = useRxData<Character>('characters', queryConstructor);
 			return (
 				<CharacterList
 					characters={characters as Character[]}
