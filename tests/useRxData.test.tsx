@@ -85,6 +85,7 @@ describe('useRxData', () => {
 
 		// should render in loading state
 		expect(screen.getByText('loading')).toBeInTheDocument();
+		expect(screen.queryByText('exhausted')).not.toBeInTheDocument();
 
 		// wait for data
 		await waitForDomChange();

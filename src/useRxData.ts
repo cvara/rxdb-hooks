@@ -95,7 +95,7 @@ const useRxData = <T>(
 		result: [],
 		limit: pageSize,
 		isFetching: true,
-		exhausted: true,
+		exhausted: false,
 	};
 
 	const [state, dispatch] = useReducer<Reducer<RxState<T>, AnyAction<T>>>(
@@ -104,7 +104,7 @@ const useRxData = <T>(
 	);
 
 	const fetchMore = useCallback(() => {
-		if (!state.limit || state.isFetching) {
+		if (!state.limit || state.isFetching || state.exhausted) {
 			return;
 		}
 		dispatch({ type: ActionType.FetchMore, pageSize });
