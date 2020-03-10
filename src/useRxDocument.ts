@@ -1,40 +1,67 @@
 import { useCallback, useContext } from 'react';
 import useData from './useRxData';
-import { RxCollection } from 'rxdb';
+import { RxCollection, RxDocument } from 'rxdb';
 import Context from './context';
 
 interface RxDocumentRet<T> {
-	result?: T;
+	result?: T | RxDocument<T>;
 	isFetching: boolean;
+}
+
+interface RxDocumentJSON<T> extends RxDocumentRet<T> {
+	result?: T;
+}
+
+interface RxDocumentDoc<T> extends RxDocumentRet<T> {
+	result?: RxDocument<T>;
 }
 
 interface UseRxDocumentOptions {
 	idAttribute?: string;
+	json?: boolean;
 }
 
-const useRxDocument = <T>(
+function useRxDocument<T>(
+	collectionName: string,
+	id?: string,
+	options?: UseRxDocumentOptions & { json: true }
+): RxDocumentJSON<T>;
+
+function useRxDocument<T>(
+	collectionName: string,
+	id?: string,
+	options?: UseRxDocumentOptions & { json?: false }
+): RxDocumentDoc<T>;
+
+/**
+ * Searches for a single document by an id attribute.
+ */
+function useRxDocument<T>(
 	collectionName: string,
 	id?: string,
 	options: UseRxDocumentOptions = {}
-): RxDocumentRet<T> => {
+): RxDocumentRet<T> {
+	const { idAttribute, json } = options;
+
 	const context = useContext(Context);
-	const idAttribute = options.idAttribute || context.idAttribute;
+	const preferredIdAttribute = idAttribute || context.idAttribute;
 
 	const queryConstructor = useCallback(
 		(c: RxCollection<T>) =>
 			c
 				.find()
-				.where(idAttribute)
+				.where(preferredIdAttribute)
 				.equals(id),
-		[id, idAttribute]
+		[id, preferredIdAttribute]
 	);
 
 	const { result, isFetching } = useData<T>(
 		collectionName,
-		id ? queryConstructor : undefined
+		id ? queryConstructor : undefined,
+		{ json: json as true } // <- typescript being paranoid; need to fix this
 	);
 
 	return { result: result[0], isFetching };
-};
+}
 
 export default useRxDocument;

@@ -4,24 +4,30 @@ import { RxCollection, RxQuery, isRxQuery, RxDocument } from 'rxdb';
 import useRxCollection from './useRxCollection';
 
 interface RxState<T> {
-	result: T[];
+	result: T[] | RxDocument<T>[];
 	isFetching: boolean;
 	exhausted: boolean;
 	limit: number;
 }
 
-interface RxData<T> {
-	result: T[];
-	isFetching: boolean;
-	exhausted: boolean;
+interface RxData<T> extends RxState<T> {
 	fetchMore: () => void;
 	resetList: () => void;
+}
+
+interface RxDataJSON<T> extends RxData<T> {
+	result: T[];
+}
+
+interface RxDataDoc<T> extends RxData<T> {
+	result: RxDocument<T>[];
 }
 
 interface UseRxDataOptions {
 	pageSize?: number;
 	sortBy?: string;
 	sortOrder?: 'asc' | 'desc';
+	json?: boolean;
 }
 
 type QueryConstructor<T> = (
@@ -76,18 +82,30 @@ const reducer = <T>(state: RxState<T>, action: AnyAction<T>): RxState<T> => {
 	}
 };
 
+function useRxData<T>(
+	collectionName: string,
+	queryConstructor?: QueryConstructor<T>,
+	options?: UseRxDataOptions & { json: true }
+): RxDataJSON<T>;
+
+function useRxData<T>(
+	collectionName: string,
+	queryConstructor?: QueryConstructor<T>,
+	options?: UseRxDataOptions & { json?: false }
+): RxDataDoc<T>;
+
 /**
  * Subscribes to specified query and provides results, also providing:
  *  - state indicators for fetching and list depletion
  *  - a fetchMore callback function for pagination support
  *  - a resetList callback function for conveniently reseting list data
  */
-const useRxData = <T>(
+function useRxData<T>(
 	collectionName: string,
 	queryConstructor?: QueryConstructor<T>,
 	options: UseRxDataOptions = {}
-): RxData<T> => {
-	const { pageSize = 0, sortBy, sortOrder = 'desc' } = options;
+): RxData<T> {
+	const { pageSize = 0, sortBy, sortOrder = 'desc', json } = options;
 
 	const collection = useRxCollection<T>(collectionName);
 
@@ -139,13 +157,10 @@ const useRxData = <T>(
 
 		const sub = query.$.subscribe(
 			(documents: RxDocument<T>[] | RxDocument<T>) => {
-				const docs = (Array.isArray(documents)
-					? documents
-					: [documents]
-				).map(doc => doc.toJSON());
+				const docs = Array.isArray(documents) ? documents : [documents];
 				dispatch({
 					type: ActionType.FetchSuccess,
-					docs,
+					docs: json ? docs.map(doc => doc.toJSON()) : docs,
 				});
 			}
 		);
@@ -160,6 +175,6 @@ const useRxData = <T>(
 		fetchMore,
 		resetList,
 	};
-};
+}
 
 export default useRxData;
