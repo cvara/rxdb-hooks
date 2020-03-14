@@ -1,0 +1,11 @@
+coverage
+node_modules/
+*.tgz
+.vscode/
+.prettier*
+jest.*
+tsconfig.*
+yarn.lock
+.eslintrc.js
+.circleci/
+tests/
