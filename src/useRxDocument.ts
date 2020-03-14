@@ -46,20 +46,24 @@ function useRxDocument<T>(
 	const context = useContext(Context);
 	const preferredIdAttribute = idAttribute || context.idAttribute;
 
+	/**
+	 * As a means of holding off data fetching when id is missing
+	 * don't return a valid RxQuery object
+	 */
 	const queryConstructor = useCallback(
 		(c: RxCollection<T>) =>
-			c
-				.find()
-				.where(preferredIdAttribute)
-				.equals(id),
+			id
+				? c
+						.find()
+						.where(preferredIdAttribute)
+						.equals(id)
+				: undefined,
 		[id, preferredIdAttribute]
 	);
 
-	const { result, isFetching } = useData<T>(
-		collectionName,
-		id ? queryConstructor : undefined,
-		{ json: json as true } // <- typescript being paranoid; need to fix this
-	);
+	const { result, isFetching } = json
+		? useData<T>(collectionName, queryConstructor, { json: true })
+		: useData<T>(collectionName, queryConstructor, { json: false });
 
 	return { result: result[0], isFetching };
 }
