@@ -8,7 +8,10 @@ interface RxState<T> {
 	limit: number;
 }
 
-export interface RxQueryResult<T> extends RxState<T> {
+export interface RxQueryResult<T> {
+	result: T[] | RxDocument<T>[];
+	isFetching: boolean;
+	exhausted: boolean;
 	fetchMore: () => void;
 	resetList: () => void;
 }
@@ -160,7 +163,6 @@ function useRxQuery<T>(
 
 	return {
 		result,
-		limit,
 		isFetching,
 		exhausted,
 		fetchMore,
