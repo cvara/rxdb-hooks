@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import RxDB, { RxDatabase } from 'rxdb';
+import RxDB, { RxDatabase, isRxDocument } from 'rxdb';
 import memoryAdapter from 'pouchdb-adapter-memory';
 
 RxDB.plugin(memoryAdapter);
@@ -86,6 +86,7 @@ export const CharacterList: FC<CharacterListProps> = ({
 			</ul>
 			<div>{exhausted ? 'exhausted' : null}</div>
 			<div>{isFetching ? 'loading' : null}</div>
+			<div>{characters.every(isRxDocument) ? 'RxDocument' : 'JSON'}</div>
 			<button onClick={handleReset}>reset</button>
 			<button onClick={handleMore}>more</button>
 		</div>

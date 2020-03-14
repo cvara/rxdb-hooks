@@ -96,6 +96,53 @@ describe('useRxData', () => {
 
 		// should be exhausted (no limit defined)
 		expect(screen.getByText('exhausted')).toBeInTheDocument();
+		// result should be an array of RxDocuments
+		expect(screen.getByText('RxDocument')).toBeInTheDocument();
+
+		done();
+	});
+
+	it('should return data in JSON format', async done => {
+		const Child: FC = () => {
+			const queryConstructor = useCallback(
+				(c: RxCollection) => c.find(),
+				[]
+			);
+			const { result: characters, isFetching, exhausted } = useRxData<
+				Character
+			>('characters', queryConstructor, { json: true });
+
+			return (
+				<CharacterList
+					characters={characters}
+					isFetching={isFetching}
+					exhausted={exhausted}
+				/>
+			);
+		};
+
+		render(
+			<Provider db={db}>
+				<Child />
+			</Provider>
+		);
+
+		// should render in loading state
+		expect(screen.getByText('loading')).toBeInTheDocument();
+		expect(screen.queryByText('exhausted')).not.toBeInTheDocument();
+
+		// wait for data
+		await waitForDomChange();
+
+		// data should now be rendered
+		bulkDocs.forEach(doc => {
+			expect(screen.queryByText(doc.name)).toBeInTheDocument();
+		});
+
+		// should be exhausted (no limit defined)
+		expect(screen.getByText('exhausted')).toBeInTheDocument();
+		// result should be an array of plain objects
+		expect(screen.getByText('JSON')).toBeInTheDocument();
 
 		done();
 	});
