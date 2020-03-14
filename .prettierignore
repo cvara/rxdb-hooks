@@ -1,5 +1,4 @@
 *.json
-*.md
 *.yml
 dist/
 node_modules/
