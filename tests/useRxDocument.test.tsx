@@ -181,4 +181,51 @@ describe('useRxDocument', () => {
 
 		done();
 	});
+
+	it('should support lazy db instantiation', async done => {
+		const Child: FC = () => {
+			const { result: character, isFetching } = useRxDocument<Character>(
+				'characters',
+				'4'
+			);
+
+			return <Character character={character} isFetching={isFetching} />;
+		};
+
+		const App: FC = () => {
+			const [lazyDb, setLazyDb] = useState(null);
+
+			const handleInit = (): void => {
+				setLazyDb(db);
+			};
+
+			return (
+				<Provider db={lazyDb}>
+					<Child />
+					<button onClick={handleInit}>init</button>
+				</Provider>
+			);
+		};
+
+		render(<App />);
+
+		// should render in loading state
+		expect(screen.getByText('loading')).toBeInTheDocument();
+
+		// trigger db init
+		fireEvent(
+			screen.getByText('init'),
+			new MouseEvent('click', {
+				bubbles: true,
+				cancelable: true,
+			})
+		);
+
+		// wait for data
+		await waitForDomChange();
+
+		expect(screen.queryByText('Obi-Wan Kenobi')).toBeInTheDocument();
+
+		done();
+	});
 });
