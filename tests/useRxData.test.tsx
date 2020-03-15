@@ -147,7 +147,7 @@ describe('useRxData', () => {
 		done();
 	});
 
-	it('should read paginated data from a collection', async done => {
+	it('should support infinite scroll pagination', async done => {
 		const pageSize = 2;
 
 		const Child: FC = () => {
@@ -259,6 +259,106 @@ describe('useRxData', () => {
 			expect(screen.getByText(doc.name)).toBeInTheDocument();
 		});
 		bulkDocs.slice(pageSize).forEach(doc => {
+			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
+		});
+
+		done();
+	});
+
+	it('should support traditional pagination', async done => {
+		const startingPage = 2;
+		const pageSize = 2;
+
+		const Child: FC = () => {
+			const queryConstructor = useCallback(
+				(c: RxCollection) => c.find(),
+				[]
+			);
+			const {
+				result: characters,
+				isFetching,
+				exhausted,
+				pageCount,
+				fetchPage,
+				fetchMore,
+				resetList,
+			} = useRxData<Character>('characters', queryConstructor, {
+				pageSize,
+				startingPage,
+			});
+
+			return (
+				<>
+					<button
+						onClick={(): void => {
+							fetchPage(startingPage - 1);
+						}}
+					>
+						previous page
+					</button>
+					<CharacterList
+						characters={characters}
+						isFetching={isFetching}
+						exhausted={exhausted}
+						pageCount={pageCount}
+						fetchMore={fetchMore}
+						resetList={resetList}
+					/>
+				</>
+			);
+		};
+
+		render(
+			<Provider db={db}>
+				<Child />
+			</Provider>
+		);
+
+		// should render in loading state
+		expect(screen.getByText('loading')).toBeInTheDocument();
+
+		// wait for data
+		await waitForDomChange();
+
+		// selected page data should now be rendered
+		bulkDocs.slice((startingPage - 1) * pageSize, pageSize).forEach(doc => {
+			expect(screen.getByText(doc.name)).toBeInTheDocument();
+		});
+		// rest data should not be rendered
+		[
+			...bulkDocs.slice(0, (startingPage - 1) * pageSize),
+			...bulkDocs.slice((startingPage - 1) * pageSize + pageSize),
+		].forEach(doc => {
+			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
+		});
+
+		// expect page count to be correctly computed
+		expect(screen.getByText('page count: 3')).toBeInTheDocument();
+
+		// trigger fetching of previous page
+		fireEvent(
+			screen.getByText('previous page'),
+			new MouseEvent('click', {
+				bubbles: true,
+				cancelable: true,
+			})
+		);
+
+		// should be loading
+		expect(screen.getByText('loading')).toBeInTheDocument();
+
+		// wait for previous page data to be rendered
+		await waitForDomChange();
+
+		// previous page data should now be rendered
+		bulkDocs.slice((startingPage - 2) * pageSize, pageSize).forEach(doc => {
+			expect(screen.getByText(doc.name)).toBeInTheDocument();
+		});
+		// rest data should not be rendered
+		[
+			...bulkDocs.slice(0, (startingPage - 2) * pageSize),
+			...bulkDocs.slice((startingPage - 2) * pageSize + pageSize),
+		].forEach(doc => {
 			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 		});
 
@@ -417,7 +517,7 @@ describe('useRxData', () => {
 		// dom should remain in loading state
 		expect(screen.getByText('loading')).toBeInTheDocument();
 		try {
-			await waitForDomChange({ timeout: 500 });
+			await waitForDomChange({ timeout: 100 });
 		} catch (err) {
 			expect(screen.getByText('loading')).toBeInTheDocument();
 		}
@@ -455,7 +555,7 @@ describe('useRxData', () => {
 		// dom should remain in loading state
 		expect(screen.getByText('loading')).toBeInTheDocument();
 		try {
-			await waitForDomChange({ timeout: 500 });
+			await waitForDomChange({ timeout: 100 });
 		} catch (err) {
 			expect(screen.getByText('loading')).toBeInTheDocument();
 		}
@@ -493,7 +593,7 @@ describe('useRxData', () => {
 		// dom should remain in loading state
 		expect(screen.getByText('loading')).toBeInTheDocument();
 		try {
-			await waitForDomChange({ timeout: 500 });
+			await waitForDomChange({ timeout: 100 });
 		} catch (err) {
 			expect(screen.getByText('loading')).toBeInTheDocument();
 		}
