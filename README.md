@@ -221,7 +221,7 @@ Same goes for `useRxData` and the `queryConstructor` function:
 ```javascript
 import { useCallback } from 'react';
 
-// (inside the component)
+// ...inside the component
 const queryConstructor = useCallback(
   collection =>
     collection

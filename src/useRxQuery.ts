@@ -241,30 +241,31 @@ function useRxQuery<T>(
 	const fetchPage = useCallback(
 		(page: number) => {
 			if (paginationMode !== PaginationMode.Traditional) {
-				// only available on Traditional mode
 				return;
 			}
 			if (page < 0 || page > state.pageCount) {
-				// can't request page outside available range
 				return;
 			}
-			dispatch({
-				type: ActionType.FetchPage,
-				page,
-			});
+			dispatch({ type: ActionType.FetchPage, page });
 		},
 		[paginationMode, state.pageCount]
 	);
 
 	const fetchMore = useCallback(() => {
-		if (!state.limit || state.isFetching || state.exhausted) {
+		if (paginationMode !== PaginationMode.InfiniteScroll) {
+			return;
+		}
+		if (state.isFetching || state.exhausted) {
 			return;
 		}
 		dispatch({ type: ActionType.FetchMore, pageSize });
 	}, [state.limit, state.isFetching, state.exhausted, pageSize]);
 
 	const resetList = useCallback(() => {
-		if (!state.limit || state.limit <= pageSize) {
+		if (paginationMode !== PaginationMode.InfiniteScroll) {
+			return;
+		}
+		if (state.limit <= pageSize) {
 			return;
 		}
 		dispatch({ type: ActionType.Reset, pageSize });
@@ -318,7 +319,7 @@ function useRxQuery<T>(
 		if (!state.page || !isRxQuery(query)) {
 			return;
 		}
-		// Unconvential counting of documents/pages to due to missing RxQuery.count():
+		// Unconvential counting of documents/pages due to missing RxQuery.count():
 		// https://github.com/pubkey/rxdb/blob/master/orga/BACKLOG.md#rxquerycount
 		const countQuerySub = query.$.subscribe(
 			(documents: RxDocument<T>[] | RxDocument<T>) => {
