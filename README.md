@@ -23,7 +23,9 @@ Nothing fancy, just conveniently handles common use cases such as:
 
 ## Installation
 
-**_coming soon_**
+```
+npm install rxdb-hooks
+```
 
 ## API
 
