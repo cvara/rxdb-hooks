@@ -1,6 +1,12 @@
 # rxdb-hooks
 
-A set of simple hooks for integrating a React application with RxDB.
+A set of really simple hooks for integrating a React application with RxDB.
+
+Nothing fancy, just conveniently handles some common issues & use cases such as:
+
+- pagination
+- maintaining useful state information (i.e. data fetching or data exhaustion during pagination)
+- unsubscribing to queries on component unmount
 
 ## Table of Contents
 
@@ -76,12 +82,13 @@ Subscribes to given RxQuery object providing query results and some helpful extr
 
 #### `options: UseRxQueryOptions`
 
-| Option      | Type              | Required | Default  | Description                                                                                                                                    |
-| ----------- | ----------------- | :------: | :------: | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pageSize`  | `number`          |    -     |   `0`    | enables pagination & defines page limit; `0` disables pagination and fetches everything                                                        |
-| `sortBy`    | `string`          |    -     |    -     | a property to sort results by; an index for this property should already exist                                                                 |
-| `sortOrder` | `"asc" \| "desc"` |    -     | `"desc"` | determines sort order for `sortBy` property                                                                                                    |
-| `json`      | `boolean`         |    -     | `false`  | when `true` resulting documents will be converted to plain JavaScript objects; equivalent to manually calling `.toJSON()` on each `RxDocument` |
+| Option         | Type              | Required | Default  | Description                                                                                                                                    |
+| -------------- | ----------------- | :------: | :------: | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pageSize`     | `number`          |    -     |   `0`    | enables pagination & defines page limit; `0` disables pagination and fetches everything                                                        |
+| `startingPage` | `number`          |    -     |    -     | 1-based number; enables tradional pagination mode & determines which page to fetch; works in combination with pageSize                         |
+| `sortBy`       | `string`          |    -     |    -     | a property to sort results by; an index for this property should already exist                                                                 |
+| `sortOrder`    | `"asc" \| "desc"` |    -     | `"desc"` | determines sort order for `sortBy` property                                                                                                    |
+| `json`         | `boolean`         |    -     | `false`  | when `true` resulting documents will be converted to plain JavaScript objects; equivalent to manually calling `.toJSON()` on each `RxDocument` |
 
 #### `result: RxQueryResult<T>`
 
@@ -105,7 +112,7 @@ const query = collection
 const { result } = useRxQuery(query);
 ```
 
-#### Pagination Example
+#### Infinite Scroll Pagination Example
 
 ```javascript
 const collection = useRxCollection('characters');
@@ -129,7 +136,40 @@ return (
     {characters.map((character, index) => (
       <Character character={character} key={index} />
     ))}
-    {!exhausted && <button onClick={fetchMore}>next page</button>}
+    {!exhausted && <button onClick={fetchMore}>load more</button>}
+  </CharacterList>
+);
+```
+
+#### Traditional Pagination Example
+
+```javascript
+const collection = useRxCollection('characters');
+const query = collection
+  .find()
+  .where('affiliation')
+  .equals('Jedi');
+const { result: characters, isFetching, fetchPage } = useRxQuery(query, {
+  pageSize: 5, // fetch 5 results per page
+  startingPage: 1, // start by showing the 1st page (1-based index)
+});
+
+if (isFetching) {
+  return 'Loading...';
+}
+
+return (
+  <CharacterList>
+    {characters.map((character, index) => (
+      <Character character={character} key={index} />
+    ))}
+    <button
+      onClick={() => {
+        fetchPage(2);
+      }}
+    >
+      2nd page
+    </button>
   </CharacterList>
 );
 ```
@@ -197,21 +237,18 @@ const { result: Yoda } = useRxDocument('characters', 'Yoda', {
 ### Query and Query Constructor memoization
 
 By design, `useRxQuery` will re-subscribe to `query` object whenever it changes, allowing
-for query criteria to be modified without unmounting the component. For this reason, to
+for query criteria to be modified during component updates. For this reason, to
 avoid unnecessary re-subscriptions, query should be memoized (i.e. via react's `useMemo`):
 
 ```javascript
-import { useMemo } from 'react';
-
-// ...inside the component
 const collection = useRxCollection('characters');
 const query = useMemo(
   () =>
     collection
       .find()
       .where('affiliation')
-      .equals('Jedi'),
-  [collection]
+      .equals(affiliation), // 👈 could come from component props
+  [collection, affiliation]
 );
 const { result } = useRxQuery(query);
 ```
@@ -219,16 +256,13 @@ const { result } = useRxQuery(query);
 Same goes for `useRxData` and the `queryConstructor` function:
 
 ```javascript
-import { useCallback } from 'react';
-
-// ...inside the component
 const queryConstructor = useCallback(
   collection =>
     collection
       .find()
       .where('affiliation')
-      .equals('Jedi'),
-  []
+      .equals(affiliation), // 👈 could come from component props
+  [affiliation]
 );
 const { result } = useRxData('characters', queryConstructor);
 ```

@@ -57,7 +57,7 @@ export interface UseRxQueryOptions {
 	pageSize?: number;
 
 	/**
-	 * Defines starting page & enables "traditional" pagination mode
+	 * Defines starting page (1-based index) & enables "traditional" pagination mode
 	 */
 	startingPage?: number;
 
