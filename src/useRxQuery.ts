@@ -15,7 +15,7 @@ export interface RxQueryResult<T> {
 	/**
 	 * Indicates that all available results have been already fetched.
 	 */
-	exhausted: boolean;
+	isExhausted: boolean;
 
 	/**
 	 * Total number of pages, based on total number of results and page size.
@@ -99,7 +99,7 @@ enum PaginationMode {
 interface RxState<T> {
 	result: T[] | RxDocument<T>[];
 	isFetching: boolean;
-	exhausted: boolean;
+	isExhausted: boolean;
 	limit: number;
 	page: number | undefined;
 	pageCount: number;
@@ -176,7 +176,7 @@ const reducer = <T>(state: RxState<T>, action: AnyAction<T>): RxState<T> => {
 				...state,
 				result: action.docs,
 				isFetching: false,
-				exhausted: !state.limit || action.docs.length < state.limit,
+				isExhausted: !state.limit || action.docs.length < state.limit,
 			};
 	}
 };
@@ -229,7 +229,7 @@ function useRxQuery<T>(
 		page: startingPage,
 		limit: paginationMode === PaginationMode.InfiniteScroll ? pageSize : 0,
 		isFetching: true,
-		exhausted: false,
+		isExhausted: false,
 		pageCount: 0,
 	};
 
@@ -255,11 +255,11 @@ function useRxQuery<T>(
 		if (paginationMode !== PaginationMode.InfiniteScroll) {
 			return;
 		}
-		if (state.isFetching || state.exhausted) {
+		if (state.isFetching || state.isExhausted) {
 			return;
 		}
 		dispatch({ type: ActionType.FetchMore, pageSize });
-	}, [state.limit, state.isFetching, state.exhausted, pageSize]);
+	}, [state.limit, state.isFetching, state.isExhausted, pageSize]);
 
 	const resetList = useCallback(() => {
 		if (paginationMode !== PaginationMode.InfiniteScroll) {
@@ -339,7 +339,7 @@ function useRxQuery<T>(
 	return {
 		result: state.result,
 		isFetching: state.isFetching,
-		exhausted: state.exhausted,
+		isExhausted: state.isExhausted,
 		pageCount: state.pageCount,
 		fetchPage,
 		fetchMore,

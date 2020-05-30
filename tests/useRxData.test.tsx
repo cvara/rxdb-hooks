@@ -63,7 +63,7 @@ describe('useRxData', () => {
 				(c: RxCollection) => c.find(),
 				[]
 			);
-			const { result: characters, isFetching, exhausted } = useRxData<
+			const { result: characters, isFetching, isExhausted } = useRxData<
 				Character
 			>('characters', queryConstructor);
 
@@ -71,7 +71,7 @@ describe('useRxData', () => {
 				<CharacterList
 					characters={characters}
 					isFetching={isFetching}
-					exhausted={exhausted}
+					isExhausted={isExhausted}
 				/>
 			);
 		};
@@ -84,7 +84,7 @@ describe('useRxData', () => {
 
 		// should render in loading state
 		expect(screen.getByText('loading')).toBeInTheDocument();
-		expect(screen.queryByText('exhausted')).not.toBeInTheDocument();
+		expect(screen.queryByText('isExhausted')).not.toBeInTheDocument();
 
 		// wait for data
 		await waitForDomChange();
@@ -94,8 +94,8 @@ describe('useRxData', () => {
 			expect(screen.queryByText(doc.name)).toBeInTheDocument();
 		});
 
-		// should be exhausted (no limit defined)
-		expect(screen.getByText('exhausted')).toBeInTheDocument();
+		// should be isExhausted (no limit defined)
+		expect(screen.getByText('isExhausted')).toBeInTheDocument();
 		// result should be an array of RxDocuments
 		expect(screen.getByText('RxDocument')).toBeInTheDocument();
 
@@ -108,7 +108,7 @@ describe('useRxData', () => {
 				(c: RxCollection) => c.find(),
 				[]
 			);
-			const { result: characters, isFetching, exhausted } = useRxData<
+			const { result: characters, isFetching, isExhausted } = useRxData<
 				Character
 			>('characters', queryConstructor, { json: true });
 
@@ -116,7 +116,7 @@ describe('useRxData', () => {
 				<CharacterList
 					characters={characters}
 					isFetching={isFetching}
-					exhausted={exhausted}
+					isExhausted={isExhausted}
 				/>
 			);
 		};
@@ -129,7 +129,7 @@ describe('useRxData', () => {
 
 		// should render in loading state
 		expect(screen.getByText('loading')).toBeInTheDocument();
-		expect(screen.queryByText('exhausted')).not.toBeInTheDocument();
+		expect(screen.queryByText('isExhausted')).not.toBeInTheDocument();
 
 		// wait for data
 		await waitForDomChange();
@@ -139,8 +139,8 @@ describe('useRxData', () => {
 			expect(screen.queryByText(doc.name)).toBeInTheDocument();
 		});
 
-		// should be exhausted (no limit defined)
-		expect(screen.getByText('exhausted')).toBeInTheDocument();
+		// should be isExhausted (no limit defined)
+		expect(screen.getByText('isExhausted')).toBeInTheDocument();
 		// result should be an array of plain objects
 		expect(screen.getByText('JSON')).toBeInTheDocument();
 
@@ -158,7 +158,7 @@ describe('useRxData', () => {
 			const {
 				result: characters,
 				isFetching,
-				exhausted,
+				isExhausted,
 				fetchMore,
 				resetList,
 			} = useRxData<Character>('characters', queryConstructor, {
@@ -169,7 +169,7 @@ describe('useRxData', () => {
 				<CharacterList
 					characters={characters}
 					isFetching={isFetching}
-					exhausted={exhausted}
+					isExhausted={isExhausted}
 					fetchMore={fetchMore}
 					resetList={resetList}
 				/>
@@ -198,7 +198,7 @@ describe('useRxData', () => {
 		});
 
 		// more data are present
-		expect(screen.queryByText('exhausted')).not.toBeInTheDocument();
+		expect(screen.queryByText('isExhausted')).not.toBeInTheDocument();
 
 		// trigger fetching of another page
 		fireEvent(
@@ -241,7 +241,7 @@ describe('useRxData', () => {
 		});
 
 		// we fetched everything
-		expect(screen.getByText('exhausted')).toBeInTheDocument();
+		expect(screen.getByText('isExhausted')).toBeInTheDocument();
 
 		// trigger a reset
 		fireEvent(
@@ -277,7 +277,7 @@ describe('useRxData', () => {
 			const {
 				result: characters,
 				isFetching,
-				exhausted,
+				isExhausted,
 				pageCount,
 				fetchPage,
 				fetchMore,
@@ -299,7 +299,7 @@ describe('useRxData', () => {
 					<CharacterList
 						characters={characters}
 						isFetching={isFetching}
-						exhausted={exhausted}
+						isExhausted={isExhausted}
 						pageCount={pageCount}
 						fetchMore={fetchMore}
 						resetList={resetList}
@@ -371,7 +371,7 @@ describe('useRxData', () => {
 				(c: RxCollection) => c.find(),
 				[]
 			);
-			const { result: characters, isFetching, exhausted } = useRxData<
+			const { result: characters, isFetching, isExhausted } = useRxData<
 				Character
 			>('characters', queryConstructor, {
 				sortBy: 'name',
@@ -381,7 +381,7 @@ describe('useRxData', () => {
 				<CharacterList
 					characters={characters}
 					isFetching={isFetching}
-					exhausted={exhausted}
+					isExhausted={isExhausted}
 				/>
 			);
 		};
@@ -411,7 +411,7 @@ describe('useRxData', () => {
 				(c: RxCollection) => c.find(),
 				[]
 			);
-			const { result: characters, isFetching, exhausted } = useRxData<
+			const { result: characters, isFetching, isExhausted } = useRxData<
 				Character
 			>('characters', queryConstructor, {
 				sortBy: 'name', // omitting sort order
@@ -420,7 +420,7 @@ describe('useRxData', () => {
 				<CharacterList
 					characters={characters}
 					isFetching={isFetching}
-					exhausted={exhausted}
+					isExhausted={isExhausted}
 				/>
 			);
 		};
@@ -458,14 +458,14 @@ describe('useRxData', () => {
 			const {
 				result: characters,
 				isFetching,
-				exhausted,
+				isExhausted,
 				fetchMore,
 			} = useRxData<Character>('characters', queryConstructor);
 			return (
 				<CharacterList
 					characters={characters as Character[]}
 					isFetching={isFetching}
-					exhausted={exhausted}
+					isExhausted={isExhausted}
 					fetchMore={fetchMore}
 				/>
 			);
@@ -495,7 +495,7 @@ describe('useRxData', () => {
 			const {
 				result: characters,
 				isFetching,
-				exhausted,
+				isExhausted,
 				fetchMore,
 			} = useRxData<Character>('characters', queryConstructor);
 
@@ -503,7 +503,7 @@ describe('useRxData', () => {
 				<CharacterList
 					characters={characters as Character[]}
 					isFetching={isFetching}
-					exhausted={exhausted}
+					isExhausted={isExhausted}
 					fetchMore={fetchMore}
 				/>
 			);
@@ -534,14 +534,14 @@ describe('useRxData', () => {
 			const {
 				result: characters,
 				isFetching,
-				exhausted,
+				isExhausted,
 				fetchMore,
 			} = useRxData<Character>('does_not_exist', queryConstructor);
 			return (
 				<CharacterList
 					characters={characters as Character[]}
 					isFetching={isFetching}
-					exhausted={exhausted}
+					isExhausted={isExhausted}
 					fetchMore={fetchMore}
 				/>
 			);
@@ -572,14 +572,14 @@ describe('useRxData', () => {
 			const {
 				result: characters,
 				isFetching,
-				exhausted,
+				isExhausted,
 				fetchMore,
 			} = useRxData<Character>('characters', queryConstructor);
 			return (
 				<CharacterList
 					characters={characters as Character[]}
 					isFetching={isFetching}
-					exhausted={exhausted}
+					isExhausted={isExhausted}
 					fetchMore={fetchMore}
 				/>
 			);

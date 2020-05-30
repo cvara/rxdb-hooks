@@ -51,7 +51,7 @@ export const teardown = async (db: RxDatabase): Promise<void> => {
 interface CharacterListProps {
 	characters: Character[];
 	isFetching: boolean;
-	exhausted: boolean;
+	isExhausted: boolean;
 	pageCount?: number;
 	resetList?: () => void;
 	fetchMore?: () => void;
@@ -60,7 +60,7 @@ interface CharacterListProps {
 export const CharacterList: FC<CharacterListProps> = ({
 	characters,
 	isFetching,
-	exhausted,
+	isExhausted,
 	resetList,
 	pageCount,
 	fetchMore,
@@ -86,7 +86,7 @@ export const CharacterList: FC<CharacterListProps> = ({
 					</li>
 				))}
 			</ul>
-			<div>{exhausted ? 'exhausted' : null}</div>
+			<div>{isExhausted ? 'isExhausted' : null}</div>
 			<div>{isFetching ? 'loading' : null}</div>
 			<div>page count: {pageCount}</div>
 			<div>{characters.every(isRxDocument) ? 'RxDocument' : 'JSON'}</div>

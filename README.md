@@ -92,13 +92,13 @@ Subscribes to given RxQuery object providing query results and some helpful extr
 
 #### `result: RxQueryResult<T>`
 
-| Property     | Type                     | Description                                                                                                                           |
-| ------------ | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `result`     | `T[] \| RxDocument<T>[]` | the resulting array of objects or `RxDocument` instances, depending on `json` option                                                  |
-| `isFetching` | `boolean`                | fetching state indicator                                                                                                              |
-| `exhausted`  | `boolean`                | flags result list as "exhausted", meaning all documents have been already fetched; relevant when pagination is enabled via `pageSize` |
-| `fetchMore`  | `() => void`             | a function to be called by the consumer to request documents of the next page                                                         |
-| `resetList`  | `() => void`             | a function to be called by the consumer to reset paginated results                                                                    |
+| Property      | Type                     | Description                                                                                                                             |
+| ------------- | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `result`      | `T[] \| RxDocument<T>[]` | the resulting array of objects or `RxDocument` instances, depending on `json` option                                                    |
+| `isFetching`  | `boolean`                | fetching state indicator                                                                                                                |
+| `isExhausted` | `boolean`                | flags result list as "isExhausted", meaning all documents have been already fetched; relevant when pagination is enabled via `pageSize` |
+| `fetchMore`   | `() => void`             | a function to be called by the consumer to request documents of the next page                                                           |
+| `resetList`   | `() => void`             | a function to be called by the consumer to reset paginated results                                                                      |
 
 #### Example
 
@@ -124,7 +124,7 @@ const {
   result: characters,
   isFetching,
   fetchMore,
-  exhausted,
+  isExhausted,
 } = useRxQuery(query, { pageSize: 5 }); // fetch first page of 5 results
 
 if (isFetching) {
@@ -136,7 +136,7 @@ return (
     {characters.map((character, index) => (
       <Character character={character} key={index} />
     ))}
-    {!exhausted && <button onClick={fetchMore}>load more</button>}
+    {!isExhausted && <button onClick={fetchMore}>load more</button>}
   </CharacterList>
 );
 ```
