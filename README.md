@@ -2,7 +2,7 @@
 
 A set of really simple hooks for integrating a React application with RxDB.
 
-Nothing fancy, just conveniently handles some common issues & use cases such as:
+Nothing fancy, just conveniently handles common use cases such as:
 
 - pagination
 - maintaining useful state information (i.e. data fetching or data exhaustion during pagination)
@@ -42,11 +42,11 @@ The `<Provider />` makes the RxDatabase instance available to nested components 
 
 ### `useRxDB`
 
+Returns the RxDatabase instance made available by the `<Provider />`
+
 ```javascript
 function useRxDB(): RxDatabase
 ```
-
-Returns the RxDatabase instance made available by the `<Provider />`
 
 #### Example
 
@@ -58,11 +58,11 @@ const db = useRxDB();
 
 ### `useRxCollection`
 
+Given a collection name returns an RxCollection instance, if found in RxDatabase.
+
 ```javascript
 function useRxCollection<T>(name: string): RxCollection<T> | null
 ```
-
-Given a collection name returns an RxCollection instance, if found in RxDatabase.
 
 #### Example
 
@@ -74,11 +74,11 @@ const collection = useRxCollection('characters');
 
 ### `useRxQuery`
 
+Subscribes to given RxQuery object providing query results and some helpful extra state variables.
+
 ```javascript
 function useRxQuery<T>(query: RxQuery, options?: UseRxQueryOptions): RxQueryResult<T>
 ```
-
-Subscribes to given RxQuery object providing query results and some helpful extra state variables.
 
 #### `options: UseRxQueryOptions`
 
@@ -178,6 +178,8 @@ return (
 
 ### `useRxData`
 
+Convenience wrapper around `useRxQuery` that expects a collection name & a query constructor function
+
 ```javascript
 function useRxData<T>(
 	collectionName: string,
@@ -185,8 +187,6 @@ function useRxData<T>(
 	options?: UseRxQueryOptions
 ): RxQueryResult<T>
 ```
-
-Convenience wrapper around `useRxQuery` that expects a collection name & a query constructor function
 
 #### Example
 
@@ -203,6 +203,8 @@ const { result } = useRxData('characters', collection =>
 
 ### `useRxDocument`
 
+Convenience hook for fetching a single document from a collection.
+
 ```javascript
 function useRxDocument<T>(
 	collectionName: string,
@@ -210,8 +212,6 @@ function useRxDocument<T>(
 	options?: UseRxDocumentOptions
 ): RxDocumentRet<T>
 ```
-
-Convenience hook for fetching a single document from a collection.
 
 #### `id`
 
@@ -271,7 +271,7 @@ const { result } = useRxData('characters', queryConstructor);
 
 All rxdb-hooks give you the ability to lazily instantiate the database and the
 collections within it. Initial delay until the above become available is absorbed
-by indicating the state as fetching (aka `isFetching:true`)
+by indicating the state as fetching (`isFetching:true`)
 
 ## LICENSE
 
