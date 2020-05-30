@@ -1,6 +1,6 @@
 {
 	"name": "rxdb-hooks",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"description": "React hooks for integrating with RxDB",
 	"main": "./dist/index.js",
 	"repository": "git@github.com:cvara/rxdb-hooks.git",
