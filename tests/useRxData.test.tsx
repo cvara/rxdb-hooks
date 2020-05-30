@@ -290,7 +290,7 @@ describe('useRxData', () => {
 			return (
 				<>
 					<button
-						onClick={(): void => {
+						onClick={() => {
 							fetchPage(startingPage - 1);
 						}}
 					>

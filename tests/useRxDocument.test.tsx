@@ -86,7 +86,7 @@ describe('useRxDocument', () => {
 				id
 			);
 
-			const onSetId = (): void => {
+			const onSetId = () => {
 				setId('4');
 			};
 
@@ -195,7 +195,7 @@ describe('useRxDocument', () => {
 		const App: FC = () => {
 			const [lazyDb, setLazyDb] = useState(null);
 
-			const handleInit = (): void => {
+			const handleInit = () => {
 				setLazyDb(db);
 			};
 

@@ -65,13 +65,13 @@ export const CharacterList: FC<CharacterListProps> = ({
 	pageCount,
 	fetchMore,
 }) => {
-	const handleReset = (): void => {
+	const handleReset = () => {
 		if (typeof resetList === 'function') {
 			resetList();
 		}
 	};
 
-	const handleMore = (): void => {
+	const handleMore = () => {
 		if (typeof fetchMore === 'function') {
 			fetchMore();
 		}

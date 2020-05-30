@@ -302,7 +302,7 @@ function useRxQuery<T>(
 			}
 		);
 
-		return (): void => {
+		return () => {
 			sub.unsubscribe();
 		};
 	}, [
@@ -331,7 +331,7 @@ function useRxQuery<T>(
 			}
 		);
 
-		return (): void => {
+		return () => {
 			countQuerySub.unsubscribe();
 		};
 	}, [state.page, query, pageSize]);
