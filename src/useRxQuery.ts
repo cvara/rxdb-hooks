@@ -111,6 +111,7 @@ enum ActionType {
 	FetchPage,
 	FetchSuccess,
 	CountPages,
+	QueryChanged,
 }
 
 interface ResetAction {
@@ -138,12 +139,17 @@ interface FetchSuccessAction<T> {
 	docs: T[];
 }
 
+interface QueryChangedAction {
+	type: ActionType.QueryChanged;
+}
+
 type AnyAction<T> =
 	| ResetAction
 	| FetchMoreAction
 	| FetchPageAction
 	| CountPagesAction
-	| FetchSuccessAction<T>;
+	| FetchSuccessAction<T>
+	| QueryChangedAction;
 
 const reducer = <T>(state: RxState<T>, action: AnyAction<T>): RxState<T> => {
 	switch (action.type) {
@@ -178,6 +184,13 @@ const reducer = <T>(state: RxState<T>, action: AnyAction<T>): RxState<T> => {
 				isFetching: false,
 				isExhausted: !state.limit || action.docs.length < state.limit,
 			};
+		case ActionType.QueryChanged:
+			return {
+				...state,
+				isFetching: true,
+			};
+		default:
+			return state;
 	}
 };
 
@@ -291,6 +304,10 @@ function useRxQuery<T>(
 				[sortBy]: sortOrder,
 			});
 		}
+
+		dispatch({
+			type: ActionType.QueryChanged,
+		});
 
 		const sub = _query.$.subscribe(
 			(documents: RxDocument<T>[] | RxDocument<T>) => {
