@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import {
 	setup,
 	teardown,
@@ -597,6 +597,98 @@ describe('useRxData', () => {
 		} catch (err) {
 			expect(screen.getByText('loading')).toBeInTheDocument();
 		}
+
+		done();
+	});
+
+	it('should set isFetching to true whenever the query changes', async done => {
+		const Child: FC = () => {
+			const [name, setName] = useState('');
+			const queryConstructor = useCallback(
+				(c: RxCollection) => {
+					if (name) {
+						return c
+							.find()
+							.where('name')
+							.equals(name);
+					}
+					return c.find();
+				},
+				[name]
+			);
+			const { result: characters, isFetching, isExhausted } = useRxData<
+				Character
+			>('characters', queryConstructor);
+
+			return (
+				<>
+					<button
+						onClick={() => {
+							setName('Yoda');
+						}}
+					>
+						search for Yoda
+					</button>
+					<CharacterList
+						characters={characters}
+						isFetching={isFetching}
+						isExhausted={isExhausted}
+					/>
+				</>
+			);
+		};
+
+		render(
+			<Provider db={db}>
+				<Child />
+			</Provider>
+		);
+
+		// should render in loading state
+		expect(screen.getByText('loading')).toBeInTheDocument();
+		expect(screen.queryByText('isExhausted')).not.toBeInTheDocument();
+
+		// wait for data
+		await waitForDomChange();
+
+		// should have stopped loading
+		expect(screen.queryByText('loading')).not.toBeInTheDocument();
+
+		// data should now be rendered
+		bulkDocs.forEach(doc => {
+			expect(screen.queryByText(doc.name)).toBeInTheDocument();
+		});
+
+		// should be isExhausted (no limit defined)
+		expect(screen.getByText('isExhausted')).toBeInTheDocument();
+		// result should be an array of RxDocuments
+		expect(screen.getByText('RxDocument')).toBeInTheDocument();
+
+		// trigger query change
+		fireEvent(
+			screen.getByText('search for Yoda'),
+			new MouseEvent('click', {
+				bubbles: true,
+				cancelable: true,
+			})
+		);
+
+		// should start loading again
+		expect(screen.queryByText('loading')).toBeInTheDocument();
+
+		// wait for Yoda
+		await waitForDomChange();
+
+		// new data fetched, loading should have stopped
+		expect(screen.queryByText('loading')).not.toBeInTheDocument();
+
+		// just making sure the correct data are fetched
+		expect(screen.getByText('Yoda')).toBeInTheDocument();
+		bulkDocs
+			.filter(doc => doc.name !== 'Yoda')
+			.forEach(doc => {
+				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
+			});
 
 		done();
 	});
