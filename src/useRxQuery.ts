@@ -14,6 +14,7 @@ export interface RxQueryResult<T> {
 
 	/**
 	 * Indicates that all available results have been already fetched.
+	 * Relevant in "infinite scroll" pagination mode
 	 */
 	isExhausted: boolean;
 
@@ -22,6 +23,12 @@ export interface RxQueryResult<T> {
 	 * Relevant in "traditional" pagination mode
 	 */
 	pageCount: number;
+
+	/**
+	 * The number of the current page.
+	 * Relevant in "infinite scroll" pagination mode
+	 */
+	currentPage: number;
 
 	/**
 	 * Allows consumer to request a specific page of results.
@@ -100,7 +107,6 @@ interface RxState<T> {
 	result: T[] | RxDocument<T>[];
 	isFetching: boolean;
 	isExhausted: boolean;
-	limit: number;
 	page: number | undefined;
 	pageCount: number;
 }
@@ -116,12 +122,10 @@ enum ActionType {
 
 interface ResetAction {
 	type: ActionType.Reset;
-	pageSize: number;
 }
 
 interface FetchMoreAction {
 	type: ActionType.FetchMore;
-	pageSize: number;
 }
 
 interface FetchPageAction {
@@ -137,6 +141,8 @@ interface CountPagesAction {
 interface FetchSuccessAction<T> {
 	type: ActionType.FetchSuccess;
 	docs: T[];
+	paginationMode: PaginationMode;
+	pageSize: number;
 }
 
 interface QueryChangedAction {
@@ -158,13 +164,13 @@ const reducer = <T>(state: RxState<T>, action: AnyAction<T>): RxState<T> => {
 				...state,
 				result: [],
 				isFetching: true,
-				limit: action.pageSize,
+				page: 1,
 			};
 		case ActionType.FetchMore:
 			return {
 				...state,
 				isFetching: true,
-				limit: state.limit + action.pageSize,
+				page: state.page + 1,
 			};
 		case ActionType.FetchPage:
 			return {
@@ -182,7 +188,12 @@ const reducer = <T>(state: RxState<T>, action: AnyAction<T>): RxState<T> => {
 				...state,
 				result: action.docs,
 				isFetching: false,
-				isExhausted: !state.limit || action.docs.length < state.limit,
+				isExhausted:
+					action.paginationMode === PaginationMode.InfiniteScroll
+						? action.docs.length < state.page * action.pageSize
+						: action.paginationMode === PaginationMode.None
+						? true
+						: false,
 			};
 		case ActionType.QueryChanged:
 			return {
@@ -237,10 +248,10 @@ function useRxQuery<T>(
 
 	const paginationMode = getPaginationMode(options);
 
-	const initialState = {
+	const initialState: RxState<T> = {
 		result: [],
-		page: startingPage,
-		limit: paginationMode === PaginationMode.InfiniteScroll ? pageSize : 0,
+		page:
+			paginationMode === PaginationMode.InfiniteScroll ? 1 : startingPage,
 		isFetching: true,
 		isExhausted: false,
 		pageCount: 0,
@@ -271,18 +282,18 @@ function useRxQuery<T>(
 		if (state.isFetching || state.isExhausted) {
 			return;
 		}
-		dispatch({ type: ActionType.FetchMore, pageSize });
-	}, [state.limit, state.isFetching, state.isExhausted, pageSize]);
+		dispatch({ type: ActionType.FetchMore });
+	}, [state.isFetching, state.isExhausted]);
 
 	const resetList = useCallback(() => {
 		if (paginationMode !== PaginationMode.InfiniteScroll) {
 			return;
 		}
-		if (state.limit <= pageSize) {
+		if (state.page === 1) {
 			return;
 		}
-		dispatch({ type: ActionType.Reset, pageSize });
-	}, [pageSize, state.limit]);
+		dispatch({ type: ActionType.Reset });
+	}, [state.page, paginationMode]);
 
 	useEffect(() => {
 		if (!isRxQuery(query)) {
@@ -296,7 +307,7 @@ function useRxQuery<T>(
 		}
 
 		if (paginationMode === PaginationMode.InfiniteScroll) {
-			_query = _query.limit(state.limit);
+			_query = _query.limit(state.page * pageSize);
 		}
 
 		if (sortBy) {
@@ -315,6 +326,8 @@ function useRxQuery<T>(
 				dispatch({
 					type: ActionType.FetchSuccess,
 					docs: json ? docs.map(doc => doc.toJSON()) : docs,
+					paginationMode,
+					pageSize,
 				});
 			}
 		);
@@ -322,15 +335,7 @@ function useRxQuery<T>(
 		return () => {
 			sub.unsubscribe();
 		};
-	}, [
-		query,
-		pageSize,
-		paginationMode,
-		sortBy,
-		sortOrder,
-		state.limit,
-		state.page,
-	]);
+	}, [query, pageSize, paginationMode, sortBy, sortOrder, state.page]);
 
 	useEffect(() => {
 		if (!state.page || !isRxQuery(query)) {
@@ -358,6 +363,7 @@ function useRxQuery<T>(
 		isFetching: state.isFetching,
 		isExhausted: state.isExhausted,
 		pageCount: state.pageCount,
+		currentPage: state.page,
 		fetchPage,
 		fetchMore,
 		resetList,

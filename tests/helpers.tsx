@@ -53,6 +53,7 @@ interface CharacterListProps {
 	isFetching: boolean;
 	isExhausted: boolean;
 	pageCount?: number;
+	currentPage?: number;
 	resetList?: () => void;
 	fetchMore?: () => void;
 }
@@ -63,6 +64,7 @@ export const CharacterList: FC<CharacterListProps> = ({
 	isExhausted,
 	resetList,
 	pageCount,
+	currentPage,
 	fetchMore,
 }) => {
 	const handleReset = () => {
@@ -89,6 +91,7 @@ export const CharacterList: FC<CharacterListProps> = ({
 			<div>{isExhausted ? 'isExhausted' : null}</div>
 			<div>{isFetching ? 'loading' : null}</div>
 			<div>page count: {pageCount}</div>
+			<div>current page: {currentPage}</div>
 			<div>{characters.every(isRxDocument) ? 'RxDocument' : 'JSON'}</div>
 			<button onClick={handleReset}>reset</button>
 			<button onClick={handleMore}>more</button>

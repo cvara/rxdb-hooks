@@ -94,7 +94,7 @@ describe('useRxData', () => {
 			expect(screen.queryByText(doc.name)).toBeInTheDocument();
 		});
 
-		// should be isExhausted (no limit defined)
+		// should be exhausted (we fetched everything in one go)
 		expect(screen.getByText('isExhausted')).toBeInTheDocument();
 		// result should be an array of RxDocuments
 		expect(screen.getByText('RxDocument')).toBeInTheDocument();
@@ -159,6 +159,7 @@ describe('useRxData', () => {
 				result: characters,
 				isFetching,
 				isExhausted,
+				currentPage,
 				fetchMore,
 				resetList,
 			} = useRxData<Character>('characters', queryConstructor, {
@@ -170,6 +171,7 @@ describe('useRxData', () => {
 					characters={characters}
 					isFetching={isFetching}
 					isExhausted={isExhausted}
+					currentPage={currentPage}
 					fetchMore={fetchMore}
 					resetList={resetList}
 				/>
@@ -184,6 +186,8 @@ describe('useRxData', () => {
 
 		// should render in loading state
 		expect(screen.getByText('loading')).toBeInTheDocument();
+		// should start at 1st page
+		expect(screen.getByText('current page: 1')).toBeInTheDocument();
 
 		// wait for data
 		await waitForDomChange();
@@ -211,6 +215,8 @@ describe('useRxData', () => {
 
 		// should be loading
 		expect(screen.getByText('loading')).toBeInTheDocument();
+		// 2nd page should be the current page now
+		expect(screen.getByText('current page: 2')).toBeInTheDocument();
 
 		// wait for next page data to be rendered
 		await waitForDomChange();
@@ -231,6 +237,8 @@ describe('useRxData', () => {
 
 		// should be loading
 		expect(screen.getByText('loading')).toBeInTheDocument();
+		// 3rd page should be the current page now
+		expect(screen.getByText('current page: 3')).toBeInTheDocument();
 
 		// wait for last page data to be rendered
 		await waitForDomChange();
@@ -251,6 +259,8 @@ describe('useRxData', () => {
 				cancelable: true,
 			})
 		);
+
+		expect(screen.getByText('current page: 1')).toBeInTheDocument();
 
 		await waitForDomChange();
 
@@ -320,6 +330,9 @@ describe('useRxData', () => {
 		// wait for data
 		await waitForDomChange();
 
+		// should not be in exhausted state
+		expect(screen.queryByText('isExhausted')).not.toBeInTheDocument();
+
 		// selected page data should now be rendered
 		bulkDocs.slice((startingPage - 1) * pageSize, pageSize).forEach(doc => {
 			expect(screen.getByText(doc.name)).toBeInTheDocument();
@@ -347,6 +360,9 @@ describe('useRxData', () => {
 		// should be loading
 		expect(screen.getByText('loading')).toBeInTheDocument();
 
+		// should not be in exhausted state
+		expect(screen.queryByText('isExhausted')).not.toBeInTheDocument();
+
 		// wait for previous page data to be rendered
 		await waitForDomChange();
 
@@ -361,6 +377,9 @@ describe('useRxData', () => {
 		].forEach(doc => {
 			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 		});
+
+		// expect page count to be unaffected
+		expect(screen.getByText('page count: 3')).toBeInTheDocument();
 
 		done();
 	});
