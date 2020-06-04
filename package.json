@@ -13,7 +13,8 @@
 		"test": "yarn jest --clearCache && yarn jest --forceExit",
 		"build": "rimraf dist && tsc --project tsconfig.json",
 		"prepack": "yarn build",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"changelog": "node ./bin/changelog.js"
 	},
 	"husky": {
 		"hooks": {
@@ -28,6 +29,7 @@
 		"@types/react": "^16.9.23",
 		"@typescript-eslint/eslint-plugin": "^2.21.0",
 		"@typescript-eslint/parser": "^2.21.0",
+		"dotenv": "^8.2.0",
 		"eslint": "^6.8.0",
 		"eslint-config-prettier": "^6.10.0",
 		"eslint-plugin-react": "^7.18.3",
@@ -41,6 +43,7 @@
 		"react-test-renderer": "^16.13.0",
 		"rimraf": "^3.0.2",
 		"rxdb": "^8.7.5",
+		"shelljs": "^0.8.4",
 		"ts-jest": "^26.0.0",
 		"typescript": "^3.8.3"
 	},

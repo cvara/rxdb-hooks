@@ -2,3 +2,4 @@
 *.yml
 dist/
 node_modules/
+CHANGELOG.md
