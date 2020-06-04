@@ -165,6 +165,7 @@ const reducer = <T>(state: RxState<T>, action: AnyAction<T>): RxState<T> => {
 				result: [],
 				isFetching: true,
 				limit: action.pageSize,
+				page: 1,
 			};
 		case ActionType.FetchMore:
 			return {
@@ -290,7 +291,7 @@ function useRxQuery<T>(
 			return;
 		}
 		dispatch({ type: ActionType.Reset, pageSize });
-	}, [pageSize, state.limit]);
+	}, [pageSize, state.limit, paginationMode]);
 
 	useEffect(() => {
 		if (!isRxQuery(query)) {

@@ -260,6 +260,8 @@ describe('useRxData', () => {
 			})
 		);
 
+		expect(screen.getByText('current page: 1')).toBeInTheDocument();
+
 		await waitForDomChange();
 
 		// now only first page data should be rendered
