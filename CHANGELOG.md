@@ -1,8 +1,8 @@
 # Changelog
 
-## [Unreleased](https://github.com/cvara/rxdb-hooks/tree/HEAD)
+## [1.2.0](https://github.com/cvara/rxdb-hooks/tree/1.2.0) (2020-06-04)
 
-[Full Changelog](https://github.com/cvara/rxdb-hooks/compare/1.1.0...HEAD)
+[Full Changelog](https://github.com/cvara/rxdb-hooks/compare/1.1.0...1.2.0)
 
 **Implemented enhancements:**
 
