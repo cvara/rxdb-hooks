@@ -3,7 +3,7 @@ import { RxDatabase } from 'rxdb';
 import Context from './context';
 
 interface ProviderProps {
-	db: RxDatabase;
+	db?: RxDatabase;
 	idAttribute?: string;
 }
 
