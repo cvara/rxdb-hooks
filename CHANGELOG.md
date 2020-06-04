@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased](https://github.com/cvara/rxdb-hooks/tree/HEAD)
+
+[Full Changelog](https://github.com/cvara/rxdb-hooks/compare/1.1.0...HEAD)
+
+**Implemented enhancements:**
+
+- useRxQuery & useRxData provide currentPage status [\#3](https://github.com/cvara/rxdb-hooks/pull/3) ([cvara](https://github.com/cvara))
+
 ## [1.1.0](https://github.com/cvara/rxdb-hooks/tree/1.1.0) (2020-06-04)
 
 [Full Changelog](https://github.com/cvara/rxdb-hooks/compare/1.0.0...1.1.0)
