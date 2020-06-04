@@ -24,6 +24,12 @@ export interface RxQueryResult<T> {
 	pageCount: number;
 
 	/**
+	 * The number of the current page.
+	 * Relevant in "infinite scroll" pagination mode
+	 */
+	currentPage: number;
+
+	/**
 	 * Allows consumer to request a specific page of results.
 	 * Relevant in "traditional" pagination mode
 	 */
@@ -164,6 +170,7 @@ const reducer = <T>(state: RxState<T>, action: AnyAction<T>): RxState<T> => {
 			return {
 				...state,
 				isFetching: true,
+				page: state.page + 1,
 				limit: state.limit + action.pageSize,
 			};
 		case ActionType.FetchPage:
@@ -239,7 +246,8 @@ function useRxQuery<T>(
 
 	const initialState = {
 		result: [],
-		page: startingPage,
+		page:
+			paginationMode === PaginationMode.InfiniteScroll ? 1 : startingPage,
 		limit: paginationMode === PaginationMode.InfiniteScroll ? pageSize : 0,
 		isFetching: true,
 		isExhausted: false,
@@ -358,6 +366,7 @@ function useRxQuery<T>(
 		isFetching: state.isFetching,
 		isExhausted: state.isExhausted,
 		pageCount: state.pageCount,
+		currentPage: state.page,
 		fetchPage,
 		fetchMore,
 		resetList,
