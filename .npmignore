@@ -9,3 +9,5 @@ yarn.lock
 .eslintrc.js
 .circleci/
 tests/
+bin/
+.env
