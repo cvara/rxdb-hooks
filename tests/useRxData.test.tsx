@@ -63,16 +63,30 @@ describe('useRxData', () => {
 				(c: RxCollection) => c.find(),
 				[]
 			);
-			const { result: characters, isFetching, isExhausted } = useRxData<
-				Character
-			>('characters', queryConstructor);
+			const {
+				result: characters,
+				isFetching,
+				isExhausted,
+				resetList,
+				fetchPage,
+			} = useRxData<Character>('characters', queryConstructor);
 
 			return (
-				<CharacterList
-					characters={characters}
-					isFetching={isFetching}
-					isExhausted={isExhausted}
-				/>
+				<>
+					<button
+						onClick={() => {
+							fetchPage(2);
+						}}
+					>
+						fetch page 2
+					</button>
+					<CharacterList
+						characters={characters}
+						isFetching={isFetching}
+						isExhausted={isExhausted}
+						resetList={resetList}
+					/>
+				</>
 			);
 		};
 
@@ -98,6 +112,34 @@ describe('useRxData', () => {
 		expect(screen.getByText('isExhausted')).toBeInTheDocument();
 		// result should be an array of RxDocuments
 		expect(screen.getByText('RxDocument')).toBeInTheDocument();
+
+		// attempt to reset list
+		fireEvent(
+			screen.getByText('reset'),
+			new MouseEvent('click', {
+				bubbles: true,
+				cancelable: true,
+			})
+		);
+
+		// noop: cannot reset when not on infinite-scroll pagination
+		expect(screen.queryByText('loading')).not.toBeInTheDocument();
+
+		// attempt to fetch page 2
+		fireEvent(
+			screen.getByText('fetch page 2'),
+			new MouseEvent('click', {
+				bubbles: true,
+				cancelable: true,
+			})
+		);
+
+		// noop: not in traditional pagination
+		expect(screen.queryByText('loading')).not.toBeInTheDocument();
+		// data should still be rendered
+		bulkDocs.forEach(doc => {
+			expect(screen.queryByText(doc.name)).toBeInTheDocument();
+		});
 
 		done();
 	});
@@ -251,6 +293,25 @@ describe('useRxData', () => {
 		// we fetched everything
 		expect(screen.getByText('isExhausted')).toBeInTheDocument();
 
+		// try to fetch more
+		fireEvent(
+			screen.getByText('more'),
+			new MouseEvent('click', {
+				bubbles: true,
+				cancelable: true,
+			})
+		);
+
+		// should not be loading & should remain on same page:
+		// there is nothing more to fetch
+		expect(screen.queryByText('loading')).not.toBeInTheDocument();
+		expect(screen.getByText('current page: 3')).toBeInTheDocument();
+
+		// last page should still be rendered
+		bulkDocs.slice(2 * pageSize, pageSize).forEach(doc => {
+			expect(screen.getByText(doc.name)).toBeInTheDocument();
+		});
+
 		// trigger a reset
 		fireEvent(
 			screen.getByText('reset'),
@@ -265,6 +326,27 @@ describe('useRxData', () => {
 		await waitForDomChange();
 
 		// now only first page data should be rendered
+		bulkDocs.slice(0, pageSize).forEach(doc => {
+			expect(screen.getByText(doc.name)).toBeInTheDocument();
+		});
+		bulkDocs.slice(pageSize).forEach(doc => {
+			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
+		});
+
+		// try to reset again
+		fireEvent(
+			screen.getByText('reset'),
+			new MouseEvent('click', {
+				bubbles: true,
+				cancelable: true,
+			})
+		);
+
+		// should be a noop: already on page 1, no point in resetting
+		expect(screen.queryByText('loading')).not.toBeInTheDocument();
+		expect(screen.getByText('current page: 1')).toBeInTheDocument();
+
+		// first page data should still be rendered
 		bulkDocs.slice(0, pageSize).forEach(doc => {
 			expect(screen.getByText(doc.name)).toBeInTheDocument();
 		});
@@ -305,6 +387,13 @@ describe('useRxData', () => {
 						}}
 					>
 						previous page
+					</button>
+					<button
+						onClick={() => {
+							fetchPage(0);
+						}}
+					>
+						wrong page
 					</button>
 					<CharacterList
 						characters={characters}
@@ -379,6 +468,43 @@ describe('useRxData', () => {
 		});
 
 		// expect page count to be unaffected
+		expect(screen.getByText('page count: 3')).toBeInTheDocument();
+
+		// request a wrong page
+		fireEvent(
+			screen.getByText('wrong page'),
+			new MouseEvent('click', {
+				bubbles: true,
+				cancelable: true,
+			})
+		);
+
+		// should be a noop since we requested a page that doesn't does not exist:
+		// should not be loading
+		expect(screen.queryByText('loading')).not.toBeInTheDocument();
+		// same data should still be rendered
+		bulkDocs.slice((startingPage - 2) * pageSize, pageSize).forEach(doc => {
+			expect(screen.getByText(doc.name)).toBeInTheDocument();
+		});
+		[
+			...bulkDocs.slice(0, (startingPage - 2) * pageSize),
+			...bulkDocs.slice((startingPage - 2) * pageSize + pageSize),
+		].forEach(doc => {
+			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
+		});
+
+		// wrongly request more
+		fireEvent(
+			screen.getByText('more'),
+			new MouseEvent('click', {
+				bubbles: true,
+				cancelable: true,
+			})
+		);
+
+		// should be a noop when not in infinite scroll pagination:
+		// should not be loading and should remain on same page
+		expect(screen.queryByText('loading')).not.toBeInTheDocument();
 		expect(screen.getByText('page count: 3')).toBeInTheDocument();
 
 		done();

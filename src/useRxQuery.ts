@@ -267,7 +267,7 @@ function useRxQuery<T>(
 			if (paginationMode !== PaginationMode.Traditional) {
 				return;
 			}
-			if (page < 0 || page > state.pageCount) {
+			if (page < 1 || page > state.pageCount) {
 				return;
 			}
 			dispatch({ type: ActionType.FetchPage, page });
