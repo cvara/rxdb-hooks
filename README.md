@@ -1,6 +1,16 @@
 # rxdb-hooks
 
-[![Build Status](https://travis-ci.com/cvara/rxdb-hooks.svg?branch=master)](https://travis-ci.com/cvara/rxdb-hooks)
+<a href="https://travis-ci.com/cvara/rxdb-hooks">
+  <img src="https://travis-ci.com/cvara/rxdb-hooks.svg?branch=master" />
+</a>
+
+<a href="https://codecov.io/gh/cvara/rxdb-hooks">
+  <img src="https://codecov.io/gh/cvara/rxdb-hooks/branch/master/graph/badge.svg" />
+</a>
+
+<a href="https://www.npmjs.com/package/rxdb-hooks">
+  <img src="https://badge.fury.io/js/rxdb-hooks.svg" alt="npm version">
+</a>
 
 A set of really simple hooks for integrating a React application with RxDB.
 
@@ -86,33 +96,34 @@ function useRxQuery<T>(query: RxQuery, options?: UseRxQueryOptions): RxQueryResu
 
 #### `options: UseRxQueryOptions`
 
-| Option         | Type              | Required | Default  | Description                                                                                                                                    |
-| -------------- | ----------------- | :------: | :------: | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pageSize`     | `number`          |    -     |   `0`    | enables pagination & defines page limit; `0` disables pagination and fetches everything                                                        |
-| `startingPage` | `number`          |    -     |    -     | 1-based number; enables tradional pagination mode & determines which page to fetch; works in combination with pageSize                         |
-| `sortBy`       | `string`          |    -     |    -     | a property to sort results by; an index for this property should already exist                                                                 |
-| `sortOrder`    | `"asc" \| "desc"` |    -     | `"desc"` | determines sort order for `sortBy` property                                                                                                    |
-| `json`         | `boolean`         |    -     | `false`  | when `true` resulting documents will be converted to plain JavaScript objects; equivalent to manually calling `.toJSON()` on each `RxDocument` |
+| Option         | Type             | Required | Default  | Description                                                                                                                                    |
+| -------------- | ---------------- | :------: | :------: | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pageSize`     | `number`         |    -     |   `0`    | enables pagination & defines page limit; `0` disables pagination and fetches everything                                                        |
+| `startingPage` | `number`         |    -     |    -     | 1-based number; enables tradional pagination mode & determines which page to fetch; works in combination with pageSize                         |
+| `sortBy`       | `string`         |    -     |    -     | a property to sort results by; an index for this property should already exist                                                                 |
+| `sortOrder`    | `"asc" | "desc"` |    -     | `"desc"` | determines sort order for `sortBy` property                                                                                                    |
+| `json`         | `boolean`        |    -     | `false`  | when `true` resulting documents will be converted to plain JavaScript objects; equivalent to manually calling `.toJSON()` on each `RxDocument` |
 
 #### `result: RxQueryResult<T>`
 
-| Property      | Type                     | Description                                                                                                                             |
-| ------------- | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `result`      | `T[] \| RxDocument<T>[]` | the resulting array of objects or `RxDocument` instances, depending on `json` option                                                    |
-| `isFetching`  | `boolean`                | fetching state indicator                                                                                                                |
-| `isExhausted` | `boolean`                | flags result list as "isExhausted", meaning all documents have been already fetched; relevant when pagination is enabled via `pageSize` |
-| `fetchMore`   | `() => void`             | a function to be called by the consumer to request documents of the next page                                                           |
-| `resetList`   | `() => void`             | a function to be called by the consumer to reset paginated results                                                                      |
+| Property      | Type                    | Description                                                                                                                             |
+| ------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `result`      | `T[] | RxDocument<T>[]` | the resulting array of objects or `RxDocument` instances, depending on `json` option                                                    |
+| `isFetching`  | `boolean`               | fetching state indicator                                                                                                                |
+| `isExhausted` | `boolean`               | flags result list as "isExhausted", meaning all documents have been already fetched; relevant when pagination is enabled via `pageSize` |
+| `fetchMore`   | `() => void`            | a function to be called by the consumer to request documents of the next page                                                           |
+| `resetList`   | `() => void`            | a function to be called by the consumer to reset paginated results                                                                      |
 
-#### Example
+#### Simple Example
 
 ```javascript
-// fetch all results of a collection
 const collection = useRxCollection('characters');
+
 const query = collection
   .find()
   .where('affiliation')
   .equals('Jedi');
+
 const { result } = useRxQuery(query);
 ```
 
@@ -120,10 +131,12 @@ const { result } = useRxQuery(query);
 
 ```javascript
 const collection = useRxCollection('characters');
+
 const query = collection
   .find()
   .where('affiliation')
   .equals('Jedi');
+
 const {
   result: characters,
   isFetching,
@@ -149,11 +162,18 @@ return (
 
 ```javascript
 const collection = useRxCollection('characters');
+
 const query = collection
   .find()
   .where('affiliation')
   .equals('Jedi');
-const { result: characters, isFetching, fetchPage } = useRxQuery(query, {
+
+const {
+  result: characters,
+  isFetching,
+  fetchPage,
+  pageCount, // holds total number of pages
+} = useRxQuery(query, {
   pageSize: 5, // fetch 5 results per page
   startingPage: 1, // start by showing the 1st page (1-based index)
 });
@@ -162,18 +182,23 @@ if (isFetching) {
   return 'Loading...';
 }
 
+// render results and leverage pageCount to render page navigation
 return (
   <CharacterList>
     {characters.map((character, index) => (
       <Character character={character} key={index} />
     ))}
-    <button
-      onClick={() => {
-        fetchPage(2);
-      }}
-    >
-      2nd page
-    </button>
+    {Array(pageCount)
+      .fill()
+      .map((x, i) => (
+        <button
+          onClick={() => {
+            fetchPage(i + 1);
+          }}
+        >
+          page {i + 1}
+        </button>
+      ))}
   </CharacterList>
 );
 ```
@@ -246,6 +271,7 @@ avoid unnecessary re-subscriptions, query should be memoized (i.e. via react's `
 
 ```javascript
 const collection = useRxCollection('characters');
+
 const query = useMemo(
   () =>
     collection
@@ -254,6 +280,7 @@ const query = useMemo(
       .equals(affiliation), // 👈 could come from component props
   [collection, affiliation]
 );
+
 const { result } = useRxQuery(query);
 ```
 
@@ -268,6 +295,7 @@ const queryConstructor = useCallback(
       .equals(affiliation), // 👈 could come from component props
   [affiliation]
 );
+
 const { result } = useRxData('characters', queryConstructor);
 ```
 
@@ -276,6 +304,22 @@ const { result } = useRxData('characters', queryConstructor);
 All rxdb-hooks give you the ability to lazily instantiate the database and the
 collections within it. Initial delay until the above become available is absorbed
 by indicating the state as fetching (`isFetching:true`)
+
+### Mutations
+
+Performing mutations on data is possible through the APIs provided by [RxDocument](https://rxdb.info/rx-document.html#functions)
+and [RxCollection](https://rxdb.info/rx-collection.html#functions):
+
+#### Example
+
+```javascript
+const collection = useRxCollection('characters');
+
+collection.upsert({
+  name: 'Luke Skywalker',
+  affiliation: 'Jedi',
+});
+```
 
 ## LICENSE
 
