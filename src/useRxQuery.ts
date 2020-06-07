@@ -338,7 +338,7 @@ function useRxQuery<T>(
 	}, [query, pageSize, paginationMode, sortBy, sortOrder, state.page]);
 
 	useEffect(() => {
-		if (!state.page || !isRxQuery(query)) {
+		if (paginationMode === PaginationMode.None || !isRxQuery(query)) {
 			return;
 		}
 		// Unconvential counting of documents/pages due to missing RxQuery.count():
@@ -356,7 +356,7 @@ function useRxQuery<T>(
 		return () => {
 			countQuerySub.unsubscribe();
 		};
-	}, [state.page, query, pageSize]);
+	}, [paginationMode, query, pageSize]);
 
 	return {
 		result: state.result,
