@@ -69,16 +69,6 @@ export interface UseRxQueryOptions {
 	startingPage?: number;
 
 	/**
-	 * Sort property
-	 */
-	sortBy?: string;
-
-	/**
-	 * Sort order
-	 */
-	sortOrder?: 'asc' | 'desc';
-
-	/**
 	 * Converts resulting RxDocuments to plain objects
 	 */
 	json?: boolean;
@@ -238,13 +228,7 @@ function useRxQuery<T>(
 	query: RxQuery,
 	options: UseRxQueryOptions = {}
 ): RxQueryResult<T> {
-	const {
-		pageSize = 0,
-		startingPage,
-		sortBy,
-		sortOrder = 'desc',
-		json,
-	} = options;
+	const { pageSize = 0, startingPage, json } = options;
 
 	const paginationMode = getPaginationMode(options);
 
@@ -310,12 +294,6 @@ function useRxQuery<T>(
 			_query = _query.limit(state.page * pageSize);
 		}
 
-		if (sortBy) {
-			_query = _query.sort({
-				[sortBy]: sortOrder,
-			});
-		}
-
 		dispatch({
 			type: ActionType.QueryChanged,
 		});
@@ -335,7 +313,7 @@ function useRxQuery<T>(
 		return () => {
 			sub.unsubscribe();
 		};
-	}, [query, pageSize, paginationMode, sortBy, sortOrder, state.page, json]);
+	}, [query, pageSize, paginationMode, state.page, json]);
 
 	useEffect(() => {
 		if (paginationMode === PaginationMode.None || !isRxQuery(query)) {
