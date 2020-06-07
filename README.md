@@ -12,7 +12,7 @@
   <img src="https://badge.fury.io/js/rxdb-hooks.svg" alt="npm version">
 </a>
 
-A set of really simple hooks for integrating a React application with RxDB.
+A set of simple hooks for integrating a React application with RxDB.
 
 Nothing fancy, just conveniently handles common use cases such as:
 
@@ -96,13 +96,11 @@ function useRxQuery<T>(query: RxQuery, options?: UseRxQueryOptions): RxQueryResu
 
 #### `options: UseRxQueryOptions`
 
-| Option         | Type             | Required | Default  | Description                                                                                                                                    |
-| -------------- | ---------------- | :------: | :------: | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pageSize`     | `number`         |    -     |   `0`    | enables pagination & defines page limit; `0` disables pagination and fetches everything                                                        |
-| `startingPage` | `number`         |    -     |    -     | 1-based number; enables tradional pagination mode & determines which page to fetch; works in combination with pageSize                         |
-| `sortBy`       | `string`         |    -     |    -     | a property to sort results by; an index for this property should already exist                                                                 |
-| `sortOrder`    | `"asc" | "desc"` |    -     | `"desc"` | determines sort order for `sortBy` property                                                                                                    |
-| `json`         | `boolean`        |    -     | `false`  | when `true` resulting documents will be converted to plain JavaScript objects; equivalent to manually calling `.toJSON()` on each `RxDocument` |
+| Option         | Type      | Required | Default | Description                                                                                                                                    |
+| -------------- | --------- | :------: | :-----: | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pageSize`     | `number`  |    -     |   `0`   | enables pagination & defines page limit; `0` disables pagination and fetches everything                                                        |
+| `startingPage` | `number`  |    -     |    -    | 1-based number; enables tradional pagination mode & determines which page to fetch; works in combination with pageSize                         |
+| `json`         | `boolean` |    -     | `false` | when `true` resulting documents will be converted to plain JavaScript objects; equivalent to manually calling `.toJSON()` on each `RxDocument` |
 
 #### `result: RxQueryResult<T>`
 
