@@ -106,7 +106,7 @@ function useRxQuery<T>(query: RxQuery, options?: UseRxQueryOptions): RxQueryResu
 
 | Property      | Type                    | Description                                                                                                                             |
 | ------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `result`      | `T[] | RxDocument<T>[]` | the resulting array of objects or `RxDocument` instances, depending on `json` option                                                    |
+| `result`      | `T[] \| RxDocument<T>[]` | the resulting array of objects or `RxDocument` instances, depending on `json` option                                                    |
 | `isFetching`  | `boolean`               | fetching state indicator                                                                                                                |
 | `isExhausted` | `boolean`               | flags result list as "isExhausted", meaning all documents have been already fetched; relevant when pagination is enabled via `pageSize` |
 | `fetchMore`   | `() => void`            | a function to be called by the consumer to request documents of the next page                                                           |
