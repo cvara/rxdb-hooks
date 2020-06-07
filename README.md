@@ -1,7 +1,5 @@
 # rxdb-hooks
 
-[![cvara](https://circleci.com/gh/cvara/rxdb-hooks.svg?style=svg)](https://circleci.com/gh/cvara/rxdb-hooks)
-
 A set of really simple hooks for integrating a React application with RxDB.
 
 Nothing fancy, just conveniently handles common use cases such as:
