@@ -7,7 +7,7 @@ jest.*
 tsconfig.*
 yarn.lock
 .eslintrc.js
-.circleci/
+*.yml
 tests/
 bin/
 .env
