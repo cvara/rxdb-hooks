@@ -3,5 +3,9 @@ node_js:
   - 10
 before_install:
   - pip install --user codecov
+script:
+  - yarn lint
+  - yarn typecheck
+  - yarn test
 after_success:
   - codecov --file coverage/lcov.info --disable search
