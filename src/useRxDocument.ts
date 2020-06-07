@@ -61,9 +61,13 @@ function useRxDocument<T>(
 		[id, preferredIdAttribute]
 	);
 
+	// get around type-narrowing issue
+	// TODO: find a better workaround
 	const { result, isFetching } = json
-		? useData<T>(collectionName, queryConstructor, { json: true })
-		: useData<T>(collectionName, queryConstructor, { json: false });
+		? // eslint-disable-next-line react-hooks/rules-of-hooks
+		  useData<T>(collectionName, queryConstructor, { json: true })
+		: // eslint-disable-next-line react-hooks/rules-of-hooks
+		  useData<T>(collectionName, queryConstructor, { json: false });
 
 	return { result: result[0], isFetching };
 }

@@ -14,7 +14,7 @@ function useRxCollection<T>(name: string): RxCollection<T> | null {
 		if (found) {
 			setCollection(found);
 		}
-	}, [db]);
+	}, [db, name]);
 
 	return collection;
 }

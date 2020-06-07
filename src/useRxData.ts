@@ -48,9 +48,12 @@ function useRxData<T>(
 	}, [collection, queryConstructor]);
 
 	// get around type-narrowing issue
+	// TODO: find a better workaround
 	return options.json
-		? useRxQuery(query, { ...options, json: true })
-		: useRxQuery(query, { ...options, json: false });
+		? // eslint-disable-next-line react-hooks/rules-of-hooks
+		  useRxQuery(query, { ...options, json: true })
+		: // eslint-disable-next-line react-hooks/rules-of-hooks
+		  useRxQuery(query, { ...options, json: false });
 }
 
 export default useRxData;

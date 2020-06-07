@@ -283,7 +283,7 @@ function useRxQuery<T>(
 			return;
 		}
 		dispatch({ type: ActionType.FetchMore });
-	}, [state.isFetching, state.isExhausted]);
+	}, [state.isFetching, state.isExhausted, paginationMode]);
 
 	const resetList = useCallback(() => {
 		if (paginationMode !== PaginationMode.InfiniteScroll) {
@@ -335,7 +335,7 @@ function useRxQuery<T>(
 		return () => {
 			sub.unsubscribe();
 		};
-	}, [query, pageSize, paginationMode, sortBy, sortOrder, state.page]);
+	}, [query, pageSize, paginationMode, sortBy, sortOrder, state.page, json]);
 
 	useEffect(() => {
 		if (paginationMode === PaginationMode.None || !isRxQuery(query)) {
