@@ -57,6 +57,18 @@ export interface RxQueryResultDoc<T> extends RxQueryResult<T> {
 	result: RxDocument<T>[];
 }
 
+/**
+ * Traditional:
+ *    Results are split into pages, starts by rendering the first page and total
+ *    pageCount is returned, allowing for requesting results of any specific page.
+ *    Requires `pageSize` to be defined
+ *
+ * Infinite:
+ *    First page of results is rendered, allowing for gradually requesting more.
+ *    Requires `pageSize` to be defined
+ */
+export type PaginationMode = 'Traditional' | 'Infinite';
+
 export interface UseRxQueryOptions {
 	/**
 	 * Controls page size, in both "infinite scroll" & "traditional" pagination
@@ -64,33 +76,14 @@ export interface UseRxQueryOptions {
 	pageSize?: number;
 
 	/**
-	 * Defines starting page (1-based index) & enables "traditional" pagination mode
+	 * Determines pagination mode
 	 */
-	startingPage?: number;
+	pagination?: PaginationMode;
 
 	/**
 	 * Converts resulting RxDocuments to plain objects
 	 */
 	json?: boolean;
-}
-
-enum PaginationMode {
-	/**
-	 * Results are split into pages and total pageCount is returned.
-	 * Requires `startingPage` & `pageSize` options to be defined.
-	 */
-	Traditional,
-
-	/**
-	 * First page of results is rendered, allowing for gradually requesting more.
-	 * Requires `pageSize` to be defined
-	 */
-	InfiniteScroll,
-
-	/**
-	 * Entire matching dataset is returned in one go
-	 */
-	None,
 }
 
 interface RxState<T> {
@@ -131,7 +124,7 @@ interface CountPagesAction {
 interface FetchSuccessAction<T> {
 	type: ActionType.FetchSuccess;
 	docs: T[];
-	paginationMode: PaginationMode;
+	pagination: PaginationMode;
 	pageSize: number;
 }
 
@@ -178,12 +171,11 @@ const reducer = <T>(state: RxState<T>, action: AnyAction<T>): RxState<T> => {
 				...state,
 				result: action.docs,
 				isFetching: false,
-				isExhausted:
-					action.paginationMode === PaginationMode.InfiniteScroll
-						? action.docs.length < state.page * action.pageSize
-						: action.paginationMode === PaginationMode.None
-						? true
-						: false,
+				isExhausted: !action.pageSize
+					? true
+					: action.pagination === 'Infinite'
+					? action.docs.length < state.page * action.pageSize
+					: false,
 			};
 		case ActionType.QueryChanged:
 			return {
@@ -193,17 +185,6 @@ const reducer = <T>(state: RxState<T>, action: AnyAction<T>): RxState<T> => {
 		default:
 			return state;
 	}
-};
-
-const getPaginationMode = (options: UseRxQueryOptions): PaginationMode => {
-	const { startingPage, pageSize } = options;
-	if (!pageSize) {
-		return PaginationMode.None;
-	}
-	if (!startingPage) {
-		return PaginationMode.InfiniteScroll;
-	}
-	return PaginationMode.Traditional;
 };
 
 function useRxQuery<T>(query: RxQuery): RxQueryResultDoc<T>;
@@ -228,14 +209,11 @@ function useRxQuery<T>(
 	query: RxQuery,
 	options: UseRxQueryOptions = {}
 ): RxQueryResult<T> {
-	const { pageSize = 0, startingPage, json } = options;
-
-	const paginationMode = getPaginationMode(options);
+	const { pageSize, pagination = 'Infinite', json } = options;
 
 	const initialState: RxState<T> = {
 		result: [],
-		page:
-			paginationMode === PaginationMode.InfiniteScroll ? 1 : startingPage,
+		page: pageSize ? 1 : undefined,
 		isFetching: true,
 		isExhausted: false,
 		pageCount: 0,
@@ -248,7 +226,7 @@ function useRxQuery<T>(
 
 	const fetchPage = useCallback(
 		(page: number) => {
-			if (paginationMode !== PaginationMode.Traditional) {
+			if (!pageSize || pagination !== 'Traditional') {
 				return;
 			}
 			if (page < 1 || page > state.pageCount) {
@@ -256,28 +234,28 @@ function useRxQuery<T>(
 			}
 			dispatch({ type: ActionType.FetchPage, page });
 		},
-		[paginationMode, state.pageCount]
+		[pageSize, pagination, state.pageCount]
 	);
 
 	const fetchMore = useCallback(() => {
-		if (paginationMode !== PaginationMode.InfiniteScroll) {
+		if (!pageSize || pagination !== 'Infinite') {
 			return;
 		}
 		if (state.isFetching || state.isExhausted) {
 			return;
 		}
 		dispatch({ type: ActionType.FetchMore });
-	}, [state.isFetching, state.isExhausted, paginationMode]);
+	}, [pageSize, pagination, state.isFetching, state.isExhausted]);
 
 	const resetList = useCallback(() => {
-		if (paginationMode !== PaginationMode.InfiniteScroll) {
+		if (!pageSize) {
 			return;
 		}
 		if (state.page === 1) {
 			return;
 		}
 		dispatch({ type: ActionType.Reset });
-	}, [state.page, paginationMode]);
+	}, [pageSize, state.page]);
 
 	useEffect(() => {
 		if (!isRxQuery(query)) {
@@ -286,11 +264,11 @@ function useRxQuery<T>(
 		// avoid re-assigning reference to original query
 		let _query = query;
 
-		if (paginationMode === PaginationMode.Traditional) {
+		if (pageSize && pagination === 'Traditional') {
 			_query = _query.skip((state.page - 1) * pageSize).limit(pageSize);
 		}
 
-		if (paginationMode === PaginationMode.InfiniteScroll) {
+		if (pageSize && pagination === 'Infinite') {
 			_query = _query.limit(state.page * pageSize);
 		}
 
@@ -304,7 +282,7 @@ function useRxQuery<T>(
 				dispatch({
 					type: ActionType.FetchSuccess,
 					docs: json ? docs.map(doc => doc.toJSON()) : docs,
-					paginationMode,
+					pagination,
 					pageSize,
 				});
 			}
@@ -313,10 +291,10 @@ function useRxQuery<T>(
 		return () => {
 			sub.unsubscribe();
 		};
-	}, [query, pageSize, paginationMode, state.page, json]);
+	}, [query, pageSize, pagination, state.page, json]);
 
 	useEffect(() => {
-		if (paginationMode === PaginationMode.None || !isRxQuery(query)) {
+		if (!pageSize || pagination !== 'Traditional' || !isRxQuery(query)) {
 			return;
 		}
 		// Unconvential counting of documents/pages due to missing RxQuery.count():
@@ -334,7 +312,7 @@ function useRxQuery<T>(
 		return () => {
 			countQuerySub.unsubscribe();
 		};
-	}, [paginationMode, query, pageSize]);
+	}, [query, pageSize, pagination]);
 
 	return {
 		result: state.result,

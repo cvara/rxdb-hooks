@@ -16,6 +16,7 @@ import {
 import { RxDatabase, RxCollection } from 'rxdb';
 import useRxData from '../src/useRxData';
 import Provider from '../src/Provider';
+import { PaginationMode } from '../src/useRxQuery';
 
 describe('useRxData', () => {
 	let db: RxDatabase;
@@ -358,7 +359,6 @@ describe('useRxData', () => {
 	});
 
 	it('should support traditional pagination', async done => {
-		const startingPage = 2;
 		const pageSize = 2;
 
 		const Child: FC = () => {
@@ -371,22 +371,23 @@ describe('useRxData', () => {
 				isFetching,
 				isExhausted,
 				pageCount,
+				currentPage,
 				fetchPage,
 				fetchMore,
 				resetList,
 			} = useRxData<Character>('characters', queryConstructor, {
 				pageSize,
-				startingPage,
+				pagination: 'Traditional',
 			});
 
 			return (
 				<>
 					<button
 						onClick={() => {
-							fetchPage(startingPage - 1);
+							fetchPage(currentPage + 1);
 						}}
 					>
-						previous page
+						next page
 					</button>
 					<button
 						onClick={() => {
@@ -416,21 +417,19 @@ describe('useRxData', () => {
 		// should render in loading state
 		expect(screen.getByText('loading')).toBeInTheDocument();
 
-		// wait for data
+		// wait for data (twice since pages are also counted)
+		await waitForDomChange();
 		await waitForDomChange();
 
 		// should not be in exhausted state
 		expect(screen.queryByText('isExhausted')).not.toBeInTheDocument();
 
 		// selected page data should now be rendered
-		bulkDocs.slice((startingPage - 1) * pageSize, pageSize).forEach(doc => {
+		bulkDocs.slice(0, pageSize).forEach(doc => {
 			expect(screen.getByText(doc.name)).toBeInTheDocument();
 		});
 		// rest data should not be rendered
-		[
-			...bulkDocs.slice(0, (startingPage - 1) * pageSize),
-			...bulkDocs.slice((startingPage - 1) * pageSize + pageSize),
-		].forEach(doc => {
+		bulkDocs.slice(pageSize).forEach(doc => {
 			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 		});
 
@@ -439,7 +438,7 @@ describe('useRxData', () => {
 
 		// trigger fetching of previous page
 		fireEvent(
-			screen.getByText('previous page'),
+			screen.getByText('next page'),
 			new MouseEvent('click', {
 				bubbles: true,
 				cancelable: true,
@@ -452,17 +451,17 @@ describe('useRxData', () => {
 		// should not be in exhausted state
 		expect(screen.queryByText('isExhausted')).not.toBeInTheDocument();
 
-		// wait for previous page data to be rendered
+		// wait for next page data to be rendered
 		await waitForDomChange();
 
-		// previous page data should now be rendered
-		bulkDocs.slice((startingPage - 2) * pageSize, pageSize).forEach(doc => {
+		// next page data should now be rendered
+		bulkDocs.slice(pageSize, pageSize).forEach(doc => {
 			expect(screen.getByText(doc.name)).toBeInTheDocument();
 		});
 		// rest data should not be rendered
 		[
-			...bulkDocs.slice(0, (startingPage - 2) * pageSize),
-			...bulkDocs.slice((startingPage - 2) * pageSize + pageSize),
+			...bulkDocs.slice(0, pageSize),
+			...bulkDocs.slice(2 * pageSize),
 		].forEach(doc => {
 			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 		});
@@ -482,13 +481,13 @@ describe('useRxData', () => {
 		// should be a noop since we requested a page that doesn't does not exist:
 		// should not be loading
 		expect(screen.queryByText('loading')).not.toBeInTheDocument();
-		// same data should still be rendered
-		bulkDocs.slice((startingPage - 2) * pageSize, pageSize).forEach(doc => {
+		// same data should now be rendered
+		bulkDocs.slice(pageSize, pageSize).forEach(doc => {
 			expect(screen.getByText(doc.name)).toBeInTheDocument();
 		});
 		[
-			...bulkDocs.slice(0, (startingPage - 2) * pageSize),
-			...bulkDocs.slice((startingPage - 2) * pageSize + pageSize),
+			...bulkDocs.slice(0, pageSize),
+			...bulkDocs.slice(2 * pageSize),
 		].forEach(doc => {
 			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 		});

@@ -96,21 +96,24 @@ function useRxQuery<T>(query: RxQuery, options?: UseRxQueryOptions): RxQueryResu
 
 #### `options: UseRxQueryOptions`
 
-| Option         | Type      | Required | Default | Description                                                                                                                                    |
-| -------------- | --------- | :------: | :-----: | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pageSize`     | `number`  |    -     |   `0`   | enables pagination & defines page limit; `0` disables pagination and fetches everything                                                        |
-| `startingPage` | `number`  |    -     |    -    | 1-based number; enables tradional pagination mode & determines which page to fetch; works in combination with pageSize                         |
-| `json`         | `boolean` |    -     | `false` | when `true` resulting documents will be converted to plain JavaScript objects; equivalent to manually calling `.toJSON()` on each `RxDocument` |
+| Option       | Type                         | Required |     Default     | Description                                                                                                                                    |
+| ------------ | ---------------------------- | :------: | :-------------: | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pageSize`   | `number`                     |    -     |        -        | enables pagination & defines page limit                                                                                                        |
+| `pagination` | `"Traditional" \| "Infinite"` |    -     | `"Traditional"` | determines pagination mode                                                                                                                     |
+| `json`       | `boolean`                    |    -     |     `false`     | when `true` resulting documents will be converted to plain JavaScript objects; equivalent to manually calling `.toJSON()` on each `RxDocument` |
 
 #### `result: RxQueryResult<T>`
 
-| Property      | Type                    | Description                                                                                                                             |
-| ------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `result`      | `T[] \| RxDocument<T>[]` | the resulting array of objects or `RxDocument` instances, depending on `json` option                                                    |
-| `isFetching`  | `boolean`               | fetching state indicator                                                                                                                |
-| `isExhausted` | `boolean`               | flags result list as "isExhausted", meaning all documents have been already fetched; relevant when pagination is enabled via `pageSize` |
-| `fetchMore`   | `() => void`            | a function to be called by the consumer to request documents of the next page                                                           |
-| `resetList`   | `() => void`            | a function to be called by the consumer to reset paginated results                                                                      |
+| Property      | Type                     | Description                                                                                                            |
+| ------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `result`      | `T[] \| RxDocument<T>[]`  | the resulting array of objects or `RxDocument` instances, depending on `json` option                                   |
+| `isFetching`  | `boolean`                | fetching state indicator                                                                                               |
+| `currentPage` | `number`                 | relevant in **all** pagination modes; holds number of current page                                                     |
+| `isExhausted` | `boolean`                | relevant in **Infinite** pagination; flags result list as "exhausted", meaning all documents have been already fetched |
+| `fetchMore`   | `() => void`             | relevant in **Infinite** pagination; a function to be called by the consumer to request documents of the next page     |
+| `resetList`   | `() => void`             | relevant in **Infinite** pagination; a function to be called by the consumer to reset paginated results                |
+| `pageCount`   | `number`                 | relevant in **Traditional** pagination; holds the total number of pages available                                      |
+| `fetchPage`   | `(page: number) => void` | relevant in **Traditional** pagination; a function to be called by the consumer to request results of a specific page  |
 
 #### Simple Example
 
@@ -135,12 +138,13 @@ const query = collection
   .where('affiliation')
   .equals('Jedi');
 
-const {
-  result: characters,
-  isFetching,
-  fetchMore,
-  isExhausted,
-} = useRxQuery(query, { pageSize: 5 }); // fetch first page of 5 results
+const { result: characters, isFetching, fetchMore, isExhausted } = useRxQuery(
+  query,
+  {
+    pageSize: 5,
+    pagination: 'Infinite',
+  }
+);
 
 if (isFetching) {
   return 'Loading...';
@@ -166,15 +170,13 @@ const query = collection
   .where('affiliation')
   .equals('Jedi');
 
-const {
-  result: characters,
-  isFetching,
-  fetchPage,
-  pageCount, // holds total number of pages
-} = useRxQuery(query, {
-  pageSize: 5, // fetch 5 results per page
-  startingPage: 1, // start by showing the 1st page (1-based index)
-});
+const { result: characters, isFetching, fetchPage, pageCount } = useRxQuery(
+  query,
+  {
+    pageSize: 5,
+    pagination: 'Traditional',
+  }
+);
 
 if (isFetching) {
   return 'Loading...';
@@ -182,22 +184,26 @@ if (isFetching) {
 
 // render results and leverage pageCount to render page navigation
 return (
-  <CharacterList>
-    {characters.map((character, index) => (
-      <Character character={character} key={index} />
-    ))}
-    {Array(pageCount)
-      .fill()
-      .map((x, i) => (
-        <button
-          onClick={() => {
-            fetchPage(i + 1);
-          }}
-        >
-          page {i + 1}
-        </button>
+  <div>
+    <CharacterList>
+      {characters.map((character, index) => (
+        <Character character={character} key={index} />
       ))}
-  </CharacterList>
+    </CharacterList>
+    <div>
+      {Array(pageCount)
+        .fill()
+        .map((x, i) => (
+          <button
+            onClick={() => {
+              fetchPage(i + 1);
+            }}
+          >
+            page {i + 1}
+          </button>
+        ))}
+    </div>
+  </div>
 );
 ```
 
