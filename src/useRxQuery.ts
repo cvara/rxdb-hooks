@@ -57,19 +57,17 @@ export interface RxQueryResultDoc<T> extends RxQueryResult<T> {
 	result: RxDocument<T>[];
 }
 
-export enum PaginationMode {
-	/**
-	 * Results are split into pages and total pageCount is returned.
-	 * Requires `pageSize` to be defined
-	 */
-	Traditional,
-
-	/**
-	 * First page of results is rendered, allowing for gradually requesting more.
-	 * Requires `pageSize` to be defined
-	 */
-	InfiniteScroll,
-}
+/**
+ * Traditional:
+ *    Results are split into pages, starts by rendering the first page and total
+ *    pageCount is returned, allowing for requesting results of any specific page.
+ *    Requires `pageSize` to be defined
+ *
+ * Infinite:
+ *    First page of results is rendered, allowing for gradually requesting more.
+ *    Requires `pageSize` to be defined
+ */
+export type PaginationMode = 'Traditional' | 'Infinite';
 
 export interface UseRxQueryOptions {
 	/**
@@ -175,7 +173,7 @@ const reducer = <T>(state: RxState<T>, action: AnyAction<T>): RxState<T> => {
 				isFetching: false,
 				isExhausted: !action.pageSize
 					? true
-					: action.pagination === PaginationMode.InfiniteScroll
+					: action.pagination === 'Infinite'
 					? action.docs.length < state.page * action.pageSize
 					: false,
 			};
@@ -211,11 +209,7 @@ function useRxQuery<T>(
 	query: RxQuery,
 	options: UseRxQueryOptions = {}
 ): RxQueryResult<T> {
-	const {
-		pageSize,
-		pagination = PaginationMode.InfiniteScroll,
-		json,
-	} = options;
+	const { pageSize, pagination = 'Infinite', json } = options;
 
 	const initialState: RxState<T> = {
 		result: [],
@@ -232,7 +226,7 @@ function useRxQuery<T>(
 
 	const fetchPage = useCallback(
 		(page: number) => {
-			if (!pageSize || pagination !== PaginationMode.Traditional) {
+			if (!pageSize || pagination !== 'Traditional') {
 				return;
 			}
 			if (page < 1 || page > state.pageCount) {
@@ -244,7 +238,7 @@ function useRxQuery<T>(
 	);
 
 	const fetchMore = useCallback(() => {
-		if (!pageSize || pagination !== PaginationMode.InfiniteScroll) {
+		if (!pageSize || pagination !== 'Infinite') {
 			return;
 		}
 		if (state.isFetching || state.isExhausted) {
@@ -270,11 +264,11 @@ function useRxQuery<T>(
 		// avoid re-assigning reference to original query
 		let _query = query;
 
-		if (pageSize && pagination === PaginationMode.Traditional) {
+		if (pageSize && pagination === 'Traditional') {
 			_query = _query.skip((state.page - 1) * pageSize).limit(pageSize);
 		}
 
-		if (pageSize && pagination === PaginationMode.InfiniteScroll) {
+		if (pageSize && pagination === 'Infinite') {
 			_query = _query.limit(state.page * pageSize);
 		}
 
@@ -300,11 +294,7 @@ function useRxQuery<T>(
 	}, [query, pageSize, pagination, state.page, json]);
 
 	useEffect(() => {
-		if (
-			!pageSize ||
-			pagination !== PaginationMode.Traditional ||
-			!isRxQuery(query)
-		) {
+		if (!pageSize || pagination !== 'Traditional' || !isRxQuery(query)) {
 			return;
 		}
 		// Unconvential counting of documents/pages due to missing RxQuery.count():

@@ -377,7 +377,7 @@ describe('useRxData', () => {
 				resetList,
 			} = useRxData<Character>('characters', queryConstructor, {
 				pageSize,
-				pagination: PaginationMode.Traditional,
+				pagination: 'Traditional',
 			});
 
 			return (
