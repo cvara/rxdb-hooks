@@ -182,10 +182,14 @@ const reducer = <T>(state: RxState<T>, action: AnyAction<T>): RxState<T> => {
 				...state,
 				isFetching: true,
 			};
+		/* istanbul ignore next */
 		default:
 			return state;
 	}
 };
+
+const getResultArray = <T>(documents: RxDocument<T>[] | RxDocument<T>) =>
+	Array.isArray(documents) ? documents : [documents];
 
 function useRxQuery<T>(query: RxQuery): RxQueryResultDoc<T>;
 
@@ -278,7 +282,7 @@ function useRxQuery<T>(
 
 		const sub = _query.$.subscribe(
 			(documents: RxDocument<T>[] | RxDocument<T>) => {
-				const docs = Array.isArray(documents) ? documents : [documents];
+				const docs = getResultArray(documents);
 				dispatch({
 					type: ActionType.FetchSuccess,
 					docs: json ? docs.map(doc => doc.toJSON()) : docs,
@@ -301,7 +305,7 @@ function useRxQuery<T>(
 		// https://github.com/pubkey/rxdb/blob/master/orga/BACKLOG.md#rxquerycount
 		const countQuerySub = query.$.subscribe(
 			(documents: RxDocument<T>[] | RxDocument<T>) => {
-				const docs = Array.isArray(documents) ? documents : [documents];
+				const docs = getResultArray(documents);
 				dispatch({
 					type: ActionType.CountPages,
 					pageCount: Math.ceil(docs.length / pageSize),

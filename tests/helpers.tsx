@@ -109,6 +109,7 @@ export const Character: FC<CharacterProps> = ({ character, isFetching }) => {
 		<div>
 			<div>{character ? character.name : null}</div>
 			<div>{isFetching ? 'loading' : null}</div>
+			<div>{isRxDocument(character) ? 'RxDocument' : 'JSON'}</div>
 		</div>
 	);
 };

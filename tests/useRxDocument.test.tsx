@@ -73,6 +73,36 @@ describe('useRxDocument', () => {
 		await waitForDomChange();
 
 		expect(screen.queryByText('Obi-Wan Kenobi')).toBeInTheDocument();
+		expect(screen.getByText('RxDocument')).toBeInTheDocument();
+
+		done();
+	});
+
+	it('should support json option', async done => {
+		const Child: FC = () => {
+			const { result: character, isFetching } = useRxDocument<Character>(
+				'characters',
+				'4',
+				{ json: true }
+			);
+
+			return <Character character={character} isFetching={isFetching} />;
+		};
+
+		render(
+			<Provider db={db}>
+				<Child />
+			</Provider>
+		);
+
+		// should render in loading state
+		expect(screen.getByText('loading')).toBeInTheDocument();
+
+		// wait for data
+		await waitForDomChange();
+
+		expect(screen.queryByText('Obi-Wan Kenobi')).toBeInTheDocument();
+		expect(screen.getByText('JSON')).toBeInTheDocument();
 
 		done();
 	});
