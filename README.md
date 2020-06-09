@@ -16,9 +16,10 @@ A set of simple hooks for integrating a React application with RxDB.
 
 Nothing fancy, just conveniently handles common use cases such as:
 
-- pagination
+- subscribing to query observables and translating results into React state
+- cleaning up after subscriptions where necessary
+- paginating results
 - maintaining useful state information (i.e. data fetching or data exhaustion during pagination)
-- unsubscribing to queries on component unmount
 
 ## Table of Contents
 
@@ -96,17 +97,17 @@ function useRxQuery<T>(query: RxQuery, options?: UseRxQueryOptions): RxQueryResu
 
 #### `options: UseRxQueryOptions`
 
-| Option       | Type                         | Required |     Default     | Description                                                                                                                                    |
-| ------------ | ---------------------------- | :------: | :-------------: | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pageSize`   | `number`                     |    -     |        -        | enables pagination & defines page limit                                                                                                        |
-| `pagination` | `"Traditional" \| "Infinite"` |    -     | `"Traditional"` | determines pagination mode                                                                                                                     |
-| `json`       | `boolean`                    |    -     |     `false`     | when `true` resulting documents will be converted to plain JavaScript objects; equivalent to manually calling `.toJSON()` on each `RxDocument` |
+| Option       | Type                         | Required |     Default     | Description                                                                                                                                                                                                                                                                                     |
+| ------------ | ---------------------------- | :------: | :-------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pageSize`   | `number`                     |    -     |        -        | enables pagination & defines page limit                                                                                                                                                                                                                                                         |
+| `pagination` | `"Traditional" | "Infinite"` |    -     | `"Traditional"` | determines pagination mode; **Traditional**: results are split into pages, starts by rendering the first page and total `pageCount` is returned, allowing for requesting results of any specific page. **Infinite**: first page of results is rendered, allowing for gradually requesting more. |
+| `json`       | `boolean`                    |    -     |     `false`     | when `true` resulting documents will be converted to plain JavaScript objects; equivalent to manually calling `.toJSON()` on each `RxDocument`                                                                                                                                                  |
 
 #### `result: RxQueryResult<T>`
 
 | Property      | Type                     | Description                                                                                                            |
 | ------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
-| `result`      | `T[] \| RxDocument<T>[]`  | the resulting array of objects or `RxDocument` instances, depending on `json` option                                   |
+| `result`      | `T[] | RxDocument<T>[]`  | the resulting array of objects or `RxDocument` instances, depending on `json` option                                   |
 | `isFetching`  | `boolean`                | fetching state indicator                                                                                               |
 | `currentPage` | `number`                 | relevant in **all** pagination modes; holds number of current page                                                     |
 | `isExhausted` | `boolean`                | relevant in **Infinite** pagination; flags result list as "exhausted", meaning all documents have been already fetched |
