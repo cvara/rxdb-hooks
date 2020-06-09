@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.0.0](https://github.com/cvara/rxdb-hooks/tree/2.0.0) (2020-06-09)
+
+[Full Changelog](https://github.com/cvara/rxdb-hooks/compare/1.2.1...2.0.0)
+
+**Breaking changes:**
+
+- Drop startPage & introduce new pagination option [\#7](https://github.com/cvara/rxdb-hooks/pull/7) ([cvara](https://github.com/cvara))
+- Drop sortBy & sortOrder from UseRxQueryOptions [\#6](https://github.com/cvara/rxdb-hooks/pull/6) ([cvara](https://github.com/cvara))
+
+**Fixed bugs:**
+
+- Properly reject wrong pages [\#5](https://github.com/cvara/rxdb-hooks/pull/5) ([cvara](https://github.com/cvara))
+
+**Merged pull requests:**
+
+- Switch to travis-ci & codecov [\#4](https://github.com/cvara/rxdb-hooks/pull/4) ([cvara](https://github.com/cvara))
+
+## [1.2.1](https://github.com/cvara/rxdb-hooks/tree/1.2.1) (2020-06-05)
+
+[Full Changelog](https://github.com/cvara/rxdb-hooks/compare/1.2.0...1.2.1)
+
 ## [1.2.0](https://github.com/cvara/rxdb-hooks/tree/1.2.0) (2020-06-04)
 
 [Full Changelog](https://github.com/cvara/rxdb-hooks/compare/1.1.0...1.2.0)
