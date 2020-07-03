@@ -1,12 +1,5 @@
 import React, { FC, useCallback, useState } from 'react';
-import {
-	setup,
-	teardown,
-	CharacterList,
-	sortByNameAsc,
-	sortByNameDesc,
-	Character,
-} from './helpers';
+import { setup, teardown, CharacterList, Character } from './helpers';
 import {
 	render,
 	screen,
@@ -16,7 +9,6 @@ import {
 import { RxDatabase, RxCollection } from 'rxdb';
 import useRxData from '../src/useRxData';
 import Provider from '../src/Provider';
-import { PaginationMode } from '../src/useRxQuery';
 
 describe('useRxData', () => {
 	let db: RxDatabase;
