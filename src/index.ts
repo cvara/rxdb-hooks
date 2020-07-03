@@ -1,7 +1,14 @@
 export { default as Context } from './context';
+export * from './context';
 export { default as Provider } from './Provider';
+export * from './Provider';
 export { default as useRxCollection } from './useRxCollection';
+export * from './useRxCollection';
 export { default as useRxData } from './useRxData';
+export * from './useRxData';
 export { default as useRxDB } from './useRxDB';
+export * from './useRxDB';
 export { default as useRxDocument } from './useRxDocument';
+export * from './useRxDocument';
 export { default as useRxQuery } from './useRxQuery';
+export * from './useRxQuery';

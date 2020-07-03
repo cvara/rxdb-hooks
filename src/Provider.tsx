@@ -2,7 +2,7 @@ import React, { FC, useMemo } from 'react';
 import { RxDatabase } from 'rxdb';
 import Context from './context';
 
-interface ProviderProps {
+export interface ProviderProps {
 	db?: RxDatabase;
 	idAttribute?: string;
 }
