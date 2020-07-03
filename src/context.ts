@@ -1,11 +1,11 @@
 import { createContext } from 'react';
 import { RxDatabase } from 'rxdb';
 
-interface Context {
+export interface RxContext {
 	db: RxDatabase | null;
 	idAttribute: string;
 }
 
-const Context = createContext<Context>(null);
+const Context = createContext<RxContext>(null);
 
 export default Context;

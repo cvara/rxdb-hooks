@@ -3,20 +3,20 @@ import useData from './useRxData';
 import { RxCollection, RxDocument } from 'rxdb';
 import Context from './context';
 
-interface RxDocumentRet<T> {
+export interface RxDocumentRet<T> {
 	result?: T | RxDocument<T>;
 	isFetching: boolean;
 }
 
-interface RxDocumentJSON<T> extends RxDocumentRet<T> {
+export interface RxDocumentJSON<T> extends RxDocumentRet<T> {
 	result?: T;
 }
 
-interface RxDocumentDoc<T> extends RxDocumentRet<T> {
+export interface RxDocumentDoc<T> extends RxDocumentRet<T> {
 	result?: RxDocument<T>;
 }
 
-interface UseRxDocumentOptions {
+export interface UseRxDocumentOptions {
 	idAttribute?: string;
 	json?: boolean;
 }

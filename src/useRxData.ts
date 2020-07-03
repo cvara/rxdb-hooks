@@ -8,7 +8,7 @@ import useRxQuery, {
 	RxQueryResultDoc,
 } from './useRxQuery';
 
-type QueryConstructor<T> = (
+export type QueryConstructor<T> = (
 	collection: RxCollection<T>
 ) => RxQuery<T> | undefined;
 
