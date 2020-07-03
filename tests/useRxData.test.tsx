@@ -1,12 +1,5 @@
 import React, { FC, useCallback, useState } from 'react';
-import {
-	setup,
-	teardown,
-	CharacterList,
-	sortByNameAsc,
-	sortByNameDesc,
-	Character,
-} from './helpers';
+import { setup, teardown, CharacterList, Character } from './helpers';
 import {
 	render,
 	screen,
@@ -16,40 +9,13 @@ import {
 import { RxDatabase, RxCollection } from 'rxdb';
 import useRxData from '../src/useRxData';
 import Provider from '../src/Provider';
-import { PaginationMode } from '../src/useRxQuery';
+import { characters } from './mockData';
 
 describe('useRxData', () => {
 	let db: RxDatabase;
-	const bulkDocs = [
-		{
-			id: '1',
-			name: 'Darth Vader',
-			affiliation: 'Sith',
-		},
-		{
-			id: '2',
-			name: 'Yoda',
-			affiliation: 'Jedi',
-		},
-		{
-			id: '3',
-			name: 'Darth Sidius',
-			affiliation: 'Sith',
-		},
-		{
-			id: '4',
-			name: 'Obi-Wan Kenobi',
-			affiliation: 'Jedi',
-		},
-		{
-			id: '5',
-			name: 'Qui-Gon Jin',
-			affiliation: 'Jedi',
-		},
-	];
 
 	beforeAll(async done => {
-		db = await setup(bulkDocs, 'characters');
+		db = await setup(characters, 'characters');
 		done();
 	});
 
@@ -105,7 +71,7 @@ describe('useRxData', () => {
 		await waitForDomChange();
 
 		// data should now be rendered
-		bulkDocs.forEach(doc => {
+		characters.forEach(doc => {
 			expect(screen.queryByText(doc.name)).toBeInTheDocument();
 		});
 
@@ -138,7 +104,7 @@ describe('useRxData', () => {
 		// noop: not in traditional pagination
 		expect(screen.queryByText('loading')).not.toBeInTheDocument();
 		// data should still be rendered
-		bulkDocs.forEach(doc => {
+		characters.forEach(doc => {
 			expect(screen.queryByText(doc.name)).toBeInTheDocument();
 		});
 
@@ -178,7 +144,7 @@ describe('useRxData', () => {
 		await waitForDomChange();
 
 		// data should now be rendered
-		bulkDocs.forEach(doc => {
+		characters.forEach(doc => {
 			expect(screen.queryByText(doc.name)).toBeInTheDocument();
 		});
 
@@ -236,11 +202,11 @@ describe('useRxData', () => {
 		await waitForDomChange();
 
 		// first page data should now be rendered
-		bulkDocs.slice(0, pageSize).forEach(doc => {
+		characters.slice(0, pageSize).forEach(doc => {
 			expect(screen.getByText(doc.name)).toBeInTheDocument();
 		});
 		// rest data should not be rendered
-		bulkDocs.slice(pageSize).forEach(doc => {
+		characters.slice(pageSize).forEach(doc => {
 			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 		});
 
@@ -265,7 +231,7 @@ describe('useRxData', () => {
 		await waitForDomChange();
 
 		// next page should be rendered now
-		bulkDocs.slice(pageSize, pageSize).forEach(doc => {
+		characters.slice(pageSize, pageSize).forEach(doc => {
 			expect(screen.getByText(doc.name)).toBeInTheDocument();
 		});
 
@@ -287,7 +253,7 @@ describe('useRxData', () => {
 		await waitForDomChange();
 
 		// last page should be rendered now
-		bulkDocs.slice(2 * pageSize, pageSize).forEach(doc => {
+		characters.slice(2 * pageSize, pageSize).forEach(doc => {
 			expect(screen.getByText(doc.name)).toBeInTheDocument();
 		});
 
@@ -309,7 +275,7 @@ describe('useRxData', () => {
 		expect(screen.getByText('current page: 3')).toBeInTheDocument();
 
 		// last page should still be rendered
-		bulkDocs.slice(2 * pageSize, pageSize).forEach(doc => {
+		characters.slice(2 * pageSize, pageSize).forEach(doc => {
 			expect(screen.getByText(doc.name)).toBeInTheDocument();
 		});
 
@@ -327,10 +293,10 @@ describe('useRxData', () => {
 		await waitForDomChange();
 
 		// now only first page data should be rendered
-		bulkDocs.slice(0, pageSize).forEach(doc => {
+		characters.slice(0, pageSize).forEach(doc => {
 			expect(screen.getByText(doc.name)).toBeInTheDocument();
 		});
-		bulkDocs.slice(pageSize).forEach(doc => {
+		characters.slice(pageSize).forEach(doc => {
 			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 		});
 
@@ -348,10 +314,10 @@ describe('useRxData', () => {
 		expect(screen.getByText('current page: 1')).toBeInTheDocument();
 
 		// first page data should still be rendered
-		bulkDocs.slice(0, pageSize).forEach(doc => {
+		characters.slice(0, pageSize).forEach(doc => {
 			expect(screen.getByText(doc.name)).toBeInTheDocument();
 		});
-		bulkDocs.slice(pageSize).forEach(doc => {
+		characters.slice(pageSize).forEach(doc => {
 			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 		});
 
@@ -425,11 +391,11 @@ describe('useRxData', () => {
 		expect(screen.queryByText('isExhausted')).not.toBeInTheDocument();
 
 		// selected page data should now be rendered
-		bulkDocs.slice(0, pageSize).forEach(doc => {
+		characters.slice(0, pageSize).forEach(doc => {
 			expect(screen.getByText(doc.name)).toBeInTheDocument();
 		});
 		// rest data should not be rendered
-		bulkDocs.slice(pageSize).forEach(doc => {
+		characters.slice(pageSize).forEach(doc => {
 			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 		});
 
@@ -455,13 +421,13 @@ describe('useRxData', () => {
 		await waitForDomChange();
 
 		// next page data should now be rendered
-		bulkDocs.slice(pageSize, pageSize).forEach(doc => {
+		characters.slice(pageSize, pageSize).forEach(doc => {
 			expect(screen.getByText(doc.name)).toBeInTheDocument();
 		});
 		// rest data should not be rendered
 		[
-			...bulkDocs.slice(0, pageSize),
-			...bulkDocs.slice(2 * pageSize),
+			...characters.slice(0, pageSize),
+			...characters.slice(2 * pageSize),
 		].forEach(doc => {
 			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 		});
@@ -482,12 +448,12 @@ describe('useRxData', () => {
 		// should not be loading
 		expect(screen.queryByText('loading')).not.toBeInTheDocument();
 		// same data should now be rendered
-		bulkDocs.slice(pageSize, pageSize).forEach(doc => {
+		characters.slice(pageSize, pageSize).forEach(doc => {
 			expect(screen.getByText(doc.name)).toBeInTheDocument();
 		});
 		[
-			...bulkDocs.slice(0, pageSize),
-			...bulkDocs.slice(2 * pageSize),
+			...characters.slice(0, pageSize),
+			...characters.slice(2 * pageSize),
 		].forEach(doc => {
 			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 		});
@@ -543,7 +509,7 @@ describe('useRxData', () => {
 
 		await waitForDomChange();
 
-		bulkDocs.forEach(doc => {
+		characters.forEach(doc => {
 			if (doc.id === idToSearchFor) {
 				expect(screen.getByText(doc.name)).toBeInTheDocument();
 			} else {
@@ -720,7 +686,7 @@ describe('useRxData', () => {
 		expect(screen.queryByText('loading')).not.toBeInTheDocument();
 
 		// data should now be rendered
-		bulkDocs.forEach(doc => {
+		characters.forEach(doc => {
 			expect(screen.queryByText(doc.name)).toBeInTheDocument();
 		});
 
@@ -749,7 +715,7 @@ describe('useRxData', () => {
 
 		// just making sure the correct data are fetched
 		expect(screen.getByText('Yoda')).toBeInTheDocument();
-		bulkDocs
+		characters
 			.filter(doc => doc.name !== 'Yoda')
 			.forEach(doc => {
 				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
