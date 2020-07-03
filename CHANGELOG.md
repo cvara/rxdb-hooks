@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.1.0](https://github.com/cvara/rxdb-hooks/tree/2.1.0) (2020-07-03)
+
+[Full Changelog](https://github.com/cvara/rxdb-hooks/compare/2.0.0...2.1.0)
+
+**Implemented enhancements:**
+
+- Export types from index [\#8](https://github.com/cvara/rxdb-hooks/pull/8) ([cvara](https://github.com/cvara))
+
+**Merged pull requests:**
+
+- Improve coverage [\#9](https://github.com/cvara/rxdb-hooks/pull/9) ([cvara](https://github.com/cvara))
+
 ## [2.0.0](https://github.com/cvara/rxdb-hooks/tree/2.0.0) (2020-06-09)
 
 [Full Changelog](https://github.com/cvara/rxdb-hooks/compare/1.2.1...2.0.0)
