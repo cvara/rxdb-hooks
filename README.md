@@ -24,6 +24,7 @@ Nothing fancy, just conveniently handles common use cases such as:
 ## Table of Contents
 
 - [Installation](#installation)
+- [Example](#example)
 - [API](#api)
   - [`Provider`](#provider)
   - [`useRxDB`](#userxdb)
@@ -32,12 +33,101 @@ Nothing fancy, just conveniently handles common use cases such as:
   - [`useRxData`](#userxdata)
   - [`useRxDocument`](#userxdocument)
 - [Recipes](#recipes)
+  - [Query and Query Constructor memoization](#query-and-query-constructor-memoization)
+  - [Lazy instantiation of RxDatabase & RxCollections](#lazy-instantiation-of-rxdatabase--rxcollections)
+  - [Mutations](#mutations)
 - [LICENSE](#license)
 
 ## Installation
 
-```
+```bash
+# using npm
 npm install rxdb-hooks
+
+# using yarn
+yarn add rxdb-hooks
+```
+
+## Example
+
+**Root.jsx**:
+
+```javascript
+const Root = () => {
+  const [db, setDb] = useState();
+
+  useEffect(() => {
+    // Notice that RxDB instantiation is asynchronous; until db becomes available
+    // consumer hooks that depend on it will still work, absorbing the delay by
+    // setting their state to isFetching:true
+    const initDB = async () => {
+      const _db = await initializeDB();
+      setDb(_db);
+    };
+    initDB();
+  }, []);
+
+  // Provide RxDB instance; hooks can now be used within the context of the Provider
+  return (
+    <Provider db={db}>
+      <App />
+    </Provider>
+  );
+};
+```
+
+**Consumer.jsx**:
+
+```javascript
+const Consumer = () => {
+  const queryConstructor = collection =>
+    collection
+      .find()
+      .where('affiliation')
+      .equals('jedi');
+
+  const { result: characters, isFetching } = useRxData(
+    'characters',
+    queryConstructor
+  );
+
+  if (isFetching) {
+    return 'loading characters...';
+  }
+
+  return (
+    <ul>
+      {characters.map((character, idx) => (
+        <li key={idx}>{character.name}</li>
+      ))}
+    </ul>
+  );
+};
+```
+
+**initializeDB.js**:
+
+```javascript
+const initializeDB = async () => {
+  // create RxDB instance
+  const db = await RxDB.create({
+    name: 'my_rxdb',
+    adapter: 'idb',
+  });
+
+  // add a collection to our db
+  const collection = await db.collection({
+    name: 'characters',
+    schema: {
+      // ...
+    },
+  });
+
+  // maybe sync collection to a remote
+  // ...
+
+  return db;
+};
 ```
 
 ## API
@@ -97,17 +187,17 @@ function useRxQuery<T>(query: RxQuery, options?: UseRxQueryOptions): RxQueryResu
 
 #### `options: UseRxQueryOptions`
 
-| Option       | Type                         | Required |     Default     | Description                                                                                                                                                                                                                                                                                     |
-| ------------ | ---------------------------- | :------: | :-------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pageSize`   | `number`                     |    -     |        -        | enables pagination & defines page limit                                                                                                                                                                                                                                                         |
+| Option       | Type                          | Required |     Default     | Description                                                                                                                                                                                                                                                                                     |
+| ------------ | ----------------------------- | :------: | :-------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pageSize`   | `number`                      |    -     |        -        | enables pagination & defines page limit                                                                                                                                                                                                                                                         |
 | `pagination` | `"Traditional" \| "Infinite"` |    -     | `"Traditional"` | determines pagination mode; **Traditional**: results are split into pages, starts by rendering the first page and total `pageCount` is returned, allowing for requesting results of any specific page. **Infinite**: first page of results is rendered, allowing for gradually requesting more. |
-| `json`       | `boolean`                    |    -     |     `false`     | when `true` resulting documents will be converted to plain JavaScript objects; equivalent to manually calling `.toJSON()` on each `RxDocument`                                                                                                                                                  |
+| `json`       | `boolean`                     |    -     |     `false`     | when `true` resulting documents will be converted to plain JavaScript objects; equivalent to manually calling `.toJSON()` on each `RxDocument`                                                                                                                                                  |
 
 #### `result: RxQueryResult<T>`
 
 | Property      | Type                     | Description                                                                                                            |
 | ------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
-| `result`      | `T[] \| RxDocument<T>[]`  | the resulting array of objects or `RxDocument` instances, depending on `json` option                                   |
+| `result`      | `T[] \| RxDocument<T>[]` | the resulting array of objects or `RxDocument` instances, depending on `json` option                                   |
 | `isFetching`  | `boolean`                | fetching state indicator                                                                                               |
 | `currentPage` | `number`                 | relevant in **all** pagination modes; holds number of current page                                                     |
 | `isExhausted` | `boolean`                | relevant in **Infinite** pagination; flags result list as "exhausted", meaning all documents have been already fetched |
