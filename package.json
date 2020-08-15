@@ -11,7 +11,7 @@
 	"scripts": {
 		"prettier": "prettier --write \"src/**/*.{js,ts,jsx,tsx}\"",
 		"lint": "eslint \"src/**/*.{js,ts,jsx,tsx}\" --ignore-path .gitignore",
-		"test": "yarn jest --clearCache && yarn jest --forceExit",
+		"test": "yarn jest --no-cache --forceExit",
 		"build": "rimraf dist && tsc --project tsconfig.json",
 		"prepack": "yarn build",
 		"typecheck": "tsc --noEmit",
