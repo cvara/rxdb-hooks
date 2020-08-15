@@ -53,6 +53,10 @@ yarn add rxdb-hooks
 **Root.jsx**:
 
 ```javascript
+import React, { useEffect } from 'react';
+import { Provider } from 'rxdb-hooks';
+import initializeDB from './initializeDB';
+
 const Root = () => {
   const [db, setDb] = useState();
 
@@ -79,6 +83,9 @@ const Root = () => {
 **Consumer.jsx**:
 
 ```javascript
+import React from 'react';
+import { useRxData } from 'rxdb-hooks';
+
 const Consumer = () => {
   const queryConstructor = collection =>
     collection
