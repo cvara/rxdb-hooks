@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.1.1](https://github.com/cvara/rxdb-hooks/tree/2.1.1) (2020-08-28)
+
+[Full Changelog](https://github.com/cvara/rxdb-hooks/compare/2.1.0...2.1.1)
+
+**Fixed bugs:**
+
+- Fix minor typing issue [\#12](https://github.com/cvara/rxdb-hooks/pull/12) ([cvara](https://github.com/cvara))
+
+**Merged pull requests:**
+
+- Bump dev dependencies [\#13](https://github.com/cvara/rxdb-hooks/pull/13) ([cvara](https://github.com/cvara))
+- Bump lodash from 4.17.15 to 4.17.19 [\#10](https://github.com/cvara/rxdb-hooks/pull/10) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [2.1.0](https://github.com/cvara/rxdb-hooks/tree/2.1.0) (2020-07-03)
 
 [Full Changelog](https://github.com/cvara/rxdb-hooks/compare/2.0.0...2.1.0)
