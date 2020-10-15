@@ -2,8 +2,8 @@ import React, { FC, useMemo } from 'react';
 import { RxDatabase } from 'rxdb';
 import Context from './context';
 
-export interface ProviderProps {
-	db?: RxDatabase;
+export interface ProviderProps<Collections> {
+	db?: RxDatabase<Collections>;
 	idAttribute?: string;
 }
 
