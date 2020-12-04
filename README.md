@@ -339,7 +339,7 @@ Convenience hook for fetching a single document from a collection.
 ```javascript
 function useRxDocument<T>(
 	collectionName: string,
-	id?: string,
+	id?: string | number,
 	options?: UseRxDocumentOptions
 ): RxDocumentRet<T>
 ```
