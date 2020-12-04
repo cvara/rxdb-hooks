@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.1.2](https://github.com/cvara/rxdb-hooks/tree/2.1.2) (2020-12-04)
+
+[Full Changelog](https://github.com/cvara/rxdb-hooks/compare/2.1.1...2.1.2)
+
+**Fixed bugs:**
+
+- useRxDocument type does not support numeric id [\#18](https://github.com/cvara/rxdb-hooks/issues/18)
+
+**Merged pull requests:**
+
+- useRxDocument typings support numeric id [\#19](https://github.com/cvara/rxdb-hooks/pull/19) ([cvara](https://github.com/cvara))
+
 ## [2.1.1](https://github.com/cvara/rxdb-hooks/tree/2.1.1) (2020-08-28)
 
 [Full Changelog](https://github.com/cvara/rxdb-hooks/compare/2.1.0...2.1.1)
