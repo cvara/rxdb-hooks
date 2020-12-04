@@ -9,39 +9,13 @@ import {
 import { RxDatabase } from 'rxdb';
 import useRxDocument from '../src/useRxDocument';
 import Provider from '../src/Provider';
+import { characters } from './mockData';
 
 describe('useRxDocument', () => {
 	let db: RxDatabase;
-	const bulkDocs = [
-		{
-			id: '1',
-			name: 'Darth Vader',
-			affiliation: 'Sith',
-		},
-		{
-			id: '2',
-			name: 'Yoda',
-			affiliation: 'Jedi',
-		},
-		{
-			id: '3',
-			name: 'Darth Sidius',
-			affiliation: 'Sith',
-		},
-		{
-			id: '4',
-			name: 'Obi-Wan Kenobi',
-			affiliation: 'Jedi',
-		},
-		{
-			id: '5',
-			name: 'Qui-Gon Jin',
-			affiliation: 'Jedi',
-		},
-	];
 
 	beforeAll(async done => {
-		db = await setup(bulkDocs, 'characters');
+		db = await setup(characters, 'characters');
 		done();
 	});
 
@@ -190,6 +164,34 @@ describe('useRxDocument', () => {
 				'characters',
 				'Yoda',
 				{ idAttribute: 'name' }
+			);
+
+			return <Character character={character} isFetching={isFetching} />;
+		};
+
+		render(
+			<Provider db={db}>
+				<Child />
+			</Provider>
+		);
+
+		// should render in loading state
+		expect(screen.getByText('loading')).toBeInTheDocument();
+
+		// wait for data
+		await waitForDomChange();
+
+		expect(screen.queryByText('Yoda')).toBeInTheDocument();
+
+		done();
+	});
+
+	it('should allow numeric id attributes', async done => {
+		const Child: FC = () => {
+			const { result: character, isFetching } = useRxDocument<Character>(
+				'characters',
+				900,
+				{ idAttribute: 'age' } // 👈 in a real-life scenario this should be indexed
 			);
 
 			return <Character character={character} isFetching={isFetching} />;

@@ -35,6 +35,9 @@ export const setup = async (
 				affiliation: {
 					type: 'string',
 				},
+				age: {
+					type: 'integer',
+				},
 			},
 		},
 	});

@@ -23,13 +23,13 @@ export interface UseRxDocumentOptions {
 
 function useRxDocument<T>(
 	collectionName: string,
-	id?: string,
+	id?: string | number,
 	options?: UseRxDocumentOptions & { json: true }
 ): RxDocumentJSON<T>;
 
 function useRxDocument<T>(
 	collectionName: string,
-	id?: string,
+	id?: string | number,
 	options?: UseRxDocumentOptions & { json?: false }
 ): RxDocumentDoc<T>;
 
@@ -38,7 +38,7 @@ function useRxDocument<T>(
  */
 function useRxDocument<T>(
 	collectionName: string,
-	id?: string,
+	id?: string | number,
 	options: UseRxDocumentOptions = {}
 ): RxDocumentRet<T> {
 	const { idAttribute, json } = options;
