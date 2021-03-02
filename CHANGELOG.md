@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.1.3](https://github.com/cvara/rxdb-hooks/tree/2.1.3) (2021-03-02)
+
+[Full Changelog](https://github.com/cvara/rxdb-hooks/compare/2.1.2...2.1.3)
+
+**Fixed bugs:**
+
+- Properly handle empty findOne\(\) query results [\#21](https://github.com/cvara/rxdb-hooks/pull/21) ([cvara](https://github.com/cvara))
+
+**Merged pull requests:**
+
+- Bump node-notifier from 8.0.0 to 8.0.1 [\#20](https://github.com/cvara/rxdb-hooks/pull/20) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [2.1.2](https://github.com/cvara/rxdb-hooks/tree/2.1.2) (2020-12-04)
 
 [Full Changelog](https://github.com/cvara/rxdb-hooks/compare/2.1.1...2.1.2)
