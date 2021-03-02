@@ -188,8 +188,17 @@ const reducer = <T>(state: RxState<T>, action: AnyAction<T>): RxState<T> => {
 	}
 };
 
-const getResultArray = <T>(documents: RxDocument<T>[] | RxDocument<T>) =>
-	Array.isArray(documents) ? documents : [documents];
+const getResultArray = <T>(
+	result: RxDocument<T>[] | RxDocument<T> | null
+): RxDocument<T>[] => {
+	if (!result) {
+		return [];
+	}
+	if (Array.isArray(result)) {
+		return result;
+	}
+	return [result];
+};
 
 function useRxQuery<T>(query: RxQuery): RxQueryResultDoc<T>;
 
@@ -281,8 +290,8 @@ function useRxQuery<T>(
 		});
 
 		const sub = _query.$.subscribe(
-			(documents: RxDocument<T>[] | RxDocument<T>) => {
-				const docs = getResultArray(documents);
+			(result: RxDocument<T>[] | RxDocument<T> | null) => {
+				const docs = getResultArray(result);
 				dispatch({
 					type: ActionType.FetchSuccess,
 					docs: json ? docs.map(doc => doc.toJSON()) : docs,
@@ -304,8 +313,8 @@ function useRxQuery<T>(
 		// Unconvential counting of documents/pages due to missing RxQuery.count():
 		// https://github.com/pubkey/rxdb/blob/master/orga/BACKLOG.md#rxquerycount
 		const countQuerySub = query.$.subscribe(
-			(documents: RxDocument<T>[] | RxDocument<T>) => {
-				const docs = getResultArray(documents);
+			(result: RxDocument<T>[] | RxDocument<T> | null) => {
+				const docs = getResultArray(result);
 				dispatch({
 					type: ActionType.CountPages,
 					pageCount: Math.ceil(docs.length / pageSize),

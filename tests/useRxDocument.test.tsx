@@ -186,6 +186,35 @@ describe('useRxDocument', () => {
 		done();
 	});
 
+	it('should handle not found', async done => {
+		const Child: FC = () => {
+			const { result: character, isFetching } = useRxDocument<Character>(
+				'characters',
+				'Mace Windu',
+				{ idAttribute: 'name' }
+			);
+
+			return <Character character={character} isFetching={isFetching} />;
+		};
+
+		render(
+			<Provider db={db}>
+				<Child />
+			</Provider>
+		);
+
+		// should render in loading state
+		expect(screen.getByText('loading')).toBeInTheDocument();
+
+		// wait for data
+		await waitForDomChange();
+
+		expect(screen.queryByText('loading')).not.toBeInTheDocument();
+		expect(screen.queryByText('Mace Windu')).not.toBeInTheDocument();
+
+		done();
+	});
+
 	it('should allow numeric id attributes', async done => {
 		const Child: FC = () => {
 			const { result: character, isFetching } = useRxDocument<Character>(
