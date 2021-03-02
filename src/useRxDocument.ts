@@ -54,7 +54,7 @@ function useRxDocument<T>(
 		(c: RxCollection<T>) =>
 			id
 				? c
-						.find()
+						.findOne()
 						.where(preferredIdAttribute)
 						.equals(id)
 				: undefined,
