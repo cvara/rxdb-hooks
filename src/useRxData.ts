@@ -10,7 +10,7 @@ import useRxQuery, {
 
 export type QueryConstructor<T> = (
 	collection: RxCollection<T>
-) => RxQuery<T, RxDocument<T> | RxDocument<T>[]> | undefined;
+) => RxQuery<T, RxDocument<T>> | RxQuery<T, RxDocument<T>[]> | undefined;
 
 function useRxData<T>(
 	collectionName: string,

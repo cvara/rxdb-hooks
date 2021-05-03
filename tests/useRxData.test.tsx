@@ -27,7 +27,7 @@ describe('useRxData', () => {
 	it('should read all data from a collection', async done => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
-				(c: RxCollection) => c.find(),
+				(c: RxCollection<Character>) => c.find(),
 				[]
 			);
 			const {
@@ -114,7 +114,7 @@ describe('useRxData', () => {
 	it('should return data in JSON format', async done => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
-				(c: RxCollection) => c.find(),
+				(c: RxCollection<Character>) => c.find(),
 				[]
 			);
 			const { result: characters, isFetching, isExhausted } = useRxData<
@@ -161,7 +161,7 @@ describe('useRxData', () => {
 
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
-				(c: RxCollection) => c.find(),
+				(c: RxCollection<Character>) => c.find(),
 				[]
 			);
 			const {
@@ -329,7 +329,7 @@ describe('useRxData', () => {
 
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
-				(c: RxCollection) => c.find(),
+				(c: RxCollection<Character>) => c.find(),
 				[]
 			);
 			const {
@@ -479,7 +479,7 @@ describe('useRxData', () => {
 		const idToSearchFor = '1';
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
-				(c: RxCollection) =>
+				(c: RxCollection<Character>) =>
 					c
 						.findOne()
 						.where('id')
@@ -559,7 +559,7 @@ describe('useRxData', () => {
 	it('should handle missing collection', async done => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
-				(c: RxCollection) => c.find(),
+				(c: RxCollection<Character>) => c.find(),
 				[]
 			);
 			const {
@@ -597,7 +597,7 @@ describe('useRxData', () => {
 	it('should handle missing database', async done => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
-				(c: RxCollection) => c.find(),
+				(c: RxCollection<Character>) => c.find(),
 				[]
 			);
 			const {
@@ -636,7 +636,7 @@ describe('useRxData', () => {
 		const Child: FC = () => {
 			const [name, setName] = useState('');
 			const queryConstructor = useCallback(
-				(c: RxCollection) => {
+				(c: RxCollection<Character>) => {
 					if (name) {
 						return c
 							.find()
