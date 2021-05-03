@@ -2,6 +2,7 @@ import { useCallback, useContext } from 'react';
 import useData from './useRxData';
 import { RxCollection, RxDocument } from 'rxdb';
 import Context from './context';
+import { Override } from './type.helpers';
 
 export interface RxDocumentRet<T> {
 	result?: T | RxDocument<T>;
@@ -24,13 +25,13 @@ export interface UseRxDocumentOptions {
 function useRxDocument<T>(
 	collectionName: string,
 	id?: string | number,
-	options?: UseRxDocumentOptions & { json: true }
+	options?: Override<UseRxDocumentOptions, { json: true }>
 ): RxDocumentJSON<T>;
 
 function useRxDocument<T>(
 	collectionName: string,
 	id?: string | number,
-	options?: UseRxDocumentOptions & { json?: false }
+	options?: Override<UseRxDocumentOptions, { json?: false }>
 ): RxDocumentDoc<T>;
 
 /**

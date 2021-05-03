@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { RxCollection, RxQuery, RxDocument } from 'rxdb';
+import { Override } from './type.helpers';
 import useRxCollection from './useRxCollection';
 import useRxQuery, {
 	UseRxQueryOptions,
@@ -20,13 +21,13 @@ function useRxData<T>(
 function useRxData<T>(
 	collectionName: string,
 	queryConstructor: QueryConstructor<T> | undefined,
-	options?: UseRxQueryOptions & { json?: false }
+	options?: Override<UseRxQueryOptions, { json?: false }>
 ): RxQueryResultDoc<T>;
 
 function useRxData<T>(
 	collectionName: string,
 	queryConstructor: QueryConstructor<T> | undefined,
-	options?: UseRxQueryOptions & { json: true }
+	options?: Override<UseRxQueryOptions, { json: true }>
 ): RxQueryResultJSON<T>;
 
 /**
