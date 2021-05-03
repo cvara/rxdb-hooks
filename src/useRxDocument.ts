@@ -1,5 +1,5 @@
 import { useCallback, useContext } from 'react';
-import useData from './useRxData';
+import useRxData from './useRxData';
 import { RxCollection, RxDocument } from 'rxdb';
 import Context from './context';
 import { Override } from './type.helpers';
@@ -66,9 +66,9 @@ function useRxDocument<T>(
 	// TODO: find a better workaround
 	const { result, isFetching } = json
 		? // eslint-disable-next-line react-hooks/rules-of-hooks
-		  useData<T>(collectionName, queryConstructor, { json: true })
+		  useRxData<T>(collectionName, queryConstructor, { json: true })
 		: // eslint-disable-next-line react-hooks/rules-of-hooks
-		  useData<T>(collectionName, queryConstructor, { json: false });
+		  useRxData<T>(collectionName, queryConstructor, { json: false });
 
 	return { result: result[0], isFetching };
 }
