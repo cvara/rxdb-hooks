@@ -1,5 +1,6 @@
 import { useEffect, useCallback, useReducer, Reducer } from 'react';
 import { RxQuery, RxDocument, isRxQuery } from 'rxdb';
+import { Override } from './type.helpers';
 
 export interface RxQueryResult<T> {
 	/**
@@ -204,12 +205,12 @@ function useRxQuery<T>(query: RxQuery): RxQueryResultDoc<T>;
 
 function useRxQuery<T>(
 	query: RxQuery,
-	options?: UseRxQueryOptions & { json?: false }
+	options?: Override<UseRxQueryOptions, { json?: false }>
 ): RxQueryResultDoc<T>;
 
 function useRxQuery<T>(
 	query: RxQuery,
-	options?: UseRxQueryOptions & { json: true }
+	options?: Override<UseRxQueryOptions, { json: true }>
 ): RxQueryResultJSON<T>;
 
 /**
