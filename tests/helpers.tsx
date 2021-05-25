@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import RxDB, { RxDatabase, isRxDocument } from 'rxdb';
+import RxDB, { RxDatabase, isRxDocument, RxCollection } from 'rxdb';
 import memoryAdapter from 'pouchdb-adapter-memory';
 
 RxDB.plugin(memoryAdapter);
@@ -9,14 +9,19 @@ export interface Character {
 	affiliation: string;
 }
 
-export const setup = async (
-	documents: Character[],
-	collectionName = 'test_collection'
-): Promise<RxDatabase> => {
+export const createDatabase = async (): Promise<RxDatabase> => {
 	const db = await RxDB.create({
 		name: 'test_database',
 		adapter: 'memory',
 	});
+	return db;
+};
+
+export const setupCollection = async (
+	db: RxDatabase,
+	documents: Character[],
+	collectionName = 'test_collection'
+): Promise<RxCollection> => {
 	const collection = await db.collection({
 		name: collectionName,
 		schema: {
@@ -42,6 +47,15 @@ export const setup = async (
 		},
 	});
 	await collection.bulkInsert(documents);
+	return collection;
+};
+
+export const setup = async (
+	documents: Character[],
+	collectionName = 'test_collection'
+): Promise<RxDatabase> => {
+	const db = await createDatabase();
+	await setupCollection(db, documents, collectionName);
 	return db;
 };
 
