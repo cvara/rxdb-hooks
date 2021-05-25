@@ -1,5 +1,12 @@
 import React, { FC, useCallback, useState } from 'react';
-import { setup, teardown, CharacterList, Character } from './helpers';
+import {
+	setup,
+	teardown,
+	CharacterList,
+	Character,
+	createDatabase,
+	setupCollection,
+} from './helpers';
 import {
 	render,
 	screen,
@@ -720,6 +727,60 @@ describe('useRxData', () => {
 			.forEach(doc => {
 				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 			});
+
+		done();
+	});
+});
+
+describe('useRxData + lazy collection init', () => {
+	let db: RxDatabase;
+
+	beforeEach(async done => {
+		// create db without collection + data
+		db = await createDatabase();
+		done();
+	});
+
+	afterEach(async done => {
+		await teardown(db);
+		done();
+	});
+
+	it('should read data from lazily created collection', async done => {
+		const Child: FC = () => {
+			const queryConstructor = useCallback(
+				(c: RxCollection<Character>) => c.find(),
+				[]
+			);
+			const { result: characters, isFetching, isExhausted } = useRxData<
+				Character
+			>('characters', queryConstructor);
+
+			return (
+				<>
+					<CharacterList
+						characters={characters}
+						isFetching={isFetching}
+						isExhausted={isExhausted}
+					/>
+				</>
+			);
+		};
+
+		render(
+			<Provider db={db}>
+				<Child />
+			</Provider>
+		);
+
+		// should render in loading state
+		expect(screen.getByText('loading')).toBeInTheDocument();
+
+		// lazily create collection
+		await setupCollection(db, characters, 'characters');
+
+		// wait for data - this will timeout
+		await waitForDomChange();
 
 		done();
 	});
