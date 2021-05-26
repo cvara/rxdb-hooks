@@ -17,6 +17,7 @@ import { RxDatabase, RxCollection } from 'rxdb';
 import useRxData from '../src/useRxData';
 import Provider from '../src/Provider';
 import { characters } from './mockData';
+import { act } from 'react-dom/test-utils';
 
 describe('useRxData', () => {
 	let db: RxDatabase;
@@ -776,10 +777,14 @@ describe('useRxData + lazy collection init', () => {
 		expect(screen.getByText('loading')).toBeInTheDocument();
 
 		// lazily create collection
-		await setupCollection(db, characters, 'characters');
+		await act(async () => {
+			await setupCollection(db, characters, 'characters');
+		});
 
-		// wait for data - this will timeout
+		// wait for data
 		await waitForDomChange();
+
+		// TODO: verify results exist in the dom
 
 		done();
 	});

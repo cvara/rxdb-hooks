@@ -11,7 +11,7 @@
 	"scripts": {
 		"prettier": "prettier --write \"src/**/*.{js,ts,jsx,tsx}\"",
 		"lint": "eslint \"src/**/*.{js,ts,jsx,tsx}\" --ignore-path .gitignore",
-		"test": "yarn jest --no-cache --forceExit",
+		"test": "yarn jest --no-cache --forceExit --runInBand",
 		"build": "rimraf dist && tsc --project tsconfig.json",
 		"prepack": "yarn build",
 		"typecheck": "tsc --noEmit",
@@ -52,7 +52,8 @@
 	"peerDependencies": {
 		"react": ">=16.8",
 		"react-dom": ">=16.8",
-		"rxdb": ">=8.7"
+		"rxdb": ">=9",
+		"rxjs": ">=6"
 	},
 	"resolutions": {
 		"minimist": "1.2.5"
