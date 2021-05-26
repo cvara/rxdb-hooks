@@ -1,8 +1,15 @@
 import React, { FC } from 'react';
-import RxDB, { RxDatabase, isRxDocument, RxCollection } from 'rxdb';
+import {
+	RxDatabase,
+	RxCollection,
+	createRxDatabase,
+	isRxDocument,
+	addRxPlugin,
+	isRxDatabase,
+} from 'rxdb';
 import memoryAdapter from 'pouchdb-adapter-memory';
 
-RxDB.plugin(memoryAdapter);
+addRxPlugin(memoryAdapter);
 
 export interface Character {
 	name: string;
@@ -10,9 +17,10 @@ export interface Character {
 }
 
 export const createDatabase = async (): Promise<RxDatabase> => {
-	const db = await RxDB.create({
+	const db = await createRxDatabase({
 		name: 'test_database',
 		adapter: 'memory',
+		ignoreDuplicate: true,
 	});
 	return db;
 };
@@ -22,32 +30,33 @@ export const setupCollection = async (
 	documents: Character[],
 	collectionName = 'test_collection'
 ): Promise<RxCollection> => {
-	const collection = await db.collection({
-		name: collectionName,
-		schema: {
-			title: 'characters',
-			version: 0,
-			type: 'object',
-			properties: {
-				id: {
-					type: 'string',
-					primary: true,
+	const collection = await db.addCollections({
+		[collectionName]: {
+			schema: {
+				title: 'characters',
+				version: 0,
+				type: 'object',
+				properties: {
+					id: {
+						type: 'string',
+						primary: true,
+					},
+					name: {
+						type: 'string',
+					},
+					affiliation: {
+						type: 'string',
+					},
+					age: {
+						type: 'integer',
+					},
 				},
-				name: {
-					type: 'string',
-					index: true,
-				},
-				affiliation: {
-					type: 'string',
-				},
-				age: {
-					type: 'integer',
-				},
+				indexes: ['name'],
 			},
 		},
 	});
-	await collection.bulkInsert(documents);
-	return collection;
+	await collection[collectionName].bulkInsert(documents);
+	return collection[collectionName];
 };
 
 export const setup = async (
@@ -60,7 +69,7 @@ export const setup = async (
 };
 
 export const teardown = async (db: RxDatabase): Promise<void> => {
-	if (RxDB.isRxDatabase(db)) {
+	if (isRxDatabase(db)) {
 		db.remove();
 	}
 };
@@ -150,5 +159,3 @@ export const sortByNameDesc = (a: Character, b: Character): number => {
 	}
 	return 0;
 };
-
-export default RxDB;
