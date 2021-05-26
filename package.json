@@ -44,7 +44,7 @@
 		"react-dom": "^16.13.0",
 		"react-test-renderer": "^16.13.0",
 		"rimraf": "^3.0.2",
-		"rxdb": "^8.7.5",
+		"rxdb": "^9.20.0",
 		"shelljs": "^0.8.4",
 		"ts-jest": "^26.0.0",
 		"typescript": "^3.8.3"
