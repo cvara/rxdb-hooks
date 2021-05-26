@@ -390,8 +390,7 @@ describe('useRxData', () => {
 		// should render in loading state
 		expect(screen.getByText('loading')).toBeInTheDocument();
 
-		// wait for data (twice since pages are also counted)
-		await waitForDomChange();
+		// wait for data
 		await waitForDomChange();
 
 		// should not be in exhausted state
