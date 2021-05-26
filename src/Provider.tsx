@@ -1,7 +1,25 @@
 import React, { FC, useMemo } from 'react';
-import { RxDatabase } from 'rxdb';
+import RxDB, { RxDatabase } from 'rxdb';
 import Context from './context';
+import { BehaviorSubject } from 'rxjs';
 
+RxDB.plugin({
+	rxdb: true,
+	prototypes: {
+		RxDatabase: proto => {
+			proto.collections$ = new BehaviorSubject({});
+		},
+	},
+
+	hooks: {
+		createRxCollection: function(col) {
+			col.database.collections$.next({
+				...col.database.collections$.getValue(),
+				[col.name]: col,
+			});
+		},
+	},
+});
 export interface ProviderProps {
 	db?: RxDatabase;
 	idAttribute?: string;

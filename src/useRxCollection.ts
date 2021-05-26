@@ -10,11 +10,14 @@ function useRxCollection<T>(name: string): RxCollection<T> | null {
 		if (!db) {
 			return;
 		}
-		const found = db[name];
-		if (found) {
-			setCollection(found);
-		}
-	}, [db, name]);
+		const subscription = db.collections$.subscribe(collections => {
+			const found = collections[name];
+			if (found) {
+				setCollection(found);
+			}
+		});
+		return () => subscription.unsubscribe();
+	}, [db, name, collection]);
 
 	return collection;
 }
