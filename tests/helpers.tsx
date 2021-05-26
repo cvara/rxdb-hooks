@@ -1,52 +1,74 @@
 import React, { FC } from 'react';
-import RxDB, { RxDatabase, isRxDocument } from 'rxdb';
+import {
+	RxDatabase,
+	RxCollection,
+	createRxDatabase,
+	isRxDocument,
+	addRxPlugin,
+	isRxDatabase,
+} from 'rxdb';
 import memoryAdapter from 'pouchdb-adapter-memory';
 
-RxDB.plugin(memoryAdapter);
+addRxPlugin(memoryAdapter);
 
 export interface Character {
 	name: string;
 	affiliation: string;
 }
 
+export const createDatabase = async (): Promise<RxDatabase> => {
+	const db = await createRxDatabase({
+		name: 'test_database',
+		adapter: 'memory',
+	});
+	return db;
+};
+
+export const setupCollection = async (
+	db: RxDatabase,
+	documents: Character[],
+	collectionName = 'test_collection'
+): Promise<RxCollection> => {
+	const collection = await db.addCollections({
+		[collectionName]: {
+			schema: {
+				title: 'characters',
+				version: 0,
+				type: 'object',
+				properties: {
+					id: {
+						type: 'string',
+						primary: true,
+					},
+					name: {
+						type: 'string',
+					},
+					affiliation: {
+						type: 'string',
+					},
+					age: {
+						type: 'integer',
+					},
+				},
+				indexes: ['name'],
+			},
+		},
+	});
+	await collection[collectionName].bulkInsert(documents);
+	return collection[collectionName];
+};
+
 export const setup = async (
 	documents: Character[],
 	collectionName = 'test_collection'
 ): Promise<RxDatabase> => {
-	const db = await RxDB.create({
-		name: 'test_database',
-		adapter: 'memory',
-	});
-	const collection = await db.collection({
-		name: collectionName,
-		schema: {
-			title: 'characters',
-			version: 0,
-			type: 'object',
-			properties: {
-				id: {
-					type: 'string',
-					primary: true,
-				},
-				name: {
-					type: 'string',
-					index: true,
-				},
-				affiliation: {
-					type: 'string',
-				},
-				age: {
-					type: 'integer',
-				},
-			},
-		},
-	});
-	await collection.bulkInsert(documents);
+	const db = await createDatabase();
+	await setupCollection(db, documents, collectionName);
 	return db;
 };
 
 export const teardown = async (db: RxDatabase): Promise<void> => {
-	if (RxDB.isRxDatabase(db)) {
+	if (isRxDatabase(db)) {
 		db.remove();
 	}
 };
@@ -136,5 +158,3 @@ export const sortByNameDesc = (a: Character, b: Character): number => {
 	}
 	return 0;
 };
-
-export default RxDB;
