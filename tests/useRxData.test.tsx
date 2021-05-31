@@ -776,7 +776,12 @@ describe('useRxData + lazy collection init', () => {
 		// should render in loading state
 		expect(screen.getByText('loading')).toBeInTheDocument();
 
-		// lazily create collection
+		// lazily create a collection we don't care about
+		await act(async () => {
+			await setupCollection(db, [], 'other');
+		});
+
+		// lazily create the collection we'be been waiting for
 		await act(async () => {
 			await setupCollection(db, characters, 'characters');
 		});
@@ -784,7 +789,10 @@ describe('useRxData + lazy collection init', () => {
 		// wait for data
 		await waitForDomChange();
 
-		// TODO: verify results exist in the dom
+		// data should now be rendered
+		characters.forEach(doc => {
+			expect(screen.queryByText(doc.name)).toBeInTheDocument();
+		});
 
 		done();
 	});
