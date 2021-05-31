@@ -4,20 +4,24 @@ import { RxDatabaseBase } from 'rxdb/dist/types/rx-database';
 
 type CollectionRecord = Record<string, RxCollection>;
 export type RxDatabaseBaseExtended = RxDatabaseBase & {
-	collections$: Subject<CollectionRecord>;
+	newCollections$: Subject<CollectionRecord>;
 };
 
-export const newCollectionObserver = {
+/**
+ * Extends RxDB prototype with a newCollections$ property: a stream emitting any
+ * new collections added via addCollections().
+ */
+export const observeNewCollections = {
 	rxdb: true,
 	prototypes: {
 		RxDatabase: (proto: RxDatabaseBaseExtended) => {
-			const collections$ = new Subject<CollectionRecord>();
-			proto.collections$ = collections$;
+			const newCollections$ = new Subject<CollectionRecord>();
+			proto.newCollections$ = newCollections$;
 
 			const orig = proto.addCollections;
 			proto.addCollections = async function(...args) {
 				const col = await orig.apply(this, args);
-				collections$.next(col);
+				newCollections$.next(col);
 				return col;
 			};
 		},
