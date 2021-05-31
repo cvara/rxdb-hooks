@@ -1,7 +1,7 @@
 import React, { FC, useMemo, useEffect } from 'react';
 import { RxDatabase, addRxPlugin } from 'rxdb';
 import Context from './context';
-import { observeNewCollections } from './plugins';
+import { observeNewCollections, RxDatabaseBaseExtended } from './plugins';
 
 export interface ProviderProps {
 	db?: RxDatabase;
@@ -14,7 +14,7 @@ const Provider: FC<ProviderProps> = ({ db, idAttribute = '_id', children }) => {
 	}, []);
 	const context = useMemo(
 		() => ({
-			db,
+			db: (db as unknown) as RxDatabaseBaseExtended,
 			idAttribute,
 		}),
 		[db, idAttribute]

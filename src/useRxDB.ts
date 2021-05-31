@@ -1,8 +1,8 @@
 import { useContext } from 'react';
-import { RxDatabase } from 'rxdb';
 import Context from './context';
+import { RxDatabaseBaseExtended } from './plugins';
 
-function useRxDB(): RxDatabase {
+function useRxDB(): RxDatabaseBaseExtended {
 	const { db } = useContext(Context);
 	return db;
 }
