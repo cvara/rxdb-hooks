@@ -13,6 +13,18 @@ function useRxCollection<T>(name: string): RxCollection<T> | null {
 		const found = db[name];
 		if (found) {
 			setCollection(found);
+		} else {
+			const sub = db.newCollections$.subscribe(col => {
+				if (col[name]) {
+					setCollection(col[name]);
+					sub.unsubscribe();
+				}
+			});
+			return () => {
+				if (!sub.closed) {
+					sub.unsubscribe();
+				}
+			};
 		}
 	}, [db, name]);
 

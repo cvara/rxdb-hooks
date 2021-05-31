@@ -1,8 +1,8 @@
 import { createContext } from 'react';
-import { RxDatabase } from 'rxdb';
+import { RxDatabaseBaseExtended } from './plugins';
 
 export interface RxContext {
-	db: RxDatabase | null;
+	db: RxDatabaseBaseExtended | null;
 	idAttribute: string;
 }
 

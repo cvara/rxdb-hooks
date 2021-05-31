@@ -1,5 +1,12 @@
 import React, { FC, useCallback, useState } from 'react';
-import { setup, teardown, CharacterList, Character } from './helpers';
+import {
+	setup,
+	teardown,
+	CharacterList,
+	Character,
+	createDatabase,
+	setupCollection,
+} from './helpers';
 import {
 	render,
 	screen,
@@ -10,6 +17,7 @@ import { RxDatabase, RxCollection } from 'rxdb';
 import useRxData from '../src/useRxData';
 import Provider from '../src/Provider';
 import { characters } from './mockData';
+import { act } from 'react-dom/test-utils';
 
 describe('useRxData', () => {
 	let db: RxDatabase;
@@ -719,6 +727,72 @@ describe('useRxData', () => {
 			.forEach(doc => {
 				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 			});
+
+		done();
+	});
+});
+
+describe('useRxData + lazy collection init', () => {
+	let db: RxDatabase;
+
+	beforeEach(async done => {
+		// create db without collection + data
+		db = await createDatabase();
+		done();
+	});
+
+	afterEach(async done => {
+		await teardown(db);
+		done();
+	});
+
+	it('should read data from lazily created collection', async done => {
+		const Child: FC = () => {
+			const queryConstructor = useCallback(
+				(c: RxCollection<Character>) => c.find(),
+				[]
+			);
+			const { result: characters, isFetching, isExhausted } = useRxData<
+				Character
+			>('characters', queryConstructor);
+
+			return (
+				<>
+					<CharacterList
+						characters={characters}
+						isFetching={isFetching}
+						isExhausted={isExhausted}
+					/>
+				</>
+			);
+		};
+
+		render(
+			<Provider db={db}>
+				<Child />
+			</Provider>
+		);
+
+		// should render in loading state
+		expect(screen.getByText('loading')).toBeInTheDocument();
+
+		// lazily create a collection we don't care about
+		await act(async () => {
+			await setupCollection(db, [], 'other');
+		});
+
+		// lazily create the collection we'be been waiting for
+		await act(async () => {
+			await setupCollection(db, characters, 'characters');
+		});
+
+		// wait for data
+		await waitForDomChange();
+
+		// data should now be rendered
+		characters.forEach(doc => {
+			expect(screen.queryByText(doc.name)).toBeInTheDocument();
+		});
 
 		done();
 	});

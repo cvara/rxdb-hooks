@@ -20,6 +20,7 @@ export const createDatabase = async (): Promise<RxDatabase> => {
 	const db = await createRxDatabase({
 		name: 'test_database',
 		adapter: 'memory',
+		ignoreDuplicate: true,
 	});
 	return db;
 };
