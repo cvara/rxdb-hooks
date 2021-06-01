@@ -25,6 +25,7 @@ Nothing fancy, just conveniently handles common use cases such as:
 
 - [Installation](#installation)
 - [Example](#example)
+- [Upgrading to v3](#upgrading-to-v3)
 - [API](#api)
   - [`Provider`](#provider)
   - [`useRxDB`](#userxdb)
@@ -55,23 +56,25 @@ yarn add rxdb-hooks
 ```javascript
 import React, { useEffect } from 'react';
 import { Provider } from 'rxdb-hooks';
-import initializeDB from './initializeDB';
+import initialize from './initialize';
 
 const Root = () => {
   const [db, setDb] = useState();
 
   useEffect(() => {
-    // Notice that RxDB instantiation is asynchronous; until db becomes available
-    // consumer hooks that depend on it will still work, absorbing the delay by
+    // Notice that RxDB instantiation is asynchronous;
+    // until db becomes available consumer hooks that depend
+    // on it will still work, absorbing the delay by
     // setting their state to isFetching:true
     const initDB = async () => {
-      const _db = await initializeDB();
+      const _db = await initialize();
       setDb(_db);
     };
     initDB();
   }, []);
 
-  // Provide RxDB instance; hooks can now be used within the context of the Provider
+  // Provide RxDB instance; hooks can now be used
+  // within the context of the Provider
   return (
     <Provider db={db}>
       <App />
@@ -112,21 +115,32 @@ const Consumer = () => {
 };
 ```
 
-**initializeDB.js**:
+**initialize.js**:
 
 ```javascript
-const initializeDB = async () => {
-  // create RxDB instance
-  const db = await RxDB.create({
-    name: 'my_rxdb',
-    adapter: 'idb',
+const initialize = async () => {
+  // create RxDB
+  const db = await createRxDatabase({
+    name: 'test_database',
   });
 
-  // add a collection to our db
-  const collection = await db.collection({
-    name: 'characters',
-    schema: {
-      // ...
+  // create a collection
+  const collection = await db.addCollections({
+    characters: {
+      schema: {
+        title: 'characters',
+        version: 0,
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            primary: true,
+          },
+          name: {
+            type: 'string',
+          },
+        },
+      },
     },
   });
 
@@ -136,6 +150,11 @@ const initializeDB = async () => {
   return db;
 };
 ```
+
+## Upgrading to v3
+
+Version 3 of rxdb-hooks **breaks compatibility with rxdb 8 or lower**, so you need to upgrade to rxdb 9.x. The core API
+is otherwise the same and should not cause any more breaking changes.
 
 ## API
 
