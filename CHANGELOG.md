@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.0.1](https://github.com/cvara/rxdb-hooks/tree/3.0.1) (2021-06-03)
+
+[Full Changelog](https://github.com/cvara/rxdb-hooks/compare/3.0.0...3.0.1)
+
+**Fixed bugs:**
+
+- Fix broken package structure [\#33](https://github.com/cvara/rxdb-hooks/pull/33) ([cvara](https://github.com/cvara))
+
 ## [3.0.0](https://github.com/cvara/rxdb-hooks/tree/3.0.0) (2021-06-01)
 
 [Full Changelog](https://github.com/cvara/rxdb-hooks/compare/2.1.3...3.0.0)
