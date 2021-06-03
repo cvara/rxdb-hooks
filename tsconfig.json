@@ -1,5 +1,4 @@
 {
-
 	"compilerOptions": {
 	  "jsx": "react",
 	  "module": "commonjs",
@@ -12,7 +11,7 @@
 	  "outDir": "dist",
 	  "declaration": true
 	},
-	"include": ["src", "tests"],
+	"include": ["src"],
 	"exclude": [
 	  "node_modules"
 	]
