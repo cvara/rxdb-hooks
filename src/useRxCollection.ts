@@ -17,7 +17,7 @@ function useRxCollection<T>(name: string): RxCollection<T> | null {
 			const sub = db.newCollections$.subscribe(col => {
 				if (col[name]) {
 					setCollection(col[name]);
-					sub.unsubscribe();
+					// sub.unsubscribe();
 				}
 			});
 			return () => {
