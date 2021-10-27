@@ -827,16 +827,17 @@ describe('useRxData + lazy collection init', () => {
 		// should render in loading state
 		expect(screen.getByText('loading')).toBeInTheDocument();
 
-		// lazily create the collection we'be been waiting for
+		const wrongCharacters: Character[] = [
+			{
+				id: '1',
+				name: 'Boba Fett',
+				affiliation: 'Mandalorian',
+				age: 56,
+			},
+		];
+
+		// lazily create the collection we've been waiting for
 		await act(async () => {
-			const wrongCharacters: Character[] = [
-				{
-					id: '1',
-					name: 'Boba Fett',
-					affiliation: 'Mandalorian',
-					age: 56,
-				},
-			];
 			await setupCollection(db, wrongCharacters, 'characters');
 			await db.removeCollection('characters');
 			await setupCollection(db, characters, 'characters');
@@ -848,6 +849,11 @@ describe('useRxData + lazy collection init', () => {
 		// data should now be rendered
 		characters.forEach(doc => {
 			expect(screen.queryByText(doc.name)).toBeInTheDocument();
+		});
+
+		// initial (now deleted) wrong characters data should not be rendered
+		wrongCharacters.forEach(doc => {
+			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 		});
 
 		done();
