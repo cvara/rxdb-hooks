@@ -796,4 +796,60 @@ describe('useRxData + lazy collection init', () => {
 
 		done();
 	});
+
+	it('should read data from recreated collection', async done => {
+		const Child: FC = () => {
+			const queryConstructor = useCallback(
+				(c: RxCollection<Character>) => c.find(),
+				[]
+			);
+			const { result: characters, isFetching, isExhausted } = useRxData<
+				Character
+			>('characters', queryConstructor);
+
+			return (
+				<>
+					<CharacterList
+						characters={characters}
+						isFetching={isFetching}
+						isExhausted={isExhausted}
+					/>
+				</>
+			);
+		};
+
+		render(
+			<Provider db={db}>
+				<Child />
+			</Provider>
+		);
+
+		// should render in loading state
+		expect(screen.getByText('loading')).toBeInTheDocument();
+
+		// lazily create the collection we'be been waiting for
+		await act(async () => {
+			const wrongCharacters: Character[] = [
+				{
+					id: '1',
+					name: 'Boba Fett',
+					affiliation: 'Mandalorian',
+					age: 56,
+				},
+			];
+			await setupCollection(db, wrongCharacters, 'characters');
+			await db.removeCollection('characters');
+			await setupCollection(db, characters, 'characters');
+		});
+
+		// wait for data
+		await waitForDomChange();
+
+		// data should now be rendered
+		characters.forEach(doc => {
+			expect(screen.queryByText(doc.name)).toBeInTheDocument();
+		});
+
+		done();
+	});
 });

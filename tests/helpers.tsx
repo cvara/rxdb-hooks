@@ -12,8 +12,10 @@ import memoryAdapter from 'pouchdb-adapter-memory';
 addRxPlugin(memoryAdapter);
 
 export interface Character {
+	id: string;
 	name: string;
 	affiliation: string;
+	age: number;
 }
 
 export const createDatabase = async (): Promise<RxDatabase> => {
