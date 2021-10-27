@@ -16,14 +16,13 @@ function useRxCollection<T>(name: string): RxCollection<T> | null {
 		} else {
 			const sub = db.newCollections$.subscribe(col => {
 				if (col[name]) {
+					// We don't unsubscribe so that we get notified
+					// and update collection if it gets deleted/recreated
 					setCollection(col[name]);
-					// sub.unsubscribe();
 				}
 			});
 			return () => {
-				if (!sub.closed) {
-					sub.unsubscribe();
-				}
+				sub.unsubscribe();
 			};
 		}
 	}, [db, name]);
