@@ -1,5 +1,19 @@
 # Changelog
 
+## [3.0.2](https://github.com/cvara/rxdb-hooks/tree/3.0.2) (2021-10-27)
+
+[Full Changelog](https://github.com/cvara/rxdb-hooks/compare/3.0.1...3.0.2)
+
+**Fixed bugs:**
+
+- Support collection deletion & recreation [\#36](https://github.com/cvara/rxdb-hooks/pull/36) ([plmercereau](https://github.com/plmercereau))
+
+**Merged pull requests:**
+
+- Bump tmpl from 1.0.4 to 1.0.5 [\#37](https://github.com/cvara/rxdb-hooks/pull/37) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump path-parse from 1.0.6 to 1.0.7 [\#35](https://github.com/cvara/rxdb-hooks/pull/35) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump glob-parent from 5.1.0 to 5.1.2 [\#34](https://github.com/cvara/rxdb-hooks/pull/34) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [3.0.1](https://github.com/cvara/rxdb-hooks/tree/3.0.1) (2021-06-03)
 
 [Full Changelog](https://github.com/cvara/rxdb-hooks/compare/3.0.0...3.0.1)
