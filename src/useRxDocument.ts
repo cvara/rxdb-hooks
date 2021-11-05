@@ -3,14 +3,15 @@ import useRxData from './useRxData';
 import { RxCollection, RxDocument } from 'rxdb';
 import Context from './context';
 import { Override } from './type.helpers';
+import { DeepReadonly } from 'rxdb/dist/types/types';
 
 export interface RxDocumentRet<T> {
-	result?: T | RxDocument<T>;
+	result?: DeepReadonly<T> | RxDocument<T>;
 	isFetching: boolean;
 }
 
 export interface RxDocumentJSON<T> extends RxDocumentRet<T> {
-	result?: T;
+	result?: DeepReadonly<T>;
 }
 
 export interface RxDocumentDoc<T> extends RxDocumentRet<T> {
