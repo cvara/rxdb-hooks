@@ -12,20 +12,15 @@
   <img src="https://badge.fury.io/js/rxdb-hooks.svg" alt="npm version">
 </a>
 
-A set of simple hooks for integrating a React application with RxDB.
-
-Nothing fancy, just conveniently handles common use cases such as:
-
-- subscribing to query observables and translating results into React state
-- cleaning up after subscriptions where necessary
-- paginating results
-- maintaining useful state information (i.e. data fetching or data exhaustion during pagination)
-
 ## Table of Contents
 
+<details>
+  <summary>Click to expand</summary>
+
+- [About](#about)
 - [Installation](#installation)
 - [Example](#example)
-- [Upgrading to v3](#upgrading-to-v3)
+- [Compatibility with RxDB](#compatibility-with-rxdb)
 - [API](#api)
   - [`Provider`](#provider)
   - [`useRxDB`](#userxdb)
@@ -38,6 +33,20 @@ Nothing fancy, just conveniently handles common use cases such as:
   - [Lazy instantiation of RxDatabase & RxCollections](#lazy-instantiation-of-rxdatabase--rxcollections)
   - [Mutations](#mutations)
 - [LICENSE](#license)
+
+</details>
+
+## About
+
+A set of simple hooks for integrating a React application with [RxDB](https://github.com/pubkey/rxdb).
+
+Nothing fancy, just conveniently handles common use cases such as:
+
+- subscribing to query observables and translating results into React state
+- cleaning up after subscriptions where necessary
+- paginating results
+- maintaining useful state information (i.e. data fetching or data exhaustion during pagination)
+- lazily creating or destroying collections
 
 ## Installation
 
@@ -131,10 +140,10 @@ const initialize = async () => {
         title: 'characters',
         version: 0,
         type: 'object',
+        primaryKey: 'id',
         properties: {
           id: {
             type: 'string',
-            primary: true,
           },
           name: {
             type: 'string',
@@ -151,10 +160,19 @@ const initialize = async () => {
 };
 ```
 
-## Upgrading to v3
+## Compatibility with RxDB
 
-Version 3 of rxdb-hooks **breaks compatibility with rxdb 8 or lower**, so you need to upgrade to rxdb 9.x. The core API
-is otherwise the same and should not cause any more breaking changes.
+The core API of rxdb-hooks remains largely the same across all major versions _beyond_ `1.x`, however some parts of the internal
+implementation (most notably [the plugin](src/plugins.ts)) differ based on the version of rxdb we need to target **\***.
+Please use the appropriate version of rxdb-hooks as per this table:
+
+| rxdb-hooks version | targeted RxDB version |
+| ------------------ | --------------------- |
+| `4.x`              | `10.x`                |
+| `3.x`              | `9.x`                 |
+| `1.x`, `2.x`       | `8.x`                 |
+
+_\* Versions 7.x of RxDB and below have not been tested and are not guaranteed to work with rxdb-hooks_
 
 ## API
 
