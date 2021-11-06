@@ -1,6 +1,6 @@
 {
 	"name": "rxdb-hooks",
-	"version": "3.0.2",
+	"version": "4.0.0",
 	"description": "React hooks for integrating with RxDB",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
