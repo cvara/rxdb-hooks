@@ -1,12 +1,13 @@
 import { useEffect, useCallback, useReducer, Reducer } from 'react';
 import { RxQuery, RxDocument, isRxQuery } from 'rxdb';
 import { Override } from './type.helpers';
+import { DeepReadonly } from 'rxdb/dist/types/types';
 
 export interface RxQueryResult<T> {
 	/**
 	 * Resulting documents.
 	 */
-	result: T[] | RxDocument<T>[];
+	result: DeepReadonly<T>[] | RxDocument<T>[];
 
 	/**
 	 * Indicates that fetching is in progress.
@@ -51,7 +52,7 @@ export interface RxQueryResult<T> {
 }
 
 export interface RxQueryResultJSON<T> extends RxQueryResult<T> {
-	result: T[];
+	result: DeepReadonly<T>[];
 }
 
 export interface RxQueryResultDoc<T> extends RxQueryResult<T> {
@@ -88,7 +89,7 @@ export interface UseRxQueryOptions {
 }
 
 interface RxState<T> {
-	result: T[] | RxDocument<T>[];
+	result: DeepReadonly<T>[] | RxDocument<T>[];
 	isFetching: boolean;
 	isExhausted: boolean;
 	page: number | undefined;
@@ -124,7 +125,7 @@ interface CountPagesAction {
 
 interface FetchSuccessAction<T> {
 	type: ActionType.FetchSuccess;
-	docs: T[];
+	docs: RxDocument<T>[] | DeepReadonly<T>[];
 	pagination: PaginationMode;
 	pageSize: number;
 }
@@ -220,7 +221,7 @@ function useRxQuery<T>(
  *  - a resetList callback function for conveniently reseting list data
  */
 function useRxQuery<T>(
-	query: RxQuery,
+	query: RxQuery<RxDocument<T>>,
 	options: UseRxQueryOptions = {}
 ): RxQueryResult<T> {
 	const { pageSize, pagination = 'Infinite', json } = options;
@@ -290,17 +291,18 @@ function useRxQuery<T>(
 			type: ActionType.QueryChanged,
 		});
 
-		const sub = _query.$.subscribe(
-			(result: RxDocument<T>[] | RxDocument<T> | null) => {
-				const docs = getResultArray(result);
-				dispatch({
-					type: ActionType.FetchSuccess,
-					docs: json ? docs.map(doc => doc.toJSON()) : docs,
-					pagination,
-					pageSize,
-				});
-			}
-		);
+		const sub = _query.$.subscribe(result => {
+			const resultArray = getResultArray(result);
+			const docs = json
+				? resultArray.map(doc => doc.toJSON())
+				: resultArray;
+			dispatch({
+				type: ActionType.FetchSuccess,
+				docs,
+				pagination,
+				pageSize,
+			});
+		});
 
 		return () => {
 			sub.unsubscribe();
@@ -313,15 +315,13 @@ function useRxQuery<T>(
 		}
 		// Unconvential counting of documents/pages due to missing RxQuery.count():
 		// https://github.com/pubkey/rxdb/blob/master/orga/BACKLOG.md#rxquerycount
-		const countQuerySub = query.$.subscribe(
-			(result: RxDocument<T>[] | RxDocument<T> | null) => {
-				const docs = getResultArray(result);
-				dispatch({
-					type: ActionType.CountPages,
-					pageCount: Math.ceil(docs.length / pageSize),
-				});
-			}
-		);
+		const countQuerySub = query.$.subscribe(result => {
+			const docs = getResultArray(result);
+			dispatch({
+				type: ActionType.CountPages,
+				pageCount: Math.ceil(docs.length / pageSize),
+			});
+		});
 
 		return () => {
 			countQuerySub.unsubscribe();

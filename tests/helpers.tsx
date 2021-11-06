@@ -4,12 +4,16 @@ import {
 	RxCollection,
 	createRxDatabase,
 	isRxDocument,
-	addRxPlugin,
 	isRxDatabase,
 } from 'rxdb';
 import memoryAdapter from 'pouchdb-adapter-memory';
+import { addPouchPlugin, getRxStoragePouch } from 'rxdb/plugins/pouchdb';
 
-addRxPlugin(memoryAdapter);
+/**
+ * For how to use pouchdb memory adapter as a storage option in rxdb@10 see:
+ * https://github.com/pubkey/rxdb/blob/master/orga/releases/10.0.0.md#the-main-thing-first
+ */
+addPouchPlugin(memoryAdapter);
 
 export interface Character {
 	id: string;
@@ -21,7 +25,7 @@ export interface Character {
 export const createDatabase = async (): Promise<RxDatabase> => {
 	const db = await createRxDatabase({
 		name: 'test_database',
-		adapter: 'memory',
+		storage: getRxStoragePouch('memory'),
 		ignoreDuplicate: true,
 	});
 	return db;
@@ -38,10 +42,10 @@ export const setupCollection = async (
 				title: 'characters',
 				version: 0,
 				type: 'object',
+				primaryKey: 'id',
 				properties: {
 					id: {
 						type: 'string',
-						primary: true,
 					},
 					name: {
 						type: 'string',
