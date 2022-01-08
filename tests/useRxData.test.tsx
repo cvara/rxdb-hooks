@@ -6,6 +6,7 @@ import {
 	Character,
 	createDatabase,
 	setupCollection,
+	MyDatabase,
 } from './helpers';
 import {
 	render,
@@ -13,14 +14,14 @@ import {
 	waitForDomChange,
 	fireEvent,
 } from '@testing-library/react';
-import { RxDatabase, RxCollection } from 'rxdb';
+import { RxCollection } from 'rxdb';
 import useRxData from '../src/useRxData';
 import Provider from '../src/Provider';
 import { characters } from './mockData';
 import { act } from 'react-dom/test-utils';
 
 describe('useRxData', () => {
-	let db: RxDatabase;
+	let db: MyDatabase;
 
 	beforeAll(async done => {
 		db = await setup(characters, 'characters');
@@ -733,7 +734,7 @@ describe('useRxData', () => {
 });
 
 describe('useRxData + lazy collection init', () => {
-	let db: RxDatabase;
+	let db: MyDatabase;
 
 	beforeEach(async done => {
 		// create db without collection + data

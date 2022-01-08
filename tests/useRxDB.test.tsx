@@ -1,6 +1,5 @@
 const fake = jest.fn();
 jest.mock('react', () => ({
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	...(jest.requireActual('react') as any),
 	useContext: fake,
 }));

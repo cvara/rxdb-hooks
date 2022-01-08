@@ -3,7 +3,6 @@ import { RxDatabase, addRxPlugin } from 'rxdb';
 import Context from './context';
 import { observeNewCollections, RxDatabaseBaseExtended } from './plugins';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface ProviderProps<Collections = any> {
 	db?: RxDatabase<Collections>;
 	idAttribute?: string;

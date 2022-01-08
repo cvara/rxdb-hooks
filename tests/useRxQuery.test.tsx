@@ -1,14 +1,19 @@
 import React, { FC, useMemo } from 'react';
-import { setup, teardown, CharacterList, Character } from './helpers';
+import {
+	setup,
+	teardown,
+	CharacterList,
+	Character,
+	MyDatabase,
+} from './helpers';
 import { render, screen, waitForDomChange } from '@testing-library/react';
-import { RxDatabase } from 'rxdb';
 import useRxQuery from '../src/useRxQuery';
 import Provider from '../src/Provider';
 import { characters } from './mockData';
 import useRxCollection from '../src/useRxCollection';
 
 describe('useRxQuery', () => {
-	let db: RxDatabase;
+	let db: MyDatabase;
 
 	beforeAll(async done => {
 		db = await setup(characters, 'characters');

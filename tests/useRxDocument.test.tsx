@@ -1,18 +1,17 @@
 import React, { FC, useState } from 'react';
-import { setup, teardown, Character } from './helpers';
+import { setup, teardown, Character, MyDatabase } from './helpers';
 import {
 	render,
 	screen,
 	waitForDomChange,
 	fireEvent,
 } from '@testing-library/react';
-import { RxDatabase } from 'rxdb';
 import useRxDocument from '../src/useRxDocument';
 import Provider from '../src/Provider';
 import { characters } from './mockData';
 
 describe('useRxDocument', () => {
-	let db: RxDatabase;
+	let db: MyDatabase;
 
 	beforeAll(async done => {
 		db = await setup(characters, 'characters');
