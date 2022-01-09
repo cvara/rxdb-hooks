@@ -1,11 +1,7 @@
 # rxdb-hooks
 
-<a href="https://www.npmjs.com/package/rxdb-hooks">
-  <img src="https://badge.fury.io/js/rxdb-hooks.svg" alt="npm version">
-</a>
-
-<a href="https://travis-ci.com/cvara/rxdb-hooks">
-  <img src="https://travis-ci.com/cvara/rxdb-hooks.svg?branch=master" />
+<a href="https://circleci.com/gh/cvara/rxdb-hooks/tree/master">
+  <img src="https://circleci.com/gh/cvara/rxdb-hooks/tree/master.svg?style=shield" />
 </a>
 
 <a href="https://codecov.io/gh/cvara/rxdb-hooks">
@@ -13,9 +9,12 @@
 </a>
 
 <a href="https://www.npmjs.com/package/rxdb-hooks">
-  <img src="https://img.shields.io/npm/dm/rxdb-hooks.svg" alt="downloads">
+  <img src="https://badge.fury.io/js/rxdb-hooks.svg" alt="npm version">
 </a>
 
+<a href="https://www.npmjs.com/package/rxdb-hooks">
+  <img src="https://img.shields.io/npm/dm/rxdb-hooks.svg" alt="downloads">
+</a>
 
 ## Table of Contents
 
