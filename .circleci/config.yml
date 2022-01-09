@@ -7,6 +7,8 @@ orbs:
   # Orbs reduce the amount of configuration required for common tasks.
   # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/node
   node: circleci/node@4.7
+  # Third party orb. Needs to be enabled via circle-ci: an organization admin must opt-in to
+  # using third party orbs in Organization Security settings.
   codecov: codecov/codecov@1.0.2
 
 jobs:
