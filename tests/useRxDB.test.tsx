@@ -1,6 +1,6 @@
 const fake = jest.fn();
 jest.mock('react', () => ({
-	...jest.requireActual('react'),
+	...(jest.requireActual('react') as any),
 	useContext: fake,
 }));
 

@@ -15,15 +15,25 @@ import { addPouchPlugin, getRxStoragePouch } from 'rxdb/plugins/pouchdb';
  */
 addPouchPlugin(memoryAdapter);
 
-export interface Character {
+// Mimic typings used in official RxDB docs:
+// https://rxdb.info/tutorials/typescript.html
+export type Character = {
 	id: string;
 	name: string;
 	affiliation: string;
 	age: number;
-}
+};
 
-export const createDatabase = async (): Promise<RxDatabase> => {
-	const db = await createRxDatabase({
+export type CharacterCollection = RxCollection<Character>;
+
+export type MyDatabaseCollections = {
+	characters: CharacterCollection;
+};
+
+export type MyDatabase = RxDatabase<MyDatabaseCollections>;
+
+export const createDatabase = async (): Promise<MyDatabase> => {
+	const db: MyDatabase = await createRxDatabase({
 		name: 'test_database',
 		storage: getRxStoragePouch('memory'),
 		ignoreDuplicate: true,
@@ -32,7 +42,7 @@ export const createDatabase = async (): Promise<RxDatabase> => {
 };
 
 export const setupCollection = async (
-	db: RxDatabase,
+	db: MyDatabase,
 	documents: Character[],
 	collectionName = 'test_collection'
 ): Promise<RxCollection> => {
@@ -68,13 +78,13 @@ export const setupCollection = async (
 export const setup = async (
 	documents: Character[],
 	collectionName = 'test_collection'
-): Promise<RxDatabase> => {
+): Promise<MyDatabase> => {
 	const db = await createDatabase();
 	await setupCollection(db, documents, collectionName);
 	return db;
 };
 
-export const teardown = async (db: RxDatabase): Promise<void> => {
+export const teardown = async (db: MyDatabase): Promise<void> => {
 	if (isRxDatabase(db)) {
 		db.remove();
 	}
