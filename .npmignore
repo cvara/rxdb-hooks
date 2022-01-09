@@ -11,3 +11,4 @@ yarn.lock
 tests/
 bin/
 .env
+.circleci/
