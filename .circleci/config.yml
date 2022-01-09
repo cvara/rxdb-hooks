@@ -9,7 +9,7 @@ orbs:
   node: circleci/node@4.7
   # Third party orb. Needs to be enabled via circle-ci: an organization admin must opt-in to
   # using third party orbs in Organization Security settings.
-  codecov: codecov/codecov@1.0.2
+  codecov: codecov/codecov@3.2.2
 
 jobs:
   # Below is the definition of your job to build and test your app, you can rename and customize it as you want.
