@@ -54,12 +54,7 @@ function useRxDocument<T>(
 	 */
 	const queryConstructor = useCallback(
 		(c: RxCollection<T>) =>
-			id
-				? c
-						.findOne()
-						.where(preferredIdAttribute)
-						.equals(id)
-				: undefined,
+			id ? c.findOne().where(preferredIdAttribute).equals(id) : undefined,
 		[id, preferredIdAttribute]
 	);
 

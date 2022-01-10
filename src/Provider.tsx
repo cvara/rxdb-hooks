@@ -18,7 +18,7 @@ const Provider = <C extends unknown>({
 	}, []);
 	const context = useMemo(
 		() => ({
-			db: (db as unknown) as RxDatabaseBaseExtended,
+			db: db as unknown as RxDatabaseBaseExtended,
 			idAttribute,
 		}),
 		[db, idAttribute]
