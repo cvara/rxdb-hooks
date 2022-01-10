@@ -172,7 +172,7 @@ Please use the appropriate version of rxdb-hooks as per this table:
 
 | rxdb-hooks version | targeted RxDB version |
 | ------------------ | --------------------- |
-| `4.x`              | `10.x`                |
+| `4.x`              | `10.x`, `11.x`        |
 | `3.x`              | `9.x`                 |
 | `1.x`, `2.x`       | `8.x`                 |
 

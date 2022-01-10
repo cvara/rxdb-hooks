@@ -8,7 +8,14 @@
 	"author": "Christoforos Varakliotis <c.varakliotis@gmail.com>",
 	"license": "MIT",
 	"private": false,
-	"keywords": ["rxdb", "react", "hooks", "react-rxdb", "use-rxdb", "react-hooks"],
+	"keywords": [
+		"rxdb",
+		"react",
+		"hooks",
+		"react-rxdb",
+		"use-rxdb",
+		"react-hooks"
+	],
 	"scripts": {
 		"prettier": "prettier --write \"src/**/*.{js,ts,jsx,tsx}\"",
 		"lint": "eslint \"src/**/*.{js,ts,jsx,tsx}\" --ignore-path .gitignore",
@@ -45,10 +52,10 @@
 		"react-dom": "^16.13.0",
 		"react-test-renderer": "^16.13.0",
 		"rimraf": "^3.0.2",
-		"rxdb": "^10.3.0",
+		"rxdb": "^11.1.0",
 		"shelljs": "^0.8.4",
 		"ts-jest": "^26.0.0",
-		"typescript": "^3.8.3"
+		"typescript": "^4.5.4"
 	},
 	"peerDependencies": {
 		"react": ">=16.8",
