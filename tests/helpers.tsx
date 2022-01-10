@@ -175,3 +175,8 @@ export const sortByNameDesc = (a: Character, b: Character): number => {
 	}
 	return 0;
 };
+
+export const delay = (ms: number): Promise<void> =>
+	new Promise(resolve => {
+		setTimeout(resolve, ms);
+	});

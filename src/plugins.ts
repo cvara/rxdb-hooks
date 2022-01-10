@@ -23,7 +23,7 @@ export const observeNewCollections: RxPlugin = {
 			proto.newCollections$ = newCollections$;
 
 			const orig = proto.addCollections;
-			proto.addCollections = async function(...args) {
+			proto.addCollections = async function (...args) {
 				const col = await orig.apply(this, args);
 				newCollections$.next(col);
 				return col;

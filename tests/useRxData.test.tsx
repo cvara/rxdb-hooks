@@ -7,13 +7,9 @@ import {
 	createDatabase,
 	setupCollection,
 	MyDatabase,
+	delay,
 } from './helpers';
-import {
-	render,
-	screen,
-	waitForDomChange,
-	fireEvent,
-} from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { RxCollection } from 'rxdb';
 import useRxData from '../src/useRxData';
 import Provider from '../src/Provider';
@@ -77,38 +73,42 @@ describe('useRxData', () => {
 		expect(screen.queryByText('isExhausted')).not.toBeInTheDocument();
 
 		// wait for data
-		await waitForDomChange();
+		await waitFor(async () => {
+			// data should now be rendered
+			characters.forEach(doc => {
+				expect(screen.queryByText(doc.name)).toBeInTheDocument();
+			});
 
-		// data should now be rendered
-		characters.forEach(doc => {
-			expect(screen.queryByText(doc.name)).toBeInTheDocument();
+			// should be exhausted (we fetched everything in one go)
+			expect(screen.getByText('isExhausted')).toBeInTheDocument();
+			// result should be an array of RxDocuments
+			expect(screen.getByText('RxDocument')).toBeInTheDocument();
 		});
 
-		// should be exhausted (we fetched everything in one go)
-		expect(screen.getByText('isExhausted')).toBeInTheDocument();
-		// result should be an array of RxDocuments
-		expect(screen.getByText('RxDocument')).toBeInTheDocument();
-
-		// attempt to reset list
-		fireEvent(
-			screen.getByText('reset'),
-			new MouseEvent('click', {
-				bubbles: true,
-				cancelable: true,
-			})
-		);
+		act(() => {
+			// attempt to reset list
+			fireEvent(
+				screen.getByText('reset'),
+				new MouseEvent('click', {
+					bubbles: true,
+					cancelable: true,
+				})
+			);
+		});
 
 		// noop: cannot reset when not on infinite-scroll pagination
 		expect(screen.queryByText('loading')).not.toBeInTheDocument();
 
-		// attempt to fetch page 2
-		fireEvent(
-			screen.getByText('fetch page 2'),
-			new MouseEvent('click', {
-				bubbles: true,
-				cancelable: true,
-			})
-		);
+		act(() => {
+			// attempt to fetch page 2
+			fireEvent(
+				screen.getByText('fetch page 2'),
+				new MouseEvent('click', {
+					bubbles: true,
+					cancelable: true,
+				})
+			);
+		});
 
 		// noop: not in traditional pagination
 		expect(screen.queryByText('loading')).not.toBeInTheDocument();
@@ -150,17 +150,17 @@ describe('useRxData', () => {
 		expect(screen.queryByText('isExhausted')).not.toBeInTheDocument();
 
 		// wait for data
-		await waitForDomChange();
+		await waitFor(async () => {
+			// data should now be rendered
+			characters.forEach(doc => {
+				expect(screen.queryByText(doc.name)).toBeInTheDocument();
+			});
 
-		// data should now be rendered
-		characters.forEach(doc => {
-			expect(screen.queryByText(doc.name)).toBeInTheDocument();
+			// should be isExhausted (no limit defined)
+			expect(screen.getByText('isExhausted')).toBeInTheDocument();
+			// result should be an array of plain objects
+			expect(screen.getByText('JSON')).toBeInTheDocument();
 		});
-
-		// should be isExhausted (no limit defined)
-		expect(screen.getByText('isExhausted')).toBeInTheDocument();
-		// result should be an array of plain objects
-		expect(screen.getByText('JSON')).toBeInTheDocument();
 
 		done();
 	});
@@ -208,28 +208,30 @@ describe('useRxData', () => {
 		expect(screen.getByText('current page: 1')).toBeInTheDocument();
 
 		// wait for data
-		await waitForDomChange();
+		await waitFor(async () => {
+			// first page data should now be rendered
+			characters.slice(0, pageSize).forEach(doc => {
+				expect(screen.getByText(doc.name)).toBeInTheDocument();
+			});
+			// rest data should not be rendered
+			characters.slice(pageSize).forEach(doc => {
+				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
+			});
 
-		// first page data should now be rendered
-		characters.slice(0, pageSize).forEach(doc => {
-			expect(screen.getByText(doc.name)).toBeInTheDocument();
+			// more data are present
+			expect(screen.queryByText('isExhausted')).not.toBeInTheDocument();
 		});
-		// rest data should not be rendered
-		characters.slice(pageSize).forEach(doc => {
-			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
+
+		act(() => {
+			// trigger fetching of another page
+			fireEvent(
+				screen.getByText('more'),
+				new MouseEvent('click', {
+					bubbles: true,
+					cancelable: true,
+				})
+			);
 		});
-
-		// more data are present
-		expect(screen.queryByText('isExhausted')).not.toBeInTheDocument();
-
-		// trigger fetching of another page
-		fireEvent(
-			screen.getByText('more'),
-			new MouseEvent('click', {
-				bubbles: true,
-				cancelable: true,
-			})
-		);
 
 		// should be loading
 		expect(screen.getByText('loading')).toBeInTheDocument();
@@ -237,21 +239,23 @@ describe('useRxData', () => {
 		expect(screen.getByText('current page: 2')).toBeInTheDocument();
 
 		// wait for next page data to be rendered
-		await waitForDomChange();
-
-		// next page should be rendered now
-		characters.slice(pageSize, pageSize).forEach(doc => {
-			expect(screen.getByText(doc.name)).toBeInTheDocument();
+		await waitFor(async () => {
+			// next page should be rendered now
+			characters.slice(pageSize, 2 * pageSize).forEach(doc => {
+				expect(screen.getByText(doc.name)).toBeInTheDocument();
+			});
 		});
 
-		// fetch last page
-		fireEvent(
-			screen.getByText('more'),
-			new MouseEvent('click', {
-				bubbles: true,
-				cancelable: true,
-			})
-		);
+		act(() => {
+			// fetch last page
+			fireEvent(
+				screen.getByText('more'),
+				new MouseEvent('click', {
+					bubbles: true,
+					cancelable: true,
+				})
+			);
+		});
 
 		// should be loading
 		expect(screen.getByText('loading')).toBeInTheDocument();
@@ -259,24 +263,26 @@ describe('useRxData', () => {
 		expect(screen.getByText('current page: 3')).toBeInTheDocument();
 
 		// wait for last page data to be rendered
-		await waitForDomChange();
+		await waitFor(async () => {
+			// last page should be rendered now
+			characters.slice(2 * pageSize, 3 * pageSize).forEach(doc => {
+				expect(screen.getByText(doc.name)).toBeInTheDocument();
+			});
 
-		// last page should be rendered now
-		characters.slice(2 * pageSize, pageSize).forEach(doc => {
-			expect(screen.getByText(doc.name)).toBeInTheDocument();
+			// we fetched everything
+			expect(screen.getByText('isExhausted')).toBeInTheDocument();
 		});
 
-		// we fetched everything
-		expect(screen.getByText('isExhausted')).toBeInTheDocument();
-
-		// try to fetch more
-		fireEvent(
-			screen.getByText('more'),
-			new MouseEvent('click', {
-				bubbles: true,
-				cancelable: true,
-			})
-		);
+		act(() => {
+			// try to fetch more
+			fireEvent(
+				screen.getByText('more'),
+				new MouseEvent('click', {
+					bubbles: true,
+					cancelable: true,
+				})
+			);
+		});
 
 		// should not be loading & should remain on same page:
 		// there is nothing more to fetch
@@ -284,39 +290,43 @@ describe('useRxData', () => {
 		expect(screen.getByText('current page: 3')).toBeInTheDocument();
 
 		// last page should still be rendered
-		characters.slice(2 * pageSize, pageSize).forEach(doc => {
+		characters.slice(2 * pageSize, 3 * pageSize).forEach(doc => {
 			expect(screen.getByText(doc.name)).toBeInTheDocument();
 		});
 
-		// trigger a reset
-		fireEvent(
-			screen.getByText('reset'),
-			new MouseEvent('click', {
-				bubbles: true,
-				cancelable: true,
-			})
-		);
+		act(() => {
+			// trigger a reset
+			fireEvent(
+				screen.getByText('reset'),
+				new MouseEvent('click', {
+					bubbles: true,
+					cancelable: true,
+				})
+			);
+		});
 
 		expect(screen.getByText('current page: 1')).toBeInTheDocument();
 
-		await waitForDomChange();
-
-		// now only first page data should be rendered
-		characters.slice(0, pageSize).forEach(doc => {
-			expect(screen.getByText(doc.name)).toBeInTheDocument();
+		await waitFor(async () => {
+			// now only first page data should be rendered
+			characters.slice(0, pageSize).forEach(doc => {
+				expect(screen.getByText(doc.name)).toBeInTheDocument();
+			});
+			characters.slice(pageSize).forEach(doc => {
+				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
+			});
 		});
-		characters.slice(pageSize).forEach(doc => {
-			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
-		});
 
-		// try to reset again
-		fireEvent(
-			screen.getByText('reset'),
-			new MouseEvent('click', {
-				bubbles: true,
-				cancelable: true,
-			})
-		);
+		act(() => {
+			// try to reset again
+			fireEvent(
+				screen.getByText('reset'),
+				new MouseEvent('click', {
+					bubbles: true,
+					cancelable: true,
+				})
+			);
+		});
 
 		// should be a noop: already on page 1, no point in resetting
 		expect(screen.queryByText('loading')).not.toBeInTheDocument();
@@ -393,31 +403,33 @@ describe('useRxData', () => {
 		expect(screen.getByText('loading')).toBeInTheDocument();
 
 		// wait for data
-		await waitForDomChange();
+		await waitFor(async () => {
+			// should not be in exhausted state
+			expect(screen.queryByText('isExhausted')).not.toBeInTheDocument();
 
-		// should not be in exhausted state
-		expect(screen.queryByText('isExhausted')).not.toBeInTheDocument();
+			// selected page data should now be rendered
+			characters.slice(0, pageSize).forEach(doc => {
+				expect(screen.getByText(doc.name)).toBeInTheDocument();
+			});
+			// rest data should not be rendered
+			characters.slice(pageSize).forEach(doc => {
+				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
+			});
 
-		// selected page data should now be rendered
-		characters.slice(0, pageSize).forEach(doc => {
-			expect(screen.getByText(doc.name)).toBeInTheDocument();
+			// expect page count to be correctly computed
+			expect(screen.getByText('page count: 3')).toBeInTheDocument();
 		});
-		// rest data should not be rendered
-		characters.slice(pageSize).forEach(doc => {
-			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
+
+		act(() => {
+			// trigger fetching of previous page
+			fireEvent(
+				screen.getByText('next page'),
+				new MouseEvent('click', {
+					bubbles: true,
+					cancelable: true,
+				})
+			);
 		});
-
-		// expect page count to be correctly computed
-		expect(screen.getByText('page count: 3')).toBeInTheDocument();
-
-		// trigger fetching of previous page
-		fireEvent(
-			screen.getByText('next page'),
-			new MouseEvent('click', {
-				bubbles: true,
-				cancelable: true,
-			})
-		);
 
 		// should be loading
 		expect(screen.getByText('loading')).toBeInTheDocument();
@@ -426,37 +438,39 @@ describe('useRxData', () => {
 		expect(screen.queryByText('isExhausted')).not.toBeInTheDocument();
 
 		// wait for next page data to be rendered
-		await waitForDomChange();
+		await waitFor(async () => {
+			// next page data should now be rendered
+			characters.slice(pageSize, 2 * pageSize).forEach(doc => {
+				expect(screen.getByText(doc.name)).toBeInTheDocument();
+			});
+			// rest data should not be rendered
+			[
+				...characters.slice(0, pageSize),
+				...characters.slice(2 * pageSize),
+			].forEach(doc => {
+				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
+			});
 
-		// next page data should now be rendered
-		characters.slice(pageSize, pageSize).forEach(doc => {
-			expect(screen.getByText(doc.name)).toBeInTheDocument();
+			// expect page count to be unaffected
+			expect(screen.getByText('page count: 3')).toBeInTheDocument();
 		});
-		// rest data should not be rendered
-		[
-			...characters.slice(0, pageSize),
-			...characters.slice(2 * pageSize),
-		].forEach(doc => {
-			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
+
+		act(() => {
+			// request a wrong page
+			fireEvent(
+				screen.getByText('wrong page'),
+				new MouseEvent('click', {
+					bubbles: true,
+					cancelable: true,
+				})
+			);
 		});
-
-		// expect page count to be unaffected
-		expect(screen.getByText('page count: 3')).toBeInTheDocument();
-
-		// request a wrong page
-		fireEvent(
-			screen.getByText('wrong page'),
-			new MouseEvent('click', {
-				bubbles: true,
-				cancelable: true,
-			})
-		);
 
 		// should be a noop since we requested a page that doesn't does not exist:
 		// should not be loading
 		expect(screen.queryByText('loading')).not.toBeInTheDocument();
 		// same data should now be rendered
-		characters.slice(pageSize, pageSize).forEach(doc => {
+		characters.slice(pageSize, 2 * pageSize).forEach(doc => {
 			expect(screen.getByText(doc.name)).toBeInTheDocument();
 		});
 		[
@@ -467,13 +481,15 @@ describe('useRxData', () => {
 		});
 
 		// wrongly request more
-		fireEvent(
-			screen.getByText('more'),
-			new MouseEvent('click', {
-				bubbles: true,
-				cancelable: true,
-			})
-		);
+		act(() => {
+			fireEvent(
+				screen.getByText('more'),
+				new MouseEvent('click', {
+					bubbles: true,
+					cancelable: true,
+				})
+			);
+		});
 
 		// should be a noop when not in infinite scroll pagination:
 		// should not be loading and should remain on same page
@@ -509,20 +525,23 @@ describe('useRxData', () => {
 				/>
 			);
 		};
+
 		render(
 			<Provider db={db}>
 				<Child />
 			</Provider>
 		);
 
-		await waitForDomChange();
-
-		characters.forEach(doc => {
-			if (doc.id === idToSearchFor) {
-				expect(screen.getByText(doc.name)).toBeInTheDocument();
-			} else {
-				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
-			}
+		await waitFor(async () => {
+			characters.forEach(doc => {
+				if (doc.id === idToSearchFor) {
+					expect(screen.getByText(doc.name)).toBeInTheDocument();
+				} else {
+					expect(
+						screen.queryByText(doc.name)
+					).not.toBeInTheDocument();
+				}
+			});
 		});
 
 		done();
@@ -555,11 +574,8 @@ describe('useRxData', () => {
 
 		// dom should remain in loading state
 		expect(screen.getByText('loading')).toBeInTheDocument();
-		try {
-			await waitForDomChange({ timeout: 100 });
-		} catch (err) {
-			expect(screen.getByText('loading')).toBeInTheDocument();
-		}
+		await delay(20);
+		expect(screen.getByText('loading')).toBeInTheDocument();
 
 		done();
 	});
@@ -593,11 +609,8 @@ describe('useRxData', () => {
 
 		// dom should remain in loading state
 		expect(screen.getByText('loading')).toBeInTheDocument();
-		try {
-			await waitForDomChange({ timeout: 100 });
-		} catch (err) {
-			expect(screen.getByText('loading')).toBeInTheDocument();
-		}
+		await delay(20);
+		expect(screen.getByText('loading')).toBeInTheDocument();
 
 		done();
 	});
@@ -631,11 +644,8 @@ describe('useRxData', () => {
 
 		// dom should remain in loading state
 		expect(screen.getByText('loading')).toBeInTheDocument();
-		try {
-			await waitForDomChange({ timeout: 100 });
-		} catch (err) {
-			expect(screen.getByText('loading')).toBeInTheDocument();
-		}
+		await delay(20);
+		expect(screen.getByText('loading')).toBeInTheDocument();
 
 		done();
 	});
@@ -688,46 +698,50 @@ describe('useRxData', () => {
 		expect(screen.queryByText('isExhausted')).not.toBeInTheDocument();
 
 		// wait for data
-		await waitForDomChange();
+		await waitFor(async () => {
+			// should have stopped loading
+			expect(screen.queryByText('loading')).not.toBeInTheDocument();
 
-		// should have stopped loading
-		expect(screen.queryByText('loading')).not.toBeInTheDocument();
+			// data should now be rendered
+			characters.forEach(doc => {
+				expect(screen.queryByText(doc.name)).toBeInTheDocument();
+			});
 
-		// data should now be rendered
-		characters.forEach(doc => {
-			expect(screen.queryByText(doc.name)).toBeInTheDocument();
+			// should be isExhausted (no limit defined)
+			expect(screen.getByText('isExhausted')).toBeInTheDocument();
+			// result should be an array of RxDocuments
+			expect(screen.getByText('RxDocument')).toBeInTheDocument();
 		});
 
-		// should be isExhausted (no limit defined)
-		expect(screen.getByText('isExhausted')).toBeInTheDocument();
-		// result should be an array of RxDocuments
-		expect(screen.getByText('RxDocument')).toBeInTheDocument();
-
-		// trigger query change
-		fireEvent(
-			screen.getByText('search for Yoda'),
-			new MouseEvent('click', {
-				bubbles: true,
-				cancelable: true,
-			})
-		);
+		act(() => {
+			// trigger query change
+			fireEvent(
+				screen.getByText('search for Yoda'),
+				new MouseEvent('click', {
+					bubbles: true,
+					cancelable: true,
+				})
+			);
+		});
 
 		// should start loading again
 		expect(screen.queryByText('loading')).toBeInTheDocument();
 
 		// wait for Yoda
-		await waitForDomChange();
+		await waitFor(async () => {
+			// new data fetched, loading should have stopped
+			expect(screen.queryByText('loading')).not.toBeInTheDocument();
 
-		// new data fetched, loading should have stopped
-		expect(screen.queryByText('loading')).not.toBeInTheDocument();
-
-		// just making sure the correct data are fetched
-		expect(screen.getByText('Yoda')).toBeInTheDocument();
-		characters
-			.filter(doc => doc.name !== 'Yoda')
-			.forEach(doc => {
-				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
-			});
+			// just making sure the correct data are fetched
+			expect(screen.getByText('Yoda')).toBeInTheDocument();
+			characters
+				.filter(doc => doc.name !== 'Yoda')
+				.forEach(doc => {
+					expect(
+						screen.queryByText(doc.name)
+					).not.toBeInTheDocument();
+				});
+		});
 
 		done();
 	});
@@ -788,11 +802,11 @@ describe('useRxData + lazy collection init', () => {
 		});
 
 		// wait for data
-		await waitForDomChange();
-
-		// data should now be rendered
-		characters.forEach(doc => {
-			expect(screen.queryByText(doc.name)).toBeInTheDocument();
+		await waitFor(async () => {
+			// data should now be rendered
+			characters.forEach(doc => {
+				expect(screen.queryByText(doc.name)).toBeInTheDocument();
+			});
 		});
 
 		done();
@@ -845,16 +859,16 @@ describe('useRxData + lazy collection init', () => {
 		});
 
 		// wait for data
-		await waitForDomChange();
+		await waitFor(async () => {
+			// data should now be rendered
+			characters.forEach(doc => {
+				expect(screen.queryByText(doc.name)).toBeInTheDocument();
+			});
 
-		// data should now be rendered
-		characters.forEach(doc => {
-			expect(screen.queryByText(doc.name)).toBeInTheDocument();
-		});
-
-		// initial (now deleted) wrong characters data should not be rendered
-		wrongCharacters.forEach(doc => {
-			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
+			// initial (now deleted) wrong characters data should not be rendered
+			wrongCharacters.forEach(doc => {
+				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
+			});
 		});
 
 		done();

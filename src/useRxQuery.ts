@@ -291,10 +291,10 @@ function useRxQuery<T>(
 			type: ActionType.QueryChanged,
 		});
 
-		const sub = _query.$.subscribe(result => {
+		const sub = _query.$.subscribe((result) => {
 			const resultArray = getResultArray(result);
 			const docs = json
-				? resultArray.map(doc => doc.toJSON())
+				? resultArray.map((doc) => doc.toJSON())
 				: resultArray;
 			dispatch({
 				type: ActionType.FetchSuccess,
@@ -315,7 +315,7 @@ function useRxQuery<T>(
 		}
 		// Unconvential counting of documents/pages due to missing RxQuery.count():
 		// https://github.com/pubkey/rxdb/blob/master/orga/BACKLOG.md#rxquerycount
-		const countQuerySub = query.$.subscribe(result => {
+		const countQuerySub = query.$.subscribe((result) => {
 			const docs = getResultArray(result);
 			dispatch({
 				type: ActionType.CountPages,
