@@ -1,14 +1,10 @@
 import React, { FC, useState } from 'react';
 import { setup, teardown, Character, MyDatabase } from './helpers';
-import {
-	render,
-	screen,
-	waitForDomChange,
-	fireEvent,
-} from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import useRxDocument from '../src/useRxDocument';
 import Provider from '../src/Provider';
 import { characters } from './mockData';
+import { act } from 'react-test-renderer';
 
 describe('useRxDocument', () => {
 	let db: MyDatabase;
@@ -43,10 +39,10 @@ describe('useRxDocument', () => {
 		expect(screen.getByText('loading')).toBeInTheDocument();
 
 		// wait for data
-		await waitForDomChange();
-
-		expect(screen.queryByText('Obi-Wan Kenobi')).toBeInTheDocument();
-		expect(screen.getByText('RxDocument')).toBeInTheDocument();
+		await waitFor(() => {
+			expect(screen.queryByText('Obi-Wan Kenobi')).toBeInTheDocument();
+			expect(screen.getByText('RxDocument')).toBeInTheDocument();
+		});
 
 		done();
 	});
@@ -72,10 +68,10 @@ describe('useRxDocument', () => {
 		expect(screen.getByText('loading')).toBeInTheDocument();
 
 		// wait for data
-		await waitForDomChange();
-
-		expect(screen.queryByText('Obi-Wan Kenobi')).toBeInTheDocument();
-		expect(screen.getByText('JSON')).toBeInTheDocument();
+		await waitFor(() => {
+			expect(screen.queryByText('Obi-Wan Kenobi')).toBeInTheDocument();
+			expect(screen.getByText('JSON')).toBeInTheDocument();
+		});
 
 		done();
 	});
@@ -112,20 +108,22 @@ describe('useRxDocument', () => {
 		expect(screen.queryByText('Obi-Wan Kenobi')).not.toBeInTheDocument();
 
 		// emulate lazy evaluation of id
-		fireEvent(
-			screen.getByText('setId'),
-			new MouseEvent('click', {
-				bubbles: true,
-				cancelable: true,
-			})
-		);
+		act(() => {
+			fireEvent(
+				screen.getByText('setId'),
+				new MouseEvent('click', {
+					bubbles: true,
+					cancelable: true,
+				})
+			);
+		});
 
 		// wait for data
-		await waitForDomChange();
-
-		// should exit loading state & data should be rendered
-		expect(screen.queryByText('loading')).not.toBeInTheDocument();
-		expect(screen.getByText('Obi-Wan Kenobi')).toBeInTheDocument();
+		await waitFor(() => {
+			// should exit loading state & data should be rendered
+			expect(screen.queryByText('loading')).not.toBeInTheDocument();
+			expect(screen.getByText('Obi-Wan Kenobi')).toBeInTheDocument();
+		});
 
 		done();
 	});
@@ -150,9 +148,9 @@ describe('useRxDocument', () => {
 		expect(screen.getByText('loading')).toBeInTheDocument();
 
 		// wait for data
-		await waitForDomChange();
-
-		expect(screen.queryByText('Yoda')).toBeInTheDocument();
+		await waitFor(() => {
+			expect(screen.queryByText('Yoda')).toBeInTheDocument();
+		});
 
 		done();
 	});
@@ -178,9 +176,9 @@ describe('useRxDocument', () => {
 		expect(screen.getByText('loading')).toBeInTheDocument();
 
 		// wait for data
-		await waitForDomChange();
-
-		expect(screen.queryByText('Yoda')).toBeInTheDocument();
+		await waitFor(() => {
+			expect(screen.queryByText('Yoda')).toBeInTheDocument();
+		});
 
 		done();
 	});
@@ -206,10 +204,10 @@ describe('useRxDocument', () => {
 		expect(screen.getByText('loading')).toBeInTheDocument();
 
 		// wait for data
-		await waitForDomChange();
-
-		expect(screen.queryByText('loading')).not.toBeInTheDocument();
-		expect(screen.queryByText('Mace Windu')).not.toBeInTheDocument();
+		await waitFor(() => {
+			expect(screen.queryByText('loading')).not.toBeInTheDocument();
+			expect(screen.queryByText('Mace Windu')).not.toBeInTheDocument();
+		});
 
 		done();
 	});
@@ -235,9 +233,9 @@ describe('useRxDocument', () => {
 		expect(screen.getByText('loading')).toBeInTheDocument();
 
 		// wait for data
-		await waitForDomChange();
-
-		expect(screen.queryByText('Yoda')).toBeInTheDocument();
+		await waitFor(() => {
+			expect(screen.queryByText('Yoda')).toBeInTheDocument();
+		});
 
 		done();
 	});
@@ -273,18 +271,20 @@ describe('useRxDocument', () => {
 		expect(screen.getByText('loading')).toBeInTheDocument();
 
 		// trigger db init
-		fireEvent(
-			screen.getByText('init'),
-			new MouseEvent('click', {
-				bubbles: true,
-				cancelable: true,
-			})
-		);
+		act(() => {
+			fireEvent(
+				screen.getByText('init'),
+				new MouseEvent('click', {
+					bubbles: true,
+					cancelable: true,
+				})
+			);
+		});
 
 		// wait for data
-		await waitForDomChange();
-
-		expect(screen.queryByText('Obi-Wan Kenobi')).toBeInTheDocument();
+		await waitFor(() => {
+			expect(screen.queryByText('Obi-Wan Kenobi')).toBeInTheDocument();
+		});
 
 		done();
 	});

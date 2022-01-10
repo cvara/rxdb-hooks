@@ -6,7 +6,7 @@ import {
 	Character,
 	MyDatabase,
 } from './helpers';
-import { render, screen, waitForDomChange } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import useRxQuery from '../src/useRxQuery';
 import Provider from '../src/Provider';
 import { characters } from './mockData';
@@ -59,17 +59,17 @@ describe('useRxQuery', () => {
 		expect(screen.queryByText('isExhausted')).not.toBeInTheDocument();
 
 		// wait for data
-		await waitForDomChange();
+		await waitFor(() => {
+			// data should now be rendered
+			characters.forEach(doc => {
+				expect(screen.queryByText(doc.name)).toBeInTheDocument();
+			});
 
-		// data should now be rendered
-		characters.forEach(doc => {
-			expect(screen.queryByText(doc.name)).toBeInTheDocument();
+			// should be exhausted (we fetched everything in one go)
+			expect(screen.getByText('isExhausted')).toBeInTheDocument();
+			// result should be an array of RxDocuments
+			expect(screen.getByText('RxDocument')).toBeInTheDocument();
 		});
-
-		// should be exhausted (we fetched everything in one go)
-		expect(screen.getByText('isExhausted')).toBeInTheDocument();
-		// result should be an array of RxDocuments
-		expect(screen.getByText('RxDocument')).toBeInTheDocument();
 
 		done();
 	});
