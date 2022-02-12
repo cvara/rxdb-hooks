@@ -88,6 +88,17 @@ export interface UseRxQueryOptions {
 	json?: boolean;
 }
 
+/**
+ * Most query functions on RxCollection return RxQuery objects with
+ * BehaviorSubject instances ($) attached to them except for .findByIds()
+ * which returns a promise.
+ */
+export type ObservableReturningQuery<T> =
+	| RxQuery<T, RxDocument<T>>
+	| RxQuery<T, RxDocument<T>[]>;
+export type PromiseReturning<T> = Promise<Map<string, RxDocument<T, any>>>;
+export type AnyRxQuery<T> = ObservableReturningQuery<T> | PromiseReturning<T>;
+
 interface RxState<T> {
 	result: DeepReadonly<T>[] | RxDocument<T>[];
 	isFetching: boolean;
@@ -202,15 +213,15 @@ const getResultArray = <T>(
 	return [result];
 };
 
-function useRxQuery<T>(query: RxQuery): RxQueryResultDoc<T>;
+function useRxQuery<T>(query: AnyRxQuery<T>): RxQueryResultDoc<T>;
 
 function useRxQuery<T>(
-	query: RxQuery,
+	query: AnyRxQuery<T>,
 	options?: Override<UseRxQueryOptions, { json?: false }>
 ): RxQueryResultDoc<T>;
 
 function useRxQuery<T>(
-	query: RxQuery,
+	query: AnyRxQuery<T>,
 	options?: Override<UseRxQueryOptions, { json: true }>
 ): RxQueryResultJSON<T>;
 
@@ -221,7 +232,7 @@ function useRxQuery<T>(
  *  - a resetList callback function for conveniently reseting list data
  */
 function useRxQuery<T>(
-	query: RxQuery<RxDocument<T>>,
+	query: AnyRxQuery<T>,
 	options: UseRxQueryOptions = {}
 ): RxQueryResult<T> {
 	const { pageSize, pagination = 'Infinite', json } = options;
