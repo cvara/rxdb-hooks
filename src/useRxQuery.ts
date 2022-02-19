@@ -3,11 +3,14 @@ import { RxQuery, RxDocument, isRxQuery } from 'rxdb';
 import { Override } from './type.helpers';
 import { DeepReadonly } from 'rxdb/dist/types/types';
 
-export interface RxQueryResult<T> {
+export type ResultMap<T> = Map<string, RxDocument<T, any>>;
+export type AnyQueryResult<T> = DeepReadonly<T>[] | RxDocument<T>[];
+
+export type RxQueryResult<T> = {
 	/**
 	 * Resulting documents.
 	 */
-	result: DeepReadonly<T>[] | RxDocument<T>[];
+	result: AnyQueryResult<T>;
 
 	/**
 	 * Indicates that fetching is in progress.
@@ -49,15 +52,21 @@ export interface RxQueryResult<T> {
 	 * Relevant in "infinite scroll" pagination mode
 	 */
 	resetList: () => void;
-}
+};
 
-export interface RxQueryResultJSON<T> extends RxQueryResult<T> {
-	result: DeepReadonly<T>[];
-}
+export type RxQueryResultJSON<T> = Override<
+	RxQueryResult<T>,
+	{
+		result: DeepReadonly<T>[];
+	}
+>;
 
-export interface RxQueryResultDoc<T> extends RxQueryResult<T> {
-	result: RxDocument<T>[];
-}
+export type RxQueryResultDoc<T> = Override<
+	RxQueryResult<T>,
+	{
+		result: RxDocument<T>[];
+	}
+>;
 
 /**
  * Traditional:
@@ -96,11 +105,11 @@ export interface UseRxQueryOptions {
 export type ObservableReturningQuery<T> =
 	| RxQuery<T, RxDocument<T>>
 	| RxQuery<T, RxDocument<T>[]>;
-export type PromiseReturning<T> = Promise<Map<string, RxDocument<T, any>>>;
+export type PromiseReturning<T> = Promise<ResultMap<T>>;
 export type AnyRxQuery<T> = ObservableReturningQuery<T> | PromiseReturning<T>;
 
 interface RxState<T> {
-	result: DeepReadonly<T>[] | RxDocument<T>[];
+	result: AnyQueryResult<T>;
 	isFetching: boolean;
 	isExhausted: boolean;
 	page: number | undefined;
@@ -136,7 +145,7 @@ interface CountPagesAction {
 
 interface FetchSuccessAction<T> {
 	type: ActionType.FetchSuccess;
-	docs: RxDocument<T>[] | DeepReadonly<T>[];
+	docs: AnyQueryResult<T>;
 	pagination: PaginationMode;
 	pageSize: number;
 }
@@ -201,6 +210,7 @@ const reducer = <T>(state: RxState<T>, action: AnyAction<T>): RxState<T> => {
 	}
 };
 
+// TODO: this should also handle Map results, converting them to array
 const getResultArray = <T>(
 	result: RxDocument<T>[] | RxDocument<T> | null
 ): RxDocument<T>[] => {
@@ -283,60 +293,108 @@ function useRxQuery<T>(
 		dispatch({ type: ActionType.Reset });
 	}, [pageSize, state.page]);
 
+	const performObservableReturningQuery = useCallback(
+		(query: ObservableReturningQuery<T>) => {
+			// avoid re-assigning reference to original query
+			let _query = query;
+
+			if (pageSize && pagination === 'Traditional') {
+				_query = _query
+					.skip((state.page - 1) * pageSize)
+					.limit(pageSize);
+			}
+
+			if (pageSize && pagination === 'Infinite') {
+				_query = _query.limit(state.page * pageSize);
+			}
+
+			dispatch({
+				type: ActionType.QueryChanged,
+			});
+			// TODO: re-enable TS and fix type error
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			const sub = _query.$.subscribe((result) => {
+				const resultArray = getResultArray(result);
+				const docs = json
+					? resultArray.map((doc) => doc.toJSON())
+					: resultArray;
+				dispatch({
+					type: ActionType.FetchSuccess,
+					docs,
+					pagination,
+					pageSize,
+				});
+			});
+
+			return () => {
+				sub.unsubscribe();
+			};
+		},
+		[json, pageSize, pagination, state.page]
+	);
+
+	const performPromiseReturningQuery = useCallback(
+		(query: PromiseReturning<T>) => {
+			dispatch({
+				type: ActionType.QueryChanged,
+			});
+
+			// TODO: convert to "cancelable" promise and cancel on cleanup
+			query.then((result) => {
+				// TODO: go through same pipeline as when handling observable result
+				const resultArray = Array.from(result, ([, doc]) => {
+					return json ? doc.toJSON() : doc;
+				});
+				dispatch({
+					type: ActionType.FetchSuccess,
+					docs: resultArray,
+					pagination,
+					pageSize,
+				});
+			});
+		},
+		[json, pageSize, pagination]
+	);
+
 	useEffect(() => {
-		if (!isRxQuery(query)) {
+		if (!query) {
 			return;
 		}
-		// avoid re-assigning reference to original query
-		let _query = query;
-
-		if (pageSize && pagination === 'Traditional') {
-			_query = _query.skip((state.page - 1) * pageSize).limit(pageSize);
+		if ('then' in query) {
+			return performPromiseReturningQuery(query);
 		}
-
-		if (pageSize && pagination === 'Infinite') {
-			_query = _query.limit(state.page * pageSize);
+		if (isRxQuery(query)) {
+			return performObservableReturningQuery(query);
 		}
-
-		dispatch({
-			type: ActionType.QueryChanged,
-		});
-
-		const sub = _query.$.subscribe((result) => {
-			const resultArray = getResultArray(result);
-			const docs = json
-				? resultArray.map((doc) => doc.toJSON())
-				: resultArray;
-			dispatch({
-				type: ActionType.FetchSuccess,
-				docs,
-				pagination,
-				pageSize,
-			});
-		});
-
-		return () => {
-			sub.unsubscribe();
-		};
-	}, [query, pageSize, pagination, state.page, json]);
+	}, [query, performPromiseReturningQuery, performObservableReturningQuery]);
 
 	useEffect(() => {
-		if (!pageSize || pagination !== 'Traditional' || !isRxQuery(query)) {
+		if (!query || !pageSize || pagination !== 'Traditional') {
 			return;
 		}
-		// Unconvential counting of documents/pages due to missing RxQuery.count():
-		// https://github.com/pubkey/rxdb/blob/master/orga/BACKLOG.md#rxquerycount
-		const countQuerySub = query.$.subscribe((result) => {
-			const docs = getResultArray(result);
-			dispatch({
-				type: ActionType.CountPages,
-				pageCount: Math.ceil(docs.length / pageSize),
+		if ('then' in query) {
+			// TODO: does pagination make sense when using findByIds()?
+			return;
+		}
+		if (isRxQuery(query)) {
+			// Unconvential counting of documents/pages due to missing RxQuery.count():
+			// https://github.com/pubkey/rxdb/blob/master/orga/BACKLOG.md#rxquerycount
+			// TODO: re-enable TS and fix type error
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			const countQuerySub = query.$.subscribe((result) => {
+				const docs = getResultArray(result);
+				dispatch({
+					type: ActionType.CountPages,
+					pageCount: Math.ceil(docs.length / pageSize),
+				});
 			});
-		});
 
-		return () => {
-			countQuerySub.unsubscribe();
-		};
+			return () => {
+				countQuerySub.unsubscribe();
+			};
+		}
 	}, [query, pageSize, pagination]);
 
 	return {

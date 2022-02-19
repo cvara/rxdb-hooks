@@ -132,7 +132,9 @@ describe('useRxData', () => {
 				isFetching,
 				isExhausted,
 				resetList,
-			} = useRxData<Character>('characters', queryConstructor);
+			} = useRxData<Character>('characters', queryConstructor, {
+				json: true,
+			});
 
 			return (
 				<>
@@ -168,7 +170,7 @@ describe('useRxData', () => {
 					).not.toBeInTheDocument();
 				}
 			});
-			expect(screen.getByText('loading')).not.toBeInTheDocument();
+			expect(screen.queryByText('loading')).not.toBeInTheDocument();
 		});
 	});
 
