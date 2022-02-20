@@ -629,6 +629,51 @@ describe('useRxData', () => {
 		done();
 	});
 
+	it('should handle null result during traditional pagination', async (done) => {
+		const Child: FC = () => {
+			const queryConstructor = useCallback(
+				(c: RxCollection<Character>) =>
+					c.findOne().where('id').equals('not existing!'),
+				[]
+			);
+			const {
+				result: characters,
+				isFetching,
+				isExhausted,
+			} = useRxData<Character>('characters', queryConstructor, {
+				pageSize: 2,
+				pagination: 'Traditional',
+			});
+
+			return (
+				<CharacterList
+					characters={characters}
+					isFetching={isFetching}
+					isExhausted={isExhausted}
+				/>
+			);
+		};
+
+		render(
+			<Provider db={db}>
+				<Child />
+			</Provider>
+		);
+
+		// should render in loading state
+		expect(screen.getByText('loading')).toBeInTheDocument();
+
+		// wait for data
+		await waitFor(async () => {
+			expect(screen.queryByText('loading')).not.toBeInTheDocument();
+			characters.forEach((doc) => {
+				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
+			});
+		});
+
+		done();
+	});
+
 	it('should always convert results to array', async (done) => {
 		const idToSearchFor = '1';
 		const Child: FC = () => {
