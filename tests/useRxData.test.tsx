@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import {
 	setup,
 	teardown,
@@ -172,6 +172,78 @@ describe('useRxData', () => {
 			});
 			expect(screen.queryByText('loading')).not.toBeInTheDocument();
 		});
+	});
+
+	it('should cancel running findByIds() on unmount', async () => {
+		const queriedIds = ['1', '2'];
+		const Child: FC = () => {
+			const queryConstructor = useCallback(
+				async (c: RxCollection<Character>) => {
+					// emulate long running query
+					await delay(100);
+					return c.findByIds(queriedIds);
+				},
+				[]
+			);
+			const {
+				result: characters,
+				isFetching,
+				isExhausted,
+				resetList,
+			} = useRxData<Character>('characters', queryConstructor, {
+				json: true,
+			});
+
+			return (
+				<>
+					<CharacterList
+						characters={characters}
+						isFetching={isFetching}
+						isExhausted={isExhausted}
+						resetList={resetList}
+					/>
+				</>
+			);
+		};
+
+		// Will unmount the Child before the query has the time to complete
+		const Parent: FC = ({ children }) => {
+			const [isChildMounted, setIsChildMounted] = useState(true);
+
+			useEffect(() => {
+				setTimeout(() => {
+					act(() => {
+						setIsChildMounted(false);
+					});
+				}, 50);
+			}, []);
+
+			if (isChildMounted) {
+				return <>{children}</>;
+			}
+			return null;
+		};
+
+		render(
+			<Provider db={db}>
+				<Parent>
+					<Child />
+				</Parent>
+			</Provider>
+		);
+
+		// should render in loading state
+		expect(screen.getByText('loading')).toBeInTheDocument();
+		expect(screen.queryByText('isExhausted')).not.toBeInTheDocument();
+
+		// let parent unmount the child
+		await delay(60);
+
+		// verify that child is unmounted
+		expect(screen.queryByText('loading')).not.toBeInTheDocument();
+
+		// wait out the long-running query
+		await delay(50);
 	});
 
 	it('should return data in JSON format', async (done) => {

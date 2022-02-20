@@ -2,6 +2,7 @@ import { useEffect, useCallback, useReducer, Reducer } from 'react';
 import { RxQuery, RxDocument, isRxQuery } from 'rxdb';
 import { Override } from './type.helpers';
 import { DeepReadonly } from 'rxdb/dist/types/types';
+import { getCancelablePromise } from './helpers';
 
 export type ResultMap<T> = Map<string, RxDocument<T, any>>;
 export type AnyQueryResult<T> = DeepReadonly<T>[] | RxDocument<T>[];
@@ -350,9 +351,8 @@ function useRxQuery<T>(
 			dispatch({
 				type: ActionType.QueryChanged,
 			});
-
-			// TODO: convert to "cancelable" promise and cancel on cleanup
-			query.then((result) => {
+			const [cancelableQuery, cancel] = getCancelablePromise(query);
+			cancelableQuery.then((result) => {
 				const docs = getResultArray(result, json);
 				dispatch({
 					type: ActionType.FetchSuccess,
@@ -361,6 +361,8 @@ function useRxQuery<T>(
 					pageSize,
 				});
 			});
+			// to be used as cleanup code in useEffect
+			return cancel;
 		},
 		[json, pageSize, pagination]
 	);
