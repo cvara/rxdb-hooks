@@ -210,17 +210,31 @@ const reducer = <T>(state: RxState<T>, action: AnyAction<T>): RxState<T> => {
 	}
 };
 
-// TODO: this should also handle Map results, converting them to array
 const getResultArray = <T>(
-	result: RxDocument<T>[] | RxDocument<T> | null
-): RxDocument<T>[] => {
+	result: RxDocument<T>[] | RxDocument<T> | ResultMap<T> | null,
+	json?: boolean
+): AnyQueryResult<T> => {
 	if (!result) {
 		return [];
 	}
-	if (Array.isArray(result)) {
-		return result;
+	if (result instanceof Map) {
+		return Array.from(result, ([, doc]) => (json ? doc.toJSON() : doc));
 	}
-	return [result];
+	const resultArray = Array.isArray(result) ? result : [result];
+	return json ? resultArray.map((doc) => doc.toJSON()) : resultArray;
+};
+
+const getResultLength = <T>(
+	result: RxDocument<T>[] | RxDocument<T> | ResultMap<T> | null
+): number => {
+	if (!result) {
+		return 0;
+	}
+	if (result instanceof Map) {
+		return result.size;
+	}
+	const resultArray = Array.isArray(result) ? result : [result];
+	return resultArray.length;
 };
 
 function useRxQuery<T>(query: AnyRxQuery<T>): RxQueryResultDoc<T>;
@@ -315,10 +329,7 @@ function useRxQuery<T>(
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			const sub = _query.$.subscribe((result) => {
-				const resultArray = getResultArray(result);
-				const docs = json
-					? resultArray.map((doc) => doc.toJSON())
-					: resultArray;
+				const docs = getResultArray(result, json);
 				dispatch({
 					type: ActionType.FetchSuccess,
 					docs,
@@ -342,13 +353,10 @@ function useRxQuery<T>(
 
 			// TODO: convert to "cancelable" promise and cancel on cleanup
 			query.then((result) => {
-				// TODO: go through same pipeline as when handling observable result
-				const resultArray = Array.from(result, ([, doc]) => {
-					return json ? doc.toJSON() : doc;
-				});
+				const docs = getResultArray(result, json);
 				dispatch({
 					type: ActionType.FetchSuccess,
-					docs: resultArray,
+					docs,
 					pagination,
 					pageSize,
 				});
@@ -384,10 +392,10 @@ function useRxQuery<T>(
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			const countQuerySub = query.$.subscribe((result) => {
-				const docs = getResultArray(result);
+				const resultLength = getResultLength(result);
 				dispatch({
 					type: ActionType.CountPages,
-					pageCount: Math.ceil(docs.length / pageSize),
+					pageCount: Math.ceil(resultLength / pageSize),
 				});
 			});
 
