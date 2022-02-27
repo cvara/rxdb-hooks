@@ -326,18 +326,19 @@ function useRxQuery<T>(
 			dispatch({
 				type: ActionType.QueryChanged,
 			});
-			// TODO: re-enable TS and fix type error
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			const sub = _query.$.subscribe((result) => {
-				const docs = getResultArray(result, json);
-				dispatch({
-					type: ActionType.FetchSuccess,
-					docs,
-					pagination,
-					pageSize,
-				});
-			});
+			// TODO: find more elegant way to resolve type error
+			// (TS doesn't consider _query.$.subscribe to be callable)
+			const sub = (_query.$.subscribe as any)(
+				(result: RxDocument<T> | RxDocument<T>[]) => {
+					const docs = getResultArray(result, json);
+					dispatch({
+						type: ActionType.FetchSuccess,
+						docs,
+						pagination,
+						pageSize,
+					});
+				}
+			);
 
 			return () => {
 				sub.unsubscribe();
@@ -390,16 +391,17 @@ function useRxQuery<T>(
 		if (isRxQuery(query)) {
 			// Unconvential counting of documents/pages due to missing RxQuery.count():
 			// https://github.com/pubkey/rxdb/blob/master/orga/BACKLOG.md#rxquerycount
-			// TODO: re-enable TS and fix type error
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			const countQuerySub = query.$.subscribe((result) => {
-				const resultLength = getResultLength(result);
-				dispatch({
-					type: ActionType.CountPages,
-					pageCount: Math.ceil(resultLength / pageSize),
-				});
-			});
+			// TODO: find more elegant way to resolve type error
+			// (TS doesn't consider _query.$.subscribe to be callable)
+			const countQuerySub = (query.$.subscribe as any)(
+				(result: RxDocument<T> | RxDocument<T>[]) => {
+					const resultLength = getResultLength(result);
+					dispatch({
+						type: ActionType.CountPages,
+						pageCount: Math.ceil(resultLength / pageSize),
+					});
+				}
+			);
 
 			return () => {
 				countQuerySub.unsubscribe();
