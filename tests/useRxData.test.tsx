@@ -246,6 +246,64 @@ describe('useRxData', () => {
 		await delay(50);
 	});
 
+	it('should ignore pagination option when using query based on findByIds()', async () => {
+		const queriedIds = ['1', '2', '3'];
+
+		const Child: FC = () => {
+			const queryConstructor = useCallback(
+				(c: RxCollection<Character>) => c.findByIds(queriedIds),
+				[]
+			);
+			const {
+				result: characters,
+				isFetching,
+				isExhausted,
+				resetList,
+			} = useRxData<Character>('characters', queryConstructor, {
+				json: false,
+				pagination: 'Traditional',
+				pageSize: 2,
+			});
+
+			return (
+				<>
+					<CharacterList
+						characters={characters}
+						isFetching={isFetching}
+						isExhausted={isExhausted}
+						resetList={resetList}
+					/>
+				</>
+			);
+		};
+
+		render(
+			<Provider db={db}>
+				<Child />
+			</Provider>
+		);
+
+		// should render in loading state
+		expect(screen.getByText('loading')).toBeInTheDocument();
+		expect(screen.queryByText('isExhausted')).not.toBeInTheDocument();
+
+		// wait for data
+		await waitFor(async () => {
+			// all data should now be rendered; pagination is ignored when
+			// querying using findByIds()
+			characters.forEach((doc) => {
+				if (queriedIds.includes(doc.id)) {
+					expect(screen.queryByText(doc.name)).toBeInTheDocument();
+				} else {
+					expect(
+						screen.queryByText(doc.name)
+					).not.toBeInTheDocument();
+				}
+			});
+			expect(screen.queryByText('loading')).not.toBeInTheDocument();
+		});
+	});
+
 	it('should return data in JSON format', async (done) => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
@@ -667,6 +725,52 @@ describe('useRxData', () => {
 		await waitFor(async () => {
 			expect(screen.queryByText('loading')).not.toBeInTheDocument();
 			characters.forEach((doc) => {
+				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
+			});
+		});
+
+		done();
+	});
+
+	it('should handle non-array result in traditional pagination', async (done) => {
+		const Child: FC = () => {
+			const queryConstructor = useCallback(
+				(c: RxCollection<Character>) =>
+					c.findOne().where('id').equals('1'),
+				[]
+			);
+			const {
+				result: characters,
+				isFetching,
+				isExhausted,
+			} = useRxData<Character>('characters', queryConstructor, {
+				pageSize: 2,
+				pagination: 'Traditional',
+			});
+
+			return (
+				<CharacterList
+					characters={characters}
+					isFetching={isFetching}
+					isExhausted={isExhausted}
+				/>
+			);
+		};
+
+		render(
+			<Provider db={db}>
+				<Child />
+			</Provider>
+		);
+
+		// should render in loading state
+		expect(screen.getByText('loading')).toBeInTheDocument();
+
+		// wait for data
+		await waitFor(async () => {
+			expect(screen.queryByText('loading')).not.toBeInTheDocument();
+			expect(screen.queryByText(characters[0].name)).toBeInTheDocument();
+			characters.slice(1).forEach((doc) => {
 				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 			});
 		});
