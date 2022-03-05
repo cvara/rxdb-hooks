@@ -226,13 +226,10 @@ const getResultArray = <T>(
 };
 
 const getResultLength = <T>(
-	result: RxDocument<T>[] | RxDocument<T> | ResultMap<T> | null
+	result: RxDocument<T>[] | RxDocument<T> | null
 ): number => {
 	if (!result) {
 		return 0;
-	}
-	if (result instanceof Map) {
-		return result.size;
 	}
 	const resultArray = Array.isArray(result) ? result : [result];
 	return resultArray.length;
@@ -381,11 +378,12 @@ function useRxQuery<T>(
 	}, [query, performPromiseReturningQuery, performObservableReturningQuery]);
 
 	useEffect(() => {
-		if (!query || !pageSize || pagination !== 'Traditional') {
-			return;
-		}
-		if ('then' in query) {
-			// TODO: does pagination make sense when using findByIds()?
+		if (
+			!query ||
+			!pageSize ||
+			pagination !== 'Traditional' ||
+			'then' in query
+		) {
 			return;
 		}
 		if (isRxQuery(query)) {
