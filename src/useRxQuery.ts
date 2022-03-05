@@ -2,12 +2,16 @@ import { useEffect, useCallback, useReducer, Reducer } from 'react';
 import { RxQuery, RxDocument, isRxQuery } from 'rxdb';
 import { Override } from './type.helpers';
 import { DeepReadonly } from 'rxdb/dist/types/types';
+import { getCancelablePromise } from './helpers';
 
-export interface RxQueryResult<T> {
+export type ResultMap<T> = Map<string, RxDocument<T, any>>;
+export type AnyQueryResult<T> = DeepReadonly<T>[] | RxDocument<T>[];
+
+export type RxQueryResult<T> = {
 	/**
 	 * Resulting documents.
 	 */
-	result: DeepReadonly<T>[] | RxDocument<T>[];
+	result: AnyQueryResult<T>;
 
 	/**
 	 * Indicates that fetching is in progress.
@@ -49,15 +53,21 @@ export interface RxQueryResult<T> {
 	 * Relevant in "infinite scroll" pagination mode
 	 */
 	resetList: () => void;
-}
+};
 
-export interface RxQueryResultJSON<T> extends RxQueryResult<T> {
-	result: DeepReadonly<T>[];
-}
+export type RxQueryResultJSON<T> = Override<
+	RxQueryResult<T>,
+	{
+		result: DeepReadonly<T>[];
+	}
+>;
 
-export interface RxQueryResultDoc<T> extends RxQueryResult<T> {
-	result: RxDocument<T>[];
-}
+export type RxQueryResultDoc<T> = Override<
+	RxQueryResult<T>,
+	{
+		result: RxDocument<T>[];
+	}
+>;
 
 /**
  * Traditional:
@@ -88,8 +98,19 @@ export interface UseRxQueryOptions {
 	json?: boolean;
 }
 
+/**
+ * Most query functions on RxCollection return RxQuery objects with
+ * BehaviorSubject instances ($) attached to them except for .findByIds()
+ * which returns a promise.
+ */
+export type ObservableReturningQuery<T> =
+	| RxQuery<T, RxDocument<T>>
+	| RxQuery<T, RxDocument<T>[]>;
+export type PromiseReturning<T> = Promise<ResultMap<T>>;
+export type AnyRxQuery<T> = ObservableReturningQuery<T> | PromiseReturning<T>;
+
 interface RxState<T> {
-	result: DeepReadonly<T>[] | RxDocument<T>[];
+	result: AnyQueryResult<T>;
 	isFetching: boolean;
 	isExhausted: boolean;
 	page: number | undefined;
@@ -125,7 +146,7 @@ interface CountPagesAction {
 
 interface FetchSuccessAction<T> {
 	type: ActionType.FetchSuccess;
-	docs: RxDocument<T>[] | DeepReadonly<T>[];
+	docs: AnyQueryResult<T>;
 	pagination: PaginationMode;
 	pageSize: number;
 }
@@ -191,26 +212,38 @@ const reducer = <T>(state: RxState<T>, action: AnyAction<T>): RxState<T> => {
 };
 
 const getResultArray = <T>(
-	result: RxDocument<T>[] | RxDocument<T> | null
-): RxDocument<T>[] => {
+	result: RxDocument<T>[] | RxDocument<T> | ResultMap<T> | null,
+	json?: boolean
+): AnyQueryResult<T> => {
 	if (!result) {
 		return [];
 	}
-	if (Array.isArray(result)) {
-		return result;
+	if (result instanceof Map) {
+		return Array.from(result, ([, doc]) => (json ? doc.toJSON() : doc));
 	}
-	return [result];
+	const resultArray = Array.isArray(result) ? result : [result];
+	return json ? resultArray.map((doc) => doc.toJSON()) : resultArray;
 };
 
-function useRxQuery<T>(query: RxQuery): RxQueryResultDoc<T>;
+const getResultLength = <T>(
+	result: RxDocument<T>[] | RxDocument<T> | null
+): number => {
+	if (!result) {
+		return 0;
+	}
+	const resultArray = Array.isArray(result) ? result : [result];
+	return resultArray.length;
+};
+
+function useRxQuery<T>(query: AnyRxQuery<T>): RxQueryResultDoc<T>;
 
 function useRxQuery<T>(
-	query: RxQuery,
+	query: AnyRxQuery<T>,
 	options?: Override<UseRxQueryOptions, { json?: false }>
 ): RxQueryResultDoc<T>;
 
 function useRxQuery<T>(
-	query: RxQuery,
+	query: AnyRxQuery<T>,
 	options?: Override<UseRxQueryOptions, { json: true }>
 ): RxQueryResultJSON<T>;
 
@@ -221,7 +254,7 @@ function useRxQuery<T>(
  *  - a resetList callback function for conveniently reseting list data
  */
 function useRxQuery<T>(
-	query: RxQuery<RxDocument<T>>,
+	query: AnyRxQuery<T>,
 	options: UseRxQueryOptions = {}
 ): RxQueryResult<T> {
 	const { pageSize, pagination = 'Infinite', json } = options;
@@ -272,60 +305,106 @@ function useRxQuery<T>(
 		dispatch({ type: ActionType.Reset });
 	}, [pageSize, state.page]);
 
+	const performObservableReturningQuery = useCallback(
+		(query: ObservableReturningQuery<T>) => {
+			// avoid re-assigning reference to original query
+			let _query = query;
+
+			if (pageSize && pagination === 'Traditional') {
+				_query = _query
+					.skip((state.page - 1) * pageSize)
+					.limit(pageSize);
+			}
+
+			if (pageSize && pagination === 'Infinite') {
+				_query = _query.limit(state.page * pageSize);
+			}
+
+			dispatch({
+				type: ActionType.QueryChanged,
+			});
+			// TODO: find more elegant way to resolve type error
+			// (TS doesn't consider _query.$.subscribe to be callable)
+			const sub = (_query.$.subscribe as any)(
+				(result: RxDocument<T> | RxDocument<T>[]) => {
+					const docs = getResultArray(result, json);
+					dispatch({
+						type: ActionType.FetchSuccess,
+						docs,
+						pagination,
+						pageSize,
+					});
+				}
+			);
+
+			return () => {
+				sub.unsubscribe();
+			};
+		},
+		[json, pageSize, pagination, state.page]
+	);
+
+	const performPromiseReturningQuery = useCallback(
+		(query: PromiseReturning<T>) => {
+			dispatch({
+				type: ActionType.QueryChanged,
+			});
+			const [cancelableQuery, cancel] = getCancelablePromise(query);
+			cancelableQuery.then((result) => {
+				const docs = getResultArray(result, json);
+				dispatch({
+					type: ActionType.FetchSuccess,
+					docs,
+					pagination,
+					pageSize,
+				});
+			});
+			// to be used as cleanup code in useEffect
+			return cancel;
+		},
+		[json, pageSize, pagination]
+	);
+
 	useEffect(() => {
-		if (!isRxQuery(query)) {
+		if (!query) {
 			return;
 		}
-		// avoid re-assigning reference to original query
-		let _query = query;
-
-		if (pageSize && pagination === 'Traditional') {
-			_query = _query.skip((state.page - 1) * pageSize).limit(pageSize);
+		if ('then' in query) {
+			return performPromiseReturningQuery(query);
 		}
-
-		if (pageSize && pagination === 'Infinite') {
-			_query = _query.limit(state.page * pageSize);
+		if (isRxQuery(query)) {
+			return performObservableReturningQuery(query);
 		}
-
-		dispatch({
-			type: ActionType.QueryChanged,
-		});
-
-		const sub = _query.$.subscribe((result) => {
-			const resultArray = getResultArray(result);
-			const docs = json
-				? resultArray.map((doc) => doc.toJSON())
-				: resultArray;
-			dispatch({
-				type: ActionType.FetchSuccess,
-				docs,
-				pagination,
-				pageSize,
-			});
-		});
-
-		return () => {
-			sub.unsubscribe();
-		};
-	}, [query, pageSize, pagination, state.page, json]);
+	}, [query, performPromiseReturningQuery, performObservableReturningQuery]);
 
 	useEffect(() => {
-		if (!pageSize || pagination !== 'Traditional' || !isRxQuery(query)) {
+		if (
+			!query ||
+			!pageSize ||
+			pagination !== 'Traditional' ||
+			'then' in query
+		) {
 			return;
 		}
-		// Unconvential counting of documents/pages due to missing RxQuery.count():
-		// https://github.com/pubkey/rxdb/blob/master/orga/BACKLOG.md#rxquerycount
-		const countQuerySub = query.$.subscribe((result) => {
-			const docs = getResultArray(result);
-			dispatch({
-				type: ActionType.CountPages,
-				pageCount: Math.ceil(docs.length / pageSize),
-			});
-		});
+		if (isRxQuery(query)) {
+			// Unconvential counting of documents/pages due to missing RxQuery.count():
+			// https://github.com/pubkey/rxdb/blob/master/orga/BACKLOG.md#rxquerycount
+			// TODO: find more elegant way to resolve type error
+			// (TS doesn't consider _query.$.subscribe to be callable)
+			const countQuerySub = (query.$.subscribe as any)(
+				(result: RxDocument<T> | RxDocument<T>[]) => {
+					const resultLength = getResultLength(result);
+					dispatch({
+						type: ActionType.CountPages,
+						pageCount: Math.ceil(resultLength / pageSize),
+					});
+				}
+			);
 
-		return () => {
-			countQuerySub.unsubscribe();
-		};
+			return () => {
+				countQuerySub.unsubscribe();
+			};
+		}
 	}, [query, pageSize, pagination]);
 
 	return {

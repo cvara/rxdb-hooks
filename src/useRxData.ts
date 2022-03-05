@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { RxCollection, RxQuery, RxDocument } from 'rxdb';
+import { RxCollection } from 'rxdb';
 import { Override } from './type.helpers';
 import useRxCollection from './useRxCollection';
 import useRxQuery, {
@@ -7,11 +7,12 @@ import useRxQuery, {
 	RxQueryResult,
 	RxQueryResultJSON,
 	RxQueryResultDoc,
+	AnyRxQuery,
 } from './useRxQuery';
 
 export type QueryConstructor<T> = (
 	collection: RxCollection<T>
-) => RxQuery<T, RxDocument<T>> | RxQuery<T, RxDocument<T>[]> | undefined;
+) => AnyRxQuery<T> | undefined;
 
 function useRxData<T>(
 	collectionName: string,
