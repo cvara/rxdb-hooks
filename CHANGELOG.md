@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.0.2](https://github.com/cvara/rxdb-hooks/tree/4.0.2) (2022-03-05)
+
+[Full Changelog](https://github.com/cvara/rxdb-hooks/compare/4.0.1...4.0.2)
+
+**Merged pull requests:**
+
+- Support findByIds\(\) query [\#47](https://github.com/cvara/rxdb-hooks/pull/47) ([cvara](https://github.com/cvara))
+- Update dependencies [\#44](https://github.com/cvara/rxdb-hooks/pull/44) ([cvara](https://github.com/cvara))
+- Verify RxDB 11 compatibility [\#43](https://github.com/cvara/rxdb-hooks/pull/43) ([cvara](https://github.com/cvara))
+
 ## [4.0.1](https://github.com/cvara/rxdb-hooks/tree/4.0.1) (2022-01-09)
 
 [Full Changelog](https://github.com/cvara/rxdb-hooks/compare/4.0.0...4.0.1)
@@ -20,6 +30,10 @@
 
 - Support RxDB 10 [\#39](https://github.com/cvara/rxdb-hooks/pull/39) ([cvara](https://github.com/cvara))
 
+**Merged pull requests:**
+
+- Bump validator from 13.6.0 to 13.7.0 [\#38](https://github.com/cvara/rxdb-hooks/pull/38) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [3.0.2](https://github.com/cvara/rxdb-hooks/tree/3.0.2) (2021-10-27)
 
 [Full Changelog](https://github.com/cvara/rxdb-hooks/compare/3.0.1...3.0.2)
@@ -30,7 +44,6 @@
 
 **Merged pull requests:**
 
-- Bump validator from 13.6.0 to 13.7.0 [\#38](https://github.com/cvara/rxdb-hooks/pull/38) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump tmpl from 1.0.4 to 1.0.5 [\#37](https://github.com/cvara/rxdb-hooks/pull/37) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump path-parse from 1.0.6 to 1.0.7 [\#35](https://github.com/cvara/rxdb-hooks/pull/35) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump glob-parent from 5.1.0 to 5.1.2 [\#34](https://github.com/cvara/rxdb-hooks/pull/34) ([dependabot[bot]](https://github.com/apps/dependabot))
@@ -76,6 +89,10 @@
 
 [Full Changelog](https://github.com/cvara/rxdb-hooks/compare/2.1.1...2.1.2)
 
+**Breaking changes:**
+
+- Drop sortBy & sortOrder from UseRxQueryOptions [\#6](https://github.com/cvara/rxdb-hooks/pull/6) ([cvara](https://github.com/cvara))
+
 **Merged pull requests:**
 
 - useRxDocument typings support numeric id [\#19](https://github.com/cvara/rxdb-hooks/pull/19) ([cvara](https://github.com/cvara))
@@ -112,7 +129,6 @@
 **Breaking changes:**
 
 - Drop startPage & introduce new pagination option [\#7](https://github.com/cvara/rxdb-hooks/pull/7) ([cvara](https://github.com/cvara))
-- Drop sortBy & sortOrder from UseRxQueryOptions [\#6](https://github.com/cvara/rxdb-hooks/pull/6) ([cvara](https://github.com/cvara))
 
 **Fixed bugs:**
 
