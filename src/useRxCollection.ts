@@ -14,7 +14,7 @@ function useRxCollection<T>(name: string): RxCollection<T> | null {
 		if (found) {
 			setCollection(found);
 		} else {
-			const sub = db.newCollections$.subscribe((col) => {
+			const sub = db.newCollections$.subscribe(col => {
 				if (col[name]) {
 					// We don't unsubscribe so that we get notified
 					// and update collection if it gets deleted/recreated

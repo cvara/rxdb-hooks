@@ -222,7 +222,7 @@ const getResultArray = <T>(
 		return Array.from(result, ([, doc]) => (json ? doc.toJSON() : doc));
 	}
 	const resultArray = Array.isArray(result) ? result : [result];
-	return json ? resultArray.map((doc) => doc.toJSON()) : resultArray;
+	return json ? resultArray.map(doc => doc.toJSON()) : resultArray;
 };
 
 const getResultLength = <T>(
@@ -350,7 +350,7 @@ function useRxQuery<T>(
 				type: ActionType.QueryChanged,
 			});
 			const [cancelableQuery, cancel] = getCancelablePromise(query);
-			cancelableQuery.then((result) => {
+			cancelableQuery.then(result => {
 				const docs = getResultArray(result, json);
 				dispatch({
 					type: ActionType.FetchSuccess,
