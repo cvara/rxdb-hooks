@@ -104,10 +104,7 @@ import { useRxData } from 'rxdb-hooks';
 
 const Consumer = () => {
   const queryConstructor = collection =>
-    collection
-      .find()
-      .where('affiliation')
-      .equals('jedi');
+    collection.find().where('affiliation').equals('jedi');
 
   const { result: characters, isFetching } = useRxData(
     'characters',
@@ -170,11 +167,11 @@ The core API of rxdb-hooks remains largely the same across all major versions _b
 implementation (most notably [the plugin](src/plugins.ts)) differ based on the version of rxdb we need to target **\***.
 Please use the appropriate version of rxdb-hooks as per this table:
 
-| rxdb-hooks version | targeted RxDB version |
-| ------------------ | --------------------- |
-| `4.x`              | `10.x`, `11.x`        |
-| `3.x`              | `9.x`                 |
-| `1.x`, `2.x`       | `8.x`                 |
+| rxdb-hooks version | targeted RxDB version  |
+| ------------------ | ---------------------- |
+| `4.x`              | `10.x`, `11.x`, `12.x` |
+| `3.x`              | `9.x`                  |
+| `1.x`, `2.x`       | `8.x`                  |
 
 _\* Versions 7.x of RxDB and below have not been tested and are not guaranteed to work with rxdb-hooks_
 
@@ -259,10 +256,7 @@ function useRxQuery<T>(query: RxQuery, options?: UseRxQueryOptions): RxQueryResu
 ```javascript
 const collection = useRxCollection('characters');
 
-const query = collection
-  .find()
-  .where('affiliation')
-  .equals('Jedi');
+const query = collection.find().where('affiliation').equals('Jedi');
 
 const { result } = useRxQuery(query);
 ```
@@ -272,18 +266,17 @@ const { result } = useRxQuery(query);
 ```javascript
 const collection = useRxCollection('characters');
 
-const query = collection
-  .find()
-  .where('affiliation')
-  .equals('Jedi');
+const query = collection.find().where('affiliation').equals('Jedi');
 
-const { result: characters, isFetching, fetchMore, isExhausted } = useRxQuery(
-  query,
-  {
-    pageSize: 5,
-    pagination: 'Infinite',
-  }
-);
+const {
+  result: characters,
+  isFetching,
+  fetchMore,
+  isExhausted,
+} = useRxQuery(query, {
+  pageSize: 5,
+  pagination: 'Infinite',
+});
 
 if (isFetching) {
   return 'Loading...';
@@ -304,18 +297,17 @@ return (
 ```javascript
 const collection = useRxCollection('characters');
 
-const query = collection
-  .find()
-  .where('affiliation')
-  .equals('Jedi');
+const query = collection.find().where('affiliation').equals('Jedi');
 
-const { result: characters, isFetching, fetchPage, pageCount } = useRxQuery(
-  query,
-  {
-    pageSize: 5,
-    pagination: 'Traditional',
-  }
-);
+const {
+  result: characters,
+  isFetching,
+  fetchPage,
+  pageCount,
+} = useRxQuery(query, {
+  pageSize: 5,
+  pagination: 'Traditional',
+});
 
 if (isFetching) {
   return 'Loading...';
@@ -364,10 +356,7 @@ function useRxData<T>(
 
 ```javascript
 const { result } = useRxData('characters', collection =>
-  collection
-    .find()
-    .where('affiliation')
-    .equals('Jedi')
+  collection.find().where('affiliation').equals('Jedi')
 );
 ```
 
@@ -416,11 +405,7 @@ avoid unnecessary re-subscriptions, query should be memoized (i.e. via react's `
 const collection = useRxCollection('characters');
 
 const query = useMemo(
-  () =>
-    collection
-      .find()
-      .where('affiliation')
-      .equals(affiliation), // 👈 could come from component props
+  () => collection.find().where('affiliation').equals(affiliation), // 👈 could come from component props
   [collection, affiliation]
 );
 
@@ -431,11 +416,7 @@ Same goes for `useRxData` and the `queryConstructor` function:
 
 ```javascript
 const queryConstructor = useCallback(
-  collection =>
-    collection
-      .find()
-      .where('affiliation')
-      .equals(affiliation), // 👈 could come from component props
+  collection => collection.find().where('affiliation').equals(affiliation), // 👈 could come from component props
   [affiliation]
 );
 
