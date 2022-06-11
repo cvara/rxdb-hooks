@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.0.3](https://github.com/cvara/rxdb-hooks/tree/4.0.3) (2022-06-11)
+
+[Full Changelog](https://github.com/cvara/rxdb-hooks/compare/4.0.2...4.0.3)
+
+**Implemented enhancements:**
+
+- Support RxDB 12 [\#54](https://github.com/cvara/rxdb-hooks/pull/54) ([cvara](https://github.com/cvara))
+
+**Merged pull requests:**
+
+- Bump Prettier & reformat source [\#53](https://github.com/cvara/rxdb-hooks/pull/53) ([cvara](https://github.com/cvara))
+- Bump semver-regex from 3.1.3 to 3.1.4 [\#50](https://github.com/cvara/rxdb-hooks/pull/50) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ajv from 6.12.0 to 6.12.6 [\#48](https://github.com/cvara/rxdb-hooks/pull/48) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [4.0.2](https://github.com/cvara/rxdb-hooks/tree/4.0.2) (2022-03-05)
 
 [Full Changelog](https://github.com/cvara/rxdb-hooks/compare/4.0.1...4.0.2)
@@ -89,10 +103,6 @@
 
 [Full Changelog](https://github.com/cvara/rxdb-hooks/compare/2.1.1...2.1.2)
 
-**Breaking changes:**
-
-- Drop sortBy & sortOrder from UseRxQueryOptions [\#6](https://github.com/cvara/rxdb-hooks/pull/6) ([cvara](https://github.com/cvara))
-
 **Merged pull requests:**
 
 - useRxDocument typings support numeric id [\#19](https://github.com/cvara/rxdb-hooks/pull/19) ([cvara](https://github.com/cvara))
@@ -129,6 +139,7 @@
 **Breaking changes:**
 
 - Drop startPage & introduce new pagination option [\#7](https://github.com/cvara/rxdb-hooks/pull/7) ([cvara](https://github.com/cvara))
+- Drop sortBy & sortOrder from UseRxQueryOptions [\#6](https://github.com/cvara/rxdb-hooks/pull/6) ([cvara](https://github.com/cvara))
 
 **Fixed bugs:**
 
