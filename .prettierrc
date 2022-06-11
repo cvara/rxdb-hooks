@@ -4,6 +4,7 @@
 	"singleQuote": true,
 	"trailingComma": "es5",
 	"tabWidth": 4,
+	"arrowParens": "avoid",
 	"overrides": [
 		{
 			"files": ["*.md", "*.yml"],
