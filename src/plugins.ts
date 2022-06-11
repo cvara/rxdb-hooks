@@ -7,7 +7,7 @@ export type RxDatabaseBaseExtended<
 	Internals = any,
 	Options = any
 > = RxDatabaseBase<Internals, Options> & {
-	newCollections$: Subject<CollectionRecord>;
+	newCollections$?: Subject<CollectionRecord>;
 };
 
 /**

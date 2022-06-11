@@ -30,7 +30,7 @@ describe('useRxDocument', () => {
 		};
 
 		render(
-			<Provider db={db}>
+			<Provider db={db} idAttribute="id">
 				<Child />
 			</Provider>
 		);
@@ -59,7 +59,7 @@ describe('useRxDocument', () => {
 		};
 
 		render(
-			<Provider db={db}>
+			<Provider db={db} idAttribute="id">
 				<Child />
 			</Provider>
 		);
@@ -78,7 +78,7 @@ describe('useRxDocument', () => {
 
 	it('should allow lazy evaluation of id', async done => {
 		const Child: FC = () => {
-			const [id, setId] = useState(undefined);
+			const [id, setId] = useState<string>();
 
 			const { result: character, isFetching } = useRxDocument<Character>(
 				'characters',
@@ -98,7 +98,7 @@ describe('useRxDocument', () => {
 		};
 
 		render(
-			<Provider db={db} idAttribute="_id">
+			<Provider db={db} idAttribute="id">
 				<Child />
 			</Provider>
 		);
@@ -251,14 +251,14 @@ describe('useRxDocument', () => {
 		};
 
 		const App: FC = () => {
-			const [lazyDb, setLazyDb] = useState(null);
+			const [lazyDb, setLazyDb] = useState<MyDatabase>();
 
 			const handleInit = () => {
 				setLazyDb(db);
 			};
 
 			return (
-				<Provider db={lazyDb}>
+				<Provider db={lazyDb} idAttribute="id">
 					<Child />
 					<button onClick={handleInit}>init</button>
 				</Provider>
