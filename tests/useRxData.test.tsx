@@ -10,11 +10,14 @@ import {
 	delay,
 } from './helpers';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import { RxCollection } from 'rxdb';
+import { addRxPlugin, RxCollection } from 'rxdb';
+import { RxDBQueryBuilderPlugin } from 'rxdb/plugins/query-builder';
 import useRxData from '../src/useRxData';
 import Provider from '../src/Provider';
 import { characters } from './mockData';
 import { act } from 'react-dom/test-utils';
+
+addRxPlugin(RxDBQueryBuilderPlugin);
 
 describe('useRxData', () => {
 	let db: MyDatabase;
