@@ -75,19 +75,13 @@ const Root = () => {
   const [db, setDb] = useState();
 
   useEffect(() => {
-    // Notice that RxDB instantiation is asynchronous;
-    // until db becomes available consumer hooks that depend
-    // on it will still work, absorbing the delay by
-    // setting their state to isFetching:true
-    const initDB = async () => {
-      const _db = await initialize();
-      setDb(_db);
-    };
-    initDB();
+    // RxDB instantiation can be asynchronous
+    initialize().then(setDb);
   }, []);
 
-  // Provide RxDB instance; hooks can now be used
-  // within the context of the Provider
+  // Until db becomes available, consumer hooks that
+  // depend on it will still work, absorbing the delay
+  // by setting their state to isFetching:true
   return (
     <Provider db={db}>
       <App />
@@ -103,12 +97,16 @@ import React from 'react';
 import { useRxData } from 'rxdb-hooks';
 
 const Consumer = () => {
-  const queryConstructor = collection =>
-    collection.find().where('affiliation').equals('jedi');
-
   const { result: characters, isFetching } = useRxData(
+    // the collection to be queried
     'characters',
-    queryConstructor
+    // a function returning the query to be applied
+    collection =>
+      collection.find({
+        selector: {
+          affiliation: 'jedi',
+        },
+      })
   );
 
   if (isFetching) {
@@ -183,10 +181,10 @@ The `<Provider />` makes the RxDatabase instance available to nested components 
 
 #### Props
 
-| Property      | Type         | Required | Default | Description                                                |
-| ------------- | ------------ | :------: | :-----: | ---------------------------------------------------------- |
-| `db`          | `RxDatabase` |  **\***  |    -    | the RxDatabase instance to consume data from               |
-| `idAttribute` | `string`     |    -     | `"_id"` | used by `useRxDocument` when querying for single documents |
+| Property      | Type         | Description                                                                             |
+| ------------- | ------------ | --------------------------------------------------------------------------------------- |
+| `db`          | `RxDatabase` | the RxDatabase instance to consume data from                                            |
+| `idAttribute` | `string`     | (optional) used by `useRxDocument` when querying for single documents. Default: `"_id"` |
 
 <hr />
 
@@ -232,11 +230,11 @@ function useRxQuery<T>(query: RxQuery, options?: UseRxQueryOptions): RxQueryResu
 
 #### `options: UseRxQueryOptions`
 
-| Option       | Type                          | Required |     Default     | Description                                                                                                                                                                                                                                                                                     |
-| ------------ | ----------------------------- | :------: | :-------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pageSize`   | `number`                      |    -     |        -        | enables pagination & defines page limit                                                                                                                                                                                                                                                         |
-| `pagination` | `"Traditional" \| "Infinite"` |    -     | `"Traditional"` | determines pagination mode; **Traditional**: results are split into pages, starts by rendering the first page and total `pageCount` is returned, allowing for requesting results of any specific page. **Infinite**: first page of results is rendered, allowing for gradually requesting more. |
-| `json`       | `boolean`                     |    -     |     `false`     | when `true` resulting documents will be converted to plain JavaScript objects; equivalent to manually calling `.toJSON()` on each `RxDocument`                                                                                                                                                  |
+| Option       | Type                          | Description                                                                                                                                                                                                                                                                                                                                     |
+| ------------ | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pageSize`   | `number`                      | (optional) enables pagination & defines page limit                                                                                                                                                                                                                                                                                              |
+| `pagination` | `"Traditional" \| "Infinite"` | (optional) determines pagination mode: <br>`Traditional`: results are split into pages, starts by rendering the first page and total `pageCount` is returned, allowing for requesting results of any specific page. <br>`Infinite`: first page of results is rendered, allowing for gradually requesting more. <br>**Default**: `"Traditional"` |
+| `json`       | `boolean`                     | (optional) when `true` resulting documents will be converted to plain JavaScript objects; equivalent to manually calling `.toJSON()` on each `RxDocument`. **Default**: `false`                                                                                                                                                                 |
 
 #### `result: RxQueryResult<T>`
 
@@ -297,7 +295,11 @@ return (
 ```javascript
 const collection = useRxCollection('characters');
 
-const query = collection.find().where('affiliation').equals('Jedi');
+const query = collection.find({
+  selector: {
+    affiliation: 'jedi',
+  },
+});
 
 const {
   result: characters,
@@ -402,10 +404,16 @@ for query criteria to be modified during component updates. For this reason, to
 avoid unnecessary re-subscriptions, query should be memoized (i.e. via react's `useMemo`):
 
 ```javascript
+const { affiliation } = props;
 const collection = useRxCollection('characters');
 
 const query = useMemo(
-  () => collection.find().where('affiliation').equals(affiliation), // 👈 could come from component props
+  () =>
+    collection.find({
+      selector: {
+        affiliation,
+      },
+    }),
   [collection, affiliation]
 );
 
@@ -415,8 +423,15 @@ const { result } = useRxQuery(query);
 Same goes for `useRxData` and the `queryConstructor` function:
 
 ```javascript
+const { affiliation } = props;
+
 const queryConstructor = useCallback(
-  collection => collection.find().where('affiliation').equals(affiliation), // 👈 could come from component props
+  collection =>
+    collection.find({
+      selector: {
+        affiliation,
+      },
+    }),
   [affiliation]
 );
 
