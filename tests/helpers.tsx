@@ -32,9 +32,11 @@ export type MyDatabaseCollections = {
 
 export type MyDatabase = RxDatabase<MyDatabaseCollections>;
 
-export const createDatabase = async (): Promise<MyDatabase> => {
+export const createDatabase = async (
+	dbName = 'test_database'
+): Promise<MyDatabase> => {
 	const db: MyDatabase = await createRxDatabase({
-		name: 'test_database',
+		name: dbName,
 		storage: getRxStoragePouch('memory'),
 		ignoreDuplicate: true,
 	});
@@ -77,9 +79,10 @@ export const setupCollection = async (
 
 export const setup = async (
 	documents: Character[],
-	collectionName = 'test_collection'
+	collectionName = 'test_collection',
+	dbName?: string
 ): Promise<MyDatabase> => {
-	const db = await createDatabase();
+	const db = await createDatabase(dbName);
 	await setupCollection(db, documents, collectionName);
 	return db;
 };
