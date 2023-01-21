@@ -22,17 +22,17 @@ addRxPlugin(RxDBQueryBuilderPlugin);
 describe('useRxData', () => {
 	let db: MyDatabase;
 
-	beforeAll(async (done) => {
+	beforeAll(async done => {
 		db = await setup(characters, 'characters');
 		done();
 	});
 
-	afterAll(async (done) => {
+	afterAll(async done => {
 		await teardown(db);
 		done();
 	});
 
-	it('should read all data from a collection', async (done) => {
+	it('should read all data from a collection', async done => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
 				(c: RxCollection<Character>) => c.find(),
@@ -78,7 +78,7 @@ describe('useRxData', () => {
 		// wait for data
 		await waitFor(async () => {
 			// data should now be rendered
-			characters.forEach((doc) => {
+			characters.forEach(doc => {
 				expect(screen.queryByText(doc.name)).toBeInTheDocument();
 			});
 
@@ -116,7 +116,7 @@ describe('useRxData', () => {
 		// noop: not in traditional pagination
 		expect(screen.queryByText('loading')).not.toBeInTheDocument();
 		// data should still be rendered
-		characters.forEach((doc) => {
+		characters.forEach(doc => {
 			expect(screen.queryByText(doc.name)).toBeInTheDocument();
 		});
 
@@ -164,7 +164,7 @@ describe('useRxData', () => {
 		// wait for data
 		await waitFor(async () => {
 			// data should now be rendered
-			characters.forEach((doc) => {
+			characters.forEach(doc => {
 				if (queriedIds.includes(doc.id)) {
 					expect(screen.queryByText(doc.name)).toBeInTheDocument();
 				} else {
@@ -294,7 +294,7 @@ describe('useRxData', () => {
 		await waitFor(async () => {
 			// all data should now be rendered; pagination is ignored when
 			// querying using findByIds()
-			characters.forEach((doc) => {
+			characters.forEach(doc => {
 				if (queriedIds.includes(doc.id)) {
 					expect(screen.queryByText(doc.name)).toBeInTheDocument();
 				} else {
@@ -307,7 +307,7 @@ describe('useRxData', () => {
 		});
 	});
 
-	it('should return data in JSON format', async (done) => {
+	it('should return data in JSON format', async done => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
 				(c: RxCollection<Character>) => c.find(),
@@ -343,7 +343,7 @@ describe('useRxData', () => {
 		// wait for data
 		await waitFor(async () => {
 			// data should now be rendered
-			characters.forEach((doc) => {
+			characters.forEach(doc => {
 				expect(screen.queryByText(doc.name)).toBeInTheDocument();
 			});
 
@@ -356,7 +356,7 @@ describe('useRxData', () => {
 		done();
 	});
 
-	it('should support infinite scroll pagination', async (done) => {
+	it('should support infinite scroll pagination', async done => {
 		const pageSize = 2;
 
 		const Child: FC = () => {
@@ -401,11 +401,11 @@ describe('useRxData', () => {
 		// wait for data
 		await waitFor(async () => {
 			// first page data should now be rendered
-			characters.slice(0, pageSize).forEach((doc) => {
+			characters.slice(0, pageSize).forEach(doc => {
 				expect(screen.getByText(doc.name)).toBeInTheDocument();
 			});
 			// rest data should not be rendered
-			characters.slice(pageSize).forEach((doc) => {
+			characters.slice(pageSize).forEach(doc => {
 				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 			});
 
@@ -432,7 +432,7 @@ describe('useRxData', () => {
 		// wait for next page data to be rendered
 		await waitFor(async () => {
 			// next page should be rendered now
-			characters.slice(pageSize, 2 * pageSize).forEach((doc) => {
+			characters.slice(pageSize, 2 * pageSize).forEach(doc => {
 				expect(screen.getByText(doc.name)).toBeInTheDocument();
 			});
 		});
@@ -456,7 +456,7 @@ describe('useRxData', () => {
 		// wait for last page data to be rendered
 		await waitFor(async () => {
 			// last page should be rendered now
-			characters.slice(2 * pageSize, 3 * pageSize).forEach((doc) => {
+			characters.slice(2 * pageSize, 3 * pageSize).forEach(doc => {
 				expect(screen.getByText(doc.name)).toBeInTheDocument();
 			});
 
@@ -481,7 +481,7 @@ describe('useRxData', () => {
 		expect(screen.getByText('current page: 3')).toBeInTheDocument();
 
 		// last page should still be rendered
-		characters.slice(2 * pageSize, 3 * pageSize).forEach((doc) => {
+		characters.slice(2 * pageSize, 3 * pageSize).forEach(doc => {
 			expect(screen.getByText(doc.name)).toBeInTheDocument();
 		});
 
@@ -500,10 +500,10 @@ describe('useRxData', () => {
 
 		await waitFor(async () => {
 			// now only first page data should be rendered
-			characters.slice(0, pageSize).forEach((doc) => {
+			characters.slice(0, pageSize).forEach(doc => {
 				expect(screen.getByText(doc.name)).toBeInTheDocument();
 			});
-			characters.slice(pageSize).forEach((doc) => {
+			characters.slice(pageSize).forEach(doc => {
 				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 			});
 		});
@@ -524,17 +524,17 @@ describe('useRxData', () => {
 		expect(screen.getByText('current page: 1')).toBeInTheDocument();
 
 		// first page data should still be rendered
-		characters.slice(0, pageSize).forEach((doc) => {
+		characters.slice(0, pageSize).forEach(doc => {
 			expect(screen.getByText(doc.name)).toBeInTheDocument();
 		});
-		characters.slice(pageSize).forEach((doc) => {
+		characters.slice(pageSize).forEach(doc => {
 			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 		});
 
 		done();
 	});
 
-	it('should support traditional pagination', async (done) => {
+	it('should support traditional pagination', async done => {
 		const pageSize = 2;
 
 		const Child: FC = () => {
@@ -599,11 +599,11 @@ describe('useRxData', () => {
 			expect(screen.queryByText('isExhausted')).not.toBeInTheDocument();
 
 			// selected page data should now be rendered
-			characters.slice(0, pageSize).forEach((doc) => {
+			characters.slice(0, pageSize).forEach(doc => {
 				expect(screen.getByText(doc.name)).toBeInTheDocument();
 			});
 			// rest data should not be rendered
-			characters.slice(pageSize).forEach((doc) => {
+			characters.slice(pageSize).forEach(doc => {
 				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 			});
 
@@ -631,14 +631,14 @@ describe('useRxData', () => {
 		// wait for next page data to be rendered
 		await waitFor(async () => {
 			// next page data should now be rendered
-			characters.slice(pageSize, 2 * pageSize).forEach((doc) => {
+			characters.slice(pageSize, 2 * pageSize).forEach(doc => {
 				expect(screen.getByText(doc.name)).toBeInTheDocument();
 			});
 			// rest data should not be rendered
 			[
 				...characters.slice(0, pageSize),
 				...characters.slice(2 * pageSize),
-			].forEach((doc) => {
+			].forEach(doc => {
 				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 			});
 
@@ -661,13 +661,13 @@ describe('useRxData', () => {
 		// should not be loading
 		expect(screen.queryByText('loading')).not.toBeInTheDocument();
 		// same data should now be rendered
-		characters.slice(pageSize, 2 * pageSize).forEach((doc) => {
+		characters.slice(pageSize, 2 * pageSize).forEach(doc => {
 			expect(screen.getByText(doc.name)).toBeInTheDocument();
 		});
 		[
 			...characters.slice(0, pageSize),
 			...characters.slice(2 * pageSize),
-		].forEach((doc) => {
+		].forEach(doc => {
 			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 		});
 
@@ -690,7 +690,7 @@ describe('useRxData', () => {
 		done();
 	});
 
-	it('should handle null result during traditional pagination', async (done) => {
+	it('should handle null result during traditional pagination', async done => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
 				(c: RxCollection<Character>) =>
@@ -727,7 +727,7 @@ describe('useRxData', () => {
 		// wait for data
 		await waitFor(async () => {
 			expect(screen.queryByText('loading')).not.toBeInTheDocument();
-			characters.forEach((doc) => {
+			characters.forEach(doc => {
 				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 			});
 		});
@@ -735,7 +735,7 @@ describe('useRxData', () => {
 		done();
 	});
 
-	it('should handle non-array result in traditional pagination', async (done) => {
+	it('should handle non-array result in traditional pagination', async done => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
 				(c: RxCollection<Character>) =>
@@ -773,7 +773,7 @@ describe('useRxData', () => {
 		await waitFor(async () => {
 			expect(screen.queryByText('loading')).not.toBeInTheDocument();
 			expect(screen.queryByText(characters[0].name)).toBeInTheDocument();
-			characters.slice(1).forEach((doc) => {
+			characters.slice(1).forEach(doc => {
 				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 			});
 		});
@@ -781,7 +781,7 @@ describe('useRxData', () => {
 		done();
 	});
 
-	it('should always convert results to array', async (done) => {
+	it('should always convert results to array', async done => {
 		const idToSearchFor = '1';
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
@@ -812,7 +812,7 @@ describe('useRxData', () => {
 		);
 
 		await waitFor(async () => {
-			characters.forEach((doc) => {
+			characters.forEach(doc => {
 				if (doc.id === idToSearchFor) {
 					expect(screen.getByText(doc.name)).toBeInTheDocument();
 				} else {
@@ -826,7 +826,7 @@ describe('useRxData', () => {
 		done();
 	});
 
-	it('should handle missing query', async (done) => {
+	it('should handle missing query', async done => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(() => undefined, []);
 			const {
@@ -859,7 +859,7 @@ describe('useRxData', () => {
 		done();
 	});
 
-	it('should handle missing collection', async (done) => {
+	it('should handle missing collection', async done => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
 				(c: RxCollection<Character>) => c.find(),
@@ -894,7 +894,7 @@ describe('useRxData', () => {
 		done();
 	});
 
-	it('should handle missing database', async (done) => {
+	it('should handle missing database', async done => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
 				(c: RxCollection<Character>) => c.find(),
@@ -929,7 +929,7 @@ describe('useRxData', () => {
 		done();
 	});
 
-	it('should set isFetching to true whenever the query changes', async (done) => {
+	it('should set isFetching to true whenever the query changes', async done => {
 		const Child: FC = () => {
 			const [name, setName] = useState('');
 			const queryConstructor = useCallback(
@@ -981,7 +981,7 @@ describe('useRxData', () => {
 			expect(screen.queryByText('loading')).not.toBeInTheDocument();
 
 			// data should now be rendered
-			characters.forEach((doc) => {
+			characters.forEach(doc => {
 				expect(screen.queryByText(doc.name)).toBeInTheDocument();
 			});
 
@@ -1013,8 +1013,8 @@ describe('useRxData', () => {
 			// just making sure the correct data are fetched
 			expect(screen.getByText('Yoda')).toBeInTheDocument();
 			characters
-				.filter((doc) => doc.name !== 'Yoda')
-				.forEach((doc) => {
+				.filter(doc => doc.name !== 'Yoda')
+				.forEach(doc => {
 					expect(
 						screen.queryByText(doc.name)
 					).not.toBeInTheDocument();
@@ -1028,18 +1028,18 @@ describe('useRxData', () => {
 describe('useRxData + lazy collection init', () => {
 	let db: MyDatabase;
 
-	beforeEach(async (done) => {
+	beforeEach(async done => {
 		// create db without collection + data
 		db = await createDatabase();
 		done();
 	});
 
-	afterEach(async (done) => {
+	afterEach(async done => {
 		await teardown(db);
 		done();
 	});
 
-	it('should read data from lazily created collection', async (done) => {
+	it('should read data from lazily created collection', async done => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
 				(c: RxCollection<Character>) => c.find(),
@@ -1084,7 +1084,7 @@ describe('useRxData + lazy collection init', () => {
 		// wait for data
 		await waitFor(async () => {
 			// data should now be rendered
-			characters.forEach((doc) => {
+			characters.forEach(doc => {
 				expect(screen.queryByText(doc.name)).toBeInTheDocument();
 			});
 		});
@@ -1092,7 +1092,7 @@ describe('useRxData + lazy collection init', () => {
 		done();
 	});
 
-	it('should read data from recreated collection', async (done) => {
+	it('should read data from recreated collection', async done => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
 				(c: RxCollection<Character>) => c.find(),
@@ -1143,12 +1143,12 @@ describe('useRxData + lazy collection init', () => {
 		// wait for data
 		await waitFor(async () => {
 			// data should now be rendered
-			characters.forEach((doc) => {
+			characters.forEach(doc => {
 				expect(screen.queryByText(doc.name)).toBeInTheDocument();
 			});
 
 			// initial (now deleted) wrong characters data should not be rendered
-			wrongCharacters.forEach((doc) => {
+			wrongCharacters.forEach(doc => {
 				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 			});
 		});

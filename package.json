@@ -17,7 +17,7 @@
 		"react-hooks"
 	],
 	"scripts": {
-		"prettier": "prettier --write \"src/**/*.{js,ts,jsx,tsx}\"",
+		"prettier": "prettier --write \"{src,tests}/**/*.{js,ts,jsx,tsx}\"",
 		"lint": "eslint \"src/**/*.{js,ts,jsx,tsx}\" --ignore-path .gitignore",
 		"test": "yarn jest --no-cache --forceExit --runInBand",
 		"build": "rimraf dist && tsc --project tsconfig.json",

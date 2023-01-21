@@ -35,9 +35,11 @@ describe('useRxQuery', () => {
 				return collection.find();
 			}, [collection]);
 
-			const { result: characters, isFetching, isExhausted } = useRxQuery<
-				Character
-			>(query);
+			const {
+				result: characters,
+				isFetching,
+				isExhausted,
+			} = useRxQuery<Character>(query);
 
 			return (
 				<CharacterList
