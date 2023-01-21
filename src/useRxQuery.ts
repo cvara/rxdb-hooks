@@ -104,7 +104,7 @@ export interface UseRxQueryOptions {
  * which returns a promise.
  */
 export type ObservableReturningQuery<T> =
-	| RxQuery<T, RxDocument<T>>
+	| RxQuery<T, RxDocument<T> | null>
 	| RxQuery<T, RxDocument<T>[]>;
 export type PromiseReturning<T> = Promise<ResultMap<T>>;
 export type AnyRxQuery<T> = ObservableReturningQuery<T> | PromiseReturning<T>;
@@ -235,7 +235,7 @@ const getResultLength = <T>(
 	return resultArray.length;
 };
 
-function useRxQuery<T>(query: AnyRxQuery<T>): RxQueryResultDoc<T>;
+function useRxQuery<T>(query?: AnyRxQuery<T>): RxQueryResultDoc<T>;
 
 function useRxQuery<T>(
 	query: AnyRxQuery<T>,
