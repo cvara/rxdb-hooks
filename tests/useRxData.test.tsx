@@ -1136,7 +1136,7 @@ describe('useRxData + lazy collection init', () => {
 		// lazily create the collection we've been waiting for
 		await act(async () => {
 			await setupCollection(db, wrongCharacters, 'characters');
-			await db.removeCollection('characters');
+			await db.collections.characters.remove();
 			await setupCollection(db, characters, 'characters');
 		});
 
