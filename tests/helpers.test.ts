@@ -3,7 +3,7 @@ import { getCancelablePromise } from '../src/helpers';
 
 describe('getCancelablePromise()', () => {
 	it('should allow uncancelled promises to resolve', () => {
-		const promise = new Promise<string>((resolve) => {
+		const promise = new Promise<string>(resolve => {
 			setTimeout(() => {
 				resolve('Voila');
 			}, 10);
@@ -23,7 +23,7 @@ describe('getCancelablePromise()', () => {
 	});
 
 	it('should allow cancelling resolving promises', async () => {
-		const promise = new Promise<string>((resolve) => {
+		const promise = new Promise<string>(resolve => {
 			setTimeout(() => {
 				resolve('Voila');
 			}, 10);
