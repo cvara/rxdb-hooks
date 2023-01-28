@@ -226,11 +226,8 @@ const getResultArray = <T>(
 };
 
 const getResultLength = <T>(
-	result: RxDocument<T>[] | RxDocument<T> | null
+	result: RxDocument<T>[] | RxDocument<T>
 ): number => {
-	if (!result) {
-		return 0;
-	}
 	const resultArray = Array.isArray(result) ? result : [result];
 	return resultArray.length;
 };

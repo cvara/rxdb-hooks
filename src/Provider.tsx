@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, PropsWithChildren } from 'react';
+import React, { useMemo, PropsWithChildren } from 'react';
 import { RxDatabase, addRxPlugin } from 'rxdb';
 import Context from './context';
 import { observeNewCollections, RxDatabaseBaseExtended } from './plugins';
@@ -8,14 +8,16 @@ export interface ProviderProps<Collections = any> {
 	idAttribute?: string;
 }
 
+/**
+ * TODO: Leave the plugin instantiation to the consumer (breaking change).
+ */
+addRxPlugin(observeNewCollections);
+
 const Provider = <C extends unknown>({
 	db,
 	idAttribute = '_id',
 	children,
 }: PropsWithChildren<ProviderProps<C>>): JSX.Element => {
-	useEffect(() => {
-		addRxPlugin(observeNewCollections);
-	}, []);
 	const context = useMemo(
 		() => ({
 			db: db as unknown as RxDatabaseBaseExtended,
