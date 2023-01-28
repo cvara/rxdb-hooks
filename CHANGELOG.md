@@ -1,5 +1,21 @@
 # Changelog
 
+## [4.1.0](https://github.com/cvara/rxdb-hooks/tree/4.1.0) (2023-01-28)
+
+[Full Changelog](https://github.com/cvara/rxdb-hooks/compare/4.0.3...4.1.0)
+
+**Implemented enhancements:**
+
+- Support RxDB 13 [\#64](https://github.com/cvara/rxdb-hooks/pull/64) ([cvara](https://github.com/cvara))
+
+**Merged pull requests:**
+
+- Minor type improvements [\#63](https://github.com/cvara/rxdb-hooks/pull/63) ([cvara](https://github.com/cvara))
+- Reformat tests with prettier [\#62](https://github.com/cvara/rxdb-hooks/pull/62) ([cvara](https://github.com/cvara))
+- Bump json5 from 2.2.0 to 2.2.3 [\#59](https://github.com/cvara/rxdb-hooks/pull/59) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump decode-uri-component from 0.2.0 to 0.2.2 [\#57](https://github.com/cvara/rxdb-hooks/pull/57) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Add tests for multiple databases [\#56](https://github.com/cvara/rxdb-hooks/pull/56) ([cvara](https://github.com/cvara))
+
 ## [4.0.3](https://github.com/cvara/rxdb-hooks/tree/4.0.3) (2022-06-11)
 
 [Full Changelog](https://github.com/cvara/rxdb-hooks/compare/4.0.2...4.0.3)
@@ -117,7 +133,6 @@
 
 **Merged pull requests:**
 
-- Bump dev dependencies [\#13](https://github.com/cvara/rxdb-hooks/pull/13) ([cvara](https://github.com/cvara))
 - Bump lodash from 4.17.15 to 4.17.19 [\#10](https://github.com/cvara/rxdb-hooks/pull/10) ([dependabot[bot]](https://github.com/apps/dependabot))
 
 ## [2.1.0](https://github.com/cvara/rxdb-hooks/tree/2.1.0) (2020-07-03)
@@ -130,6 +145,7 @@
 
 **Merged pull requests:**
 
+- Bump dev dependencies [\#13](https://github.com/cvara/rxdb-hooks/pull/13) ([cvara](https://github.com/cvara))
 - Improve coverage [\#9](https://github.com/cvara/rxdb-hooks/pull/9) ([cvara](https://github.com/cvara))
 
 ## [2.0.0](https://github.com/cvara/rxdb-hooks/tree/2.0.0) (2020-06-09)
