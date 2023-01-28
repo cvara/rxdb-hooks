@@ -744,17 +744,21 @@ describe('useRxData', () => {
 				result: characters,
 				isFetching,
 				isExhausted,
+				pageCount,
 			} = useRxData<Character>('characters', queryConstructor, {
 				pageSize: 2,
 				pagination: 'Traditional',
 			});
 
 			return (
-				<CharacterList
-					characters={characters}
-					isFetching={isFetching}
-					isExhausted={isExhausted}
-				/>
+				<>
+					<CharacterList
+						characters={characters}
+						isFetching={isFetching}
+						isExhausted={isExhausted}
+					/>
+					<div>page count {pageCount}</div>
+				</>
 			);
 		};
 
@@ -774,6 +778,10 @@ describe('useRxData', () => {
 			characters.slice(1).forEach(doc => {
 				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 			});
+		});
+
+		await waitFor(async () => {
+			expect(screen.getByText('page count 1')).toBeInTheDocument();
 		});
 
 		done();
