@@ -6,14 +6,7 @@ import {
 	isRxDocument,
 	isRxDatabase,
 } from 'rxdb';
-import memoryAdapter from 'pouchdb-adapter-memory';
-import { addPouchPlugin, getRxStoragePouch } from 'rxdb/plugins/pouchdb';
-
-/**
- * For how to use pouchdb memory adapter as a storage option in rxdb@10 see:
- * https://github.com/pubkey/rxdb/blob/master/orga/releases/10.0.0.md#the-main-thing-first
- */
-addPouchPlugin(memoryAdapter);
+import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 
 // Mimic typings used in official RxDB docs:
 // https://rxdb.info/tutorials/typescript.html
@@ -37,7 +30,7 @@ export const createDatabase = async (
 ): Promise<MyDatabase> => {
 	const db: MyDatabase = await createRxDatabase({
 		name: dbName,
-		storage: getRxStoragePouch('memory'),
+		storage: getRxStorageDexie(),
 		ignoreDuplicate: true,
 	});
 	return db;
