@@ -2,7 +2,6 @@ import { useEffect, useCallback, useReducer, Reducer } from 'react';
 import { RxQuery, RxDocument, isRxQuery } from 'rxdb';
 import { Override } from './type.helpers';
 import { DeepReadonly } from 'rxdb/dist/types/types';
-import { getCancelablePromise } from './helpers';
 
 export type ResultMap<T> = Map<string, RxDocument<T, any>>;
 export type AnyQueryResult<T> = DeepReadonly<T>[] | RxDocument<T>[];
@@ -98,16 +97,11 @@ export interface UseRxQueryOptions {
 	json?: boolean;
 }
 
-/**
- * Most query functions on RxCollection return RxQuery objects with
- * BehaviorSubject instances ($) attached to them except for .findByIds()
- * which returns a promise.
- */
 export type ObservableReturningQuery<T> =
+	| RxQuery<T, Map<string, RxDocument<T, any>>>
 	| RxQuery<T, RxDocument<T> | null>
 	| RxQuery<T, RxDocument<T>[]>;
-export type PromiseReturning<T> = Promise<ResultMap<T>>;
-export type AnyRxQuery<T> = ObservableReturningQuery<T> | PromiseReturning<T>;
+export type AnyRxQuery<T> = ObservableReturningQuery<T>;
 
 interface RxState<T> {
 	result: AnyQueryResult<T>;
@@ -212,7 +206,11 @@ const reducer = <T>(state: RxState<T>, action: AnyAction<T>): RxState<T> => {
 };
 
 const getResultArray = <T>(
-	result: RxDocument<T>[] | RxDocument<T> | ResultMap<T> | null,
+	result:
+		| RxDocument<T>[]
+		| RxDocument<T>
+		| Map<string, RxDocument<T, any>>
+		| null,
 	json?: boolean
 ): AnyQueryResult<T> => {
 	if (!result) {
@@ -302,7 +300,7 @@ function useRxQuery<T>(
 		dispatch({ type: ActionType.Reset });
 	}, [pageSize, state.page]);
 
-	const performObservableReturningQuery = useCallback(
+	const performQuery = useCallback(
 		(query: ObservableReturningQuery<T>) => {
 			// avoid re-assigning reference to original query
 			let _query = query;
@@ -341,38 +339,14 @@ function useRxQuery<T>(
 		[json, pageSize, pagination, state.page]
 	);
 
-	const performPromiseReturningQuery = useCallback(
-		(query: PromiseReturning<T>) => {
-			dispatch({
-				type: ActionType.QueryChanged,
-			});
-			const [cancelableQuery, cancel] = getCancelablePromise(query);
-			cancelableQuery.then(result => {
-				const docs = getResultArray(result, json);
-				dispatch({
-					type: ActionType.FetchSuccess,
-					docs,
-					pagination,
-					pageSize,
-				});
-			});
-			// to be used as cleanup code in useEffect
-			return cancel;
-		},
-		[json, pageSize, pagination]
-	);
-
 	useEffect(() => {
 		if (!query) {
 			return;
 		}
-		if ('then' in query) {
-			return performPromiseReturningQuery(query);
-		}
 		if (isRxQuery(query)) {
-			return performObservableReturningQuery(query);
+			return performQuery(query);
 		}
-	}, [query, performPromiseReturningQuery, performObservableReturningQuery]);
+	}, [query, performQuery]);
 
 	useEffect(() => {
 		if (
