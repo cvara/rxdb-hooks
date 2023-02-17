@@ -2,6 +2,7 @@
 	"extends": "./tsconfig",
 	"compilerOptions": {
 	  "target": "es6",
-	  "types": ["jest"]
+	  "types": ["jest"],
+	  "lib": ["ES2016",  "DOM"]
 	}
   }
