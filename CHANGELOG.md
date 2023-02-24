@@ -1,5 +1,18 @@
 # Changelog
 
+## [5.0.0](https://github.com/cvara/rxdb-hooks/tree/5.0.0) (2023-02-24)
+
+[Full Changelog](https://github.com/cvara/rxdb-hooks/compare/4.1.0...5.0.0)
+
+**Breaking changes:**
+
+- Support for lazy collection creation made opt-in [\#68](https://github.com/cvara/rxdb-hooks/pull/68) ([cvara](https://github.com/cvara))
+- Support RxDB 14 [\#66](https://github.com/cvara/rxdb-hooks/pull/66) ([cvara](https://github.com/cvara))
+
+**Merged pull requests:**
+
+- Bump minimatch from 3.0.4 to 3.1.2 [\#67](https://github.com/cvara/rxdb-hooks/pull/67) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [4.1.0](https://github.com/cvara/rxdb-hooks/tree/4.1.0) (2023-01-28)
 
 [Full Changelog](https://github.com/cvara/rxdb-hooks/compare/4.0.3...4.1.0)
@@ -133,6 +146,7 @@
 
 **Merged pull requests:**
 
+- Bump dev dependencies [\#13](https://github.com/cvara/rxdb-hooks/pull/13) ([cvara](https://github.com/cvara))
 - Bump lodash from 4.17.15 to 4.17.19 [\#10](https://github.com/cvara/rxdb-hooks/pull/10) ([dependabot[bot]](https://github.com/apps/dependabot))
 
 ## [2.1.0](https://github.com/cvara/rxdb-hooks/tree/2.1.0) (2020-07-03)
@@ -145,7 +159,6 @@
 
 **Merged pull requests:**
 
-- Bump dev dependencies [\#13](https://github.com/cvara/rxdb-hooks/pull/13) ([cvara](https://github.com/cvara))
 - Improve coverage [\#9](https://github.com/cvara/rxdb-hooks/pull/9) ([cvara](https://github.com/cvara))
 
 ## [2.0.0](https://github.com/cvara/rxdb-hooks/tree/2.0.0) (2020-06-09)
