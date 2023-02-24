@@ -25,6 +25,7 @@
 - [Installation](#installation)
 - [Example](#example)
 - [Compatibility with RxDB](#compatibility-with-rxdb)
+- [Migration Guide](#migration-guide)
 - [API](#api)
   - [`Provider`](#provider)
   - [`useRxDB`](#userxdb)
@@ -173,6 +174,12 @@ Please use the appropriate version of rxdb-hooks as per this table:
 | `1.x`, `2.x`       | `8.x`                  |
 
 _\* Versions 7.x of RxDB and below have not been tested and are not guaranteed to work with rxdb-hooks_
+
+## Migration Guide
+
+- `4.x` => `5.x`
+  - `useRxDocument` has been dropped; for fetching single documents simply use `useRxQuery` or `useRxData`
+  - observing lazily created collection has become an opt-in feature that, if needed, has to be explicitly enabled by using the provided plugin. For more info see [Lazy instantiation of RxDatabase & RxCollections](#lazy-instantiation-of-rxdatabase--rxcollections)
 
 ## API
 
