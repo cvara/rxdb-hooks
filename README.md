@@ -182,10 +182,9 @@ The `<Provider />` makes the RxDatabase instance available to nested components 
 
 #### Props
 
-| Property      | Type         | Description                                                                             |
-| ------------- | ------------ | --------------------------------------------------------------------------------------- |
-| `db`          | `RxDatabase` | the RxDatabase instance to consume data from                                            |
-| `idAttribute` | `string`     | (optional) used by `useRxDocument` when querying for single documents. Default: `"_id"` |
+| Property | Type         | Description                                  |
+| -------- | ------------ | -------------------------------------------- |
+| `db`     | `RxDatabase` | the RxDatabase instance to consume data from |
 
 <hr />
 
@@ -364,37 +363,6 @@ const { result } = useRxData('characters', collection =>
 ```
 
 <hr />
-
-### `useRxDocument`
-
-Convenience hook for fetching a single document from a collection.
-
-```javascript
-function useRxDocument<T>(
-	collectionName: string,
-	id?: string | number,
-	options?: UseRxDocumentOptions
-): RxDocumentRet<T>
-```
-
-#### `id`
-
-The id of the document
-
-#### `options`
-
-| Option        | Type      | Required | Default | Description                                                                                      |
-| ------------- | --------- | :------: | :-----: | ------------------------------------------------------------------------------------------------ |
-| `idAttribute` | `string`  |    -     | `"_id"` | enables overriding the id attribute; has precedence over `idAttribute` set by the `<Provider />` |
-| `json`        | `boolean` |    -     | `false` | converts resulting RxDocument to plain javascript object                                         |
-
-#### Example
-
-```javascript
-const { result: Yoda } = useRxDocument('characters', 'Yoda', {
-  idAttribute: 'name',
-});
-```
 
 ## Recipes
 

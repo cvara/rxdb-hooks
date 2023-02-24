@@ -5,7 +5,6 @@ import { observeNewCollections, RxDatabaseBaseExtended } from './plugins';
 
 export interface ProviderProps<Collections = any> {
 	db?: RxDatabase<Collections>;
-	idAttribute?: string;
 }
 
 /**
@@ -15,15 +14,13 @@ addRxPlugin(observeNewCollections);
 
 const Provider = <C extends unknown>({
 	db,
-	idAttribute = '_id',
 	children,
 }: PropsWithChildren<ProviderProps<C>>): JSX.Element => {
 	const context = useMemo(
 		() => ({
 			db: db as unknown as RxDatabaseBaseExtended,
-			idAttribute,
 		}),
-		[db, idAttribute]
+		[db]
 	);
 	return <Context.Provider value={context}>{children}</Context.Provider>;
 };
