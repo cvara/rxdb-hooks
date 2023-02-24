@@ -411,7 +411,23 @@ const { result } = useRxData('characters', queryConstructor);
 
 All rxdb-hooks give you the ability to lazily instantiate the database and the
 collections within it. Initial delay until the above become available is absorbed
-by indicating the state as fetching (`isFetching:true`)
+by indicating the state as fetching (`isFetching:true`).
+
+Since `v5.0.0` of `rxdb-hooks`, observing newly created collections has become
+an **opt-in** feature that, _if needed_, has to be enabled via the provided `observeNewCollections` plugin:
+
+```javascript
+import { addRxPlugin } from 'rxdb';
+import { observeNewCollections } from 'rxdb-hooks';
+
+addRxPlugin(observeNewCollections);
+```
+
+Adding the plugin makes it possible for all rxdb-hooks to pick up data from
+collections that are lazily added after the inital db initialization.
+
+Also note that lazily instantiating the rxdb instance itself is supported
+out-of-the-box, **the plugin only affects lazy collection creation**.
 
 ### Mutations
 
