@@ -168,6 +168,7 @@ Please use the appropriate version of rxdb-hooks as per this table:
 
 | rxdb-hooks version | targeted RxDB version  |
 | ------------------ | ---------------------- |
+| `5.x`              | `14.x`                 |
 | `4.1.x`            | `13.x`                 |
 | `4.0.x`            | `10.x`, `11.x`, `12.x` |
 | `3.x`              | `9.x`                  |
@@ -177,9 +178,10 @@ _\* Versions 7.x of RxDB and below have not been tested and are not guaranteed t
 
 ## Migration Guide
 
-- `4.x` => `5.x`
-  - `useRxDocument` has been dropped; for fetching single documents simply use `useRxQuery` or `useRxData`
-  - observing lazily created collection has become an opt-in feature that, if needed, has to be explicitly enabled by using the provided plugin. For more info see [Lazy instantiation of RxDatabase & RxCollections](#lazy-instantiation-of-rxdatabase--rxcollections)
+### `4.x` => `5.x`
+
+- `useRxDocument` has been dropped; for fetching single documents simply use `useRxQuery` or `useRxData`
+- observing lazily created collection has become an opt-in feature that, if needed, has to be explicitly enabled by using the provided plugin. For more info see [Lazy instantiation of RxDatabase & RxCollections](#lazy-instantiation-of-rxdatabase--rxcollections)
 
 ## API
 
