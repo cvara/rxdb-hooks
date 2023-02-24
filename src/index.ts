@@ -10,3 +10,4 @@ export { default as useRxDB } from './useRxDB';
 export * from './useRxDB';
 export { default as useRxQuery } from './useRxQuery';
 export * from './useRxQuery';
+export * from './plugins';
