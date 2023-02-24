@@ -8,11 +8,14 @@ import {
 	MyDatabase,
 } from './helpers';
 import { render, screen, waitFor } from '@testing-library/react';
-import { RxCollection } from 'rxdb';
+import { RxCollection, addRxPlugin } from 'rxdb';
 import useRxData from '../src/useRxData';
 import Provider from '../src/Provider';
+import { observeNewCollections } from '../src/plugins';
 import { characters } from './mockData';
 import { act } from 'react-dom/test-utils';
+
+addRxPlugin(observeNewCollections);
 
 describe('useRxData + lazy collection init', () => {
 	let db: MyDatabase;
