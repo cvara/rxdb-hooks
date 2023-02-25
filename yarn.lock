@@ -241,17 +241,17 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.14.5"
 
-"@babel/runtime@7.20.13":
-  version "7.20.13"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.20.13.tgz#7055ab8a7cff2b8f6058bf6ae45ff84ad2aded4b"
-  integrity sha512-gt3PKXs0DBoL9xCvOIIZ2NEqAGZqHjAnmVbfQtB620V0uReIQutpel14KcneZuer7UioY8ALKZ7iocavvzTNFA==
-  dependencies:
-    regenerator-runtime "^0.13.11"
-
 "@babel/runtime@7.20.7":
   version "7.20.7"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.20.7.tgz#fcb41a5a70550e04a7b708037c7c32f7f356d8fd"
   integrity sha512-UF0tvkUtxwAgZ5W/KrkHf0Rn0fdnLDU9ScxBrEVNUprE/MzirjK4MJUX1/BVDv00Sv8cljtukVK1aky++X1SjQ==
+  dependencies:
+    regenerator-runtime "^0.13.11"
+
+"@babel/runtime@7.21.0":
+  version "7.21.0"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.21.0.tgz#5b55c9d394e5fcf304909a8b00c07dc217b56673"
+  integrity sha512-xwII0//EObnq89Ji5AKYQaRYiW/nZ3llSv29d49IuxPhKbtJoLP+9QUUZ4nVragQVtaVGeZrpB+ZtG/Pdy/POw==
   dependencies:
     regenerator-runtime "^0.13.11"
 
@@ -5525,12 +5525,12 @@ run-parallel@^1.1.9:
   dependencies:
     queue-microtask "^1.2.2"
 
-rxdb@~14.0.3:
-  version "14.0.3"
-  resolved "https://registry.yarnpkg.com/rxdb/-/rxdb-14.0.3.tgz#732c700d544f7bfdcbf15b713b9e46f0b9128bad"
-  integrity sha512-rc0wdsqkUta1i8oM/ljZhpMY2dJ9d2jgUpmmixsBa9ESZe30WMTzf5Nb+HtiCIC4EnmoGNne52LaZBfQi+WPPw==
+rxdb@14.1.1:
+  version "14.1.1"
+  resolved "https://registry.yarnpkg.com/rxdb/-/rxdb-14.1.1.tgz#ccd588f7f6cd844c6478c9655742c8ec25e58493"
+  integrity sha512-kBOla/d62HqORsWBAyozTFypmdufZH8BOVM1XymkQ7rBAQmRMhORw5CU8+sUubakyTAGfTtvYGMJ6K+lZZkI+Q==
   dependencies:
-    "@babel/runtime" "7.20.13"
+    "@babel/runtime" "7.21.0"
     "@types/clone" "2.1.1"
     "@types/cors" "2.8.13"
     "@types/express" "4.17.17"
@@ -5561,7 +5561,7 @@ rxdb@~14.0.3:
     pouchdb-selector-core "8.0.1"
     reconnecting-websocket "4.4.0"
     simple-peer "9.11.1"
-    socket.io-client "4.6.0"
+    socket.io-client "4.6.1"
     unload "2.4.1"
     util "0.12.5"
     ws "8.12.1"
@@ -5773,10 +5773,10 @@ snapdragon@^0.8.1:
     source-map-resolve "^0.5.0"
     use "^3.1.0"
 
-socket.io-client@4.6.0:
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/socket.io-client/-/socket.io-client-4.6.0.tgz#449255d2e0fe429f5ab47ecd3e3b1716b0039c13"
-  integrity sha512-2XOp18xnGghUICSd5ziUIS4rB0dhr6S8OvAps8y+HhOjFQlqGcf+FIh6fCIsKKZyWFxJeFPrZRNPGsHDTsz1Ug==
+socket.io-client@4.6.1:
+  version "4.6.1"
+  resolved "https://registry.yarnpkg.com/socket.io-client/-/socket.io-client-4.6.1.tgz#80d97d5eb0feca448a0fb6d69a7b222d3d547eab"
+  integrity sha512-5UswCV6hpaRsNg5kkEHVcbBIXEYoVbMQaHJBXJCyEQ+CiFPV1NIOY0XOFWG4XR4GZcB8Kn6AsRs/9cy9TbqVMQ==
   dependencies:
     "@socket.io/component-emitter" "~3.1.0"
     debug "~4.3.2"
