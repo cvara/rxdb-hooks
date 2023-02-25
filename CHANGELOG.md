@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.0.1](https://github.com/cvara/rxdb-hooks/tree/5.0.1) (2023-02-25)
+
+[Full Changelog](https://github.com/cvara/rxdb-hooks/compare/5.0.0...5.0.1)
+
+**Merged pull requests:**
+
+- Bump rxdb to 14.1.1 [\#69](https://github.com/cvara/rxdb-hooks/pull/69) ([cvara](https://github.com/cvara))
+
 ## [5.0.0](https://github.com/cvara/rxdb-hooks/tree/5.0.0) (2023-02-24)
 
 [Full Changelog](https://github.com/cvara/rxdb-hooks/compare/4.1.0...5.0.0)
@@ -127,14 +135,11 @@
 **Merged pull requests:**
 
 - Bump node-notifier from 8.0.0 to 8.0.1 [\#20](https://github.com/cvara/rxdb-hooks/pull/20) ([dependabot[bot]](https://github.com/apps/dependabot))
+- useRxDocument typings support numeric id [\#19](https://github.com/cvara/rxdb-hooks/pull/19) ([cvara](https://github.com/cvara))
 
 ## [2.1.2](https://github.com/cvara/rxdb-hooks/tree/2.1.2) (2020-12-04)
 
 [Full Changelog](https://github.com/cvara/rxdb-hooks/compare/2.1.1...2.1.2)
-
-**Merged pull requests:**
-
-- useRxDocument typings support numeric id [\#19](https://github.com/cvara/rxdb-hooks/pull/19) ([cvara](https://github.com/cvara))
 
 ## [2.1.1](https://github.com/cvara/rxdb-hooks/tree/2.1.1) (2020-08-28)
 
