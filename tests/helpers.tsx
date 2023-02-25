@@ -51,9 +51,11 @@ export const setupCollection = async (
 				properties: {
 					id: {
 						type: 'string',
+						maxLength: 100,
 					},
 					name: {
 						type: 'string',
+						maxLength: 100,
 					},
 					affiliation: {
 						type: 'string',

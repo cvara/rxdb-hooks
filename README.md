@@ -144,6 +144,7 @@ const initialize = async () => {
         properties: {
           id: {
             type: 'string',
+            maxLength: 100,
           },
           name: {
             type: 'string',
