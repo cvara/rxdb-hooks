@@ -1,3 +1,5 @@
+import { RxQuery } from 'rxdb';
+
 /**
  * Second variable in array is a function that can be invoked to cancel the promise.
  */
@@ -36,4 +38,20 @@ export const getCancelablePromise = <T>(
 			hasCanceled = true;
 		},
 	];
+};
+
+export const isObject = (val: unknown): val is Record<string, unknown> => {
+	return typeof val === 'object' && val !== null;
+};
+
+export const isRxQuery = (val: unknown): val is RxQuery => {
+	return (
+		isObject(val) &&
+		'skip' in val &&
+		'limit' in val &&
+		'$' in val &&
+		isObject(val.$) &&
+		'subscribe' in val.$ &&
+		typeof val.$.subscribe === 'function'
+	);
 };
