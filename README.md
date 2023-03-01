@@ -1,20 +1,25 @@
 # rxdb-hooks
 
+#### React hooks for integrating with [RxDB](https://github.com/pubkey/rxdb)
+
+<a href="https://www.npmjs.com/package/rxdb-hooks">
+  <img src="https://img.shields.io/npm/v/rxdb-hooks?color=%23E6008D&style=flat-square" alt="npm version">
+</a>
+
 <a href="https://circleci.com/gh/cvara/rxdb-hooks/tree/master">
-  <img src="https://circleci.com/gh/cvara/rxdb-hooks/tree/master.svg?style=shield" />
+  <img src="https://img.shields.io/circleci/build/github/cvara/rxdb-hooks/master?style=flat-square" />
 </a>
 
 <a href="https://codecov.io/gh/cvara/rxdb-hooks">
-  <img src="https://codecov.io/gh/cvara/rxdb-hooks/branch/master/graph/badge.svg" />
+  <img src="https://img.shields.io/codecov/c/github/cvara/rxdb-hooks?style=flat-square" />
 </a>
 
-<a href="https://www.npmjs.com/package/rxdb-hooks">
-  <img src="https://badge.fury.io/js/rxdb-hooks.svg" alt="npm version">
-</a>
 
 <a href="https://www.npmjs.com/package/rxdb-hooks">
-  <img src="https://img.shields.io/npm/dm/rxdb-hooks.svg" alt="downloads">
+  <img src="https://img.shields.io/npm/dm/rxdb-hooks?color=%233498db&style=flat-square" alt="downloads">
 </a>
+
+
 
 ## Table of Contents
 
@@ -42,8 +47,6 @@
 </details>
 
 ## About
-
-A set of simple hooks for integrating a React application with [RxDB](https://github.com/pubkey/rxdb).
 
 Nothing fancy, just conveniently handles common use cases such as:
 
