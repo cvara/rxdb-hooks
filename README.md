@@ -310,7 +310,7 @@ const collection = useRxCollection('characters');
 
 const query = collection.find({
   selector: {
-    affiliation: 'jedi',
+    affiliation: 'Jedi',
   },
 });
 
