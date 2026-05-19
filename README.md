@@ -2,6 +2,9 @@
 
 #### React hooks for integrating with [RxDB](https://github.com/pubkey/rxdb)
 
+> [!NOTE]
+> Since [`17.0.0-beta.7`](https://rxdb.info/releases/17.0.0.html), RxDB ships its own official React hooks plugin — see the [RxDB React integration guide](https://rxdb.info/react.html). If you're starting a new project on RxDB ≥ 17, the official plugin is the recommended choice. `rxdb-hooks` continues to be maintained for projects on the RxDB versions listed in the [compatibility table](#compatibility-with-rxdb) below.
+
 <a href="https://www.npmjs.com/package/rxdb-hooks">
   <img src="https://img.shields.io/npm/v/rxdb-hooks?color=%23E6008D&style=flat-square" alt="npm version">
 </a>
