@@ -1,5 +1,16 @@
 # Changelog
 
+## [v5.0.3](https://github.com/cvara/rxdb-hooks/tree/v5.0.3) (2026-05-19)
+
+[Full Changelog](https://github.com/cvara/rxdb-hooks/compare/5.0.2...v5.0.3)
+
+**Merged pull requests:**
+
+- docs: mention official RxDB react-hooks plugin [\#94](https://github.com/cvara/rxdb-hooks/pull/94) ([cvara](https://github.com/cvara))
+- chore: refresh yarn.lock \(May 2026\) [\#92](https://github.com/cvara/rxdb-hooks/pull/92) ([cvara](https://github.com/cvara))
+- Bump webpack from 5.75.0 to 5.76.0 [\#76](https://github.com/cvara/rxdb-hooks/pull/76) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Fix confusing lowercased `jedi` in query [\#75](https://github.com/cvara/rxdb-hooks/pull/75) ([samyok](https://github.com/samyok))
+
 ## [5.0.2](https://github.com/cvara/rxdb-hooks/tree/5.0.2) (2023-02-27)
 
 [Full Changelog](https://github.com/cvara/rxdb-hooks/compare/5.0.1...5.0.2)
