@@ -1,5 +1,13 @@
 # Changelog
 
+## [v6.0.0](https://github.com/cvara/rxdb-hooks/tree/v6.0.0) (2026-05-20)
+
+[Full Changelog](https://github.com/cvara/rxdb-hooks/compare/v5.0.3...v6.0.0)
+
+**Merged pull requests:**
+
+- feat: rxdb 15 & 16 compatibility \(closes \#95\) [\#96](https://github.com/cvara/rxdb-hooks/pull/96) ([cvara](https://github.com/cvara))
+
 ## [v5.0.3](https://github.com/cvara/rxdb-hooks/tree/v5.0.3) (2026-05-19)
 
 [Full Changelog](https://github.com/cvara/rxdb-hooks/compare/5.0.2...v5.0.3)
