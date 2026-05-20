@@ -27,7 +27,7 @@ RXDB_VERSION="$1"
 shift
 
 RXJS_VERSION=""
-if [ "$#" -gt 0 ] && [ "$1" != "--" ]; then
+if [ "$#" -gt 0 ] && [ "$1" != "--" ] && [[ "$1" != -* ]]; then
 	RXJS_VERSION="$1"
 	shift
 fi
