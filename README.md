@@ -175,6 +175,7 @@ Please use the appropriate version of rxdb-hooks as per this table:
 
 | rxdb-hooks version | targeted RxDB version  |
 | ------------------ | ---------------------- |
+| `6.x`              | `14.x`, `15.x`, `16.x` |
 | `5.x`              | `14.x`                 |
 | `4.1.x`            | `13.x`                 |
 | `4.0.x`            | `10.x`, `11.x`, `12.x` |
@@ -182,6 +183,8 @@ Please use the appropriate version of rxdb-hooks as per this table:
 | `1.x`, `2.x`       | `8.x`                  |
 
 _\* Versions 7.x of RxDB and below have not been tested and are not guaranteed to work with rxdb-hooks_
+
+> **Note:** `rxdb-hooks@6` requires TypeScript ≥ 5 (consumer-side), in line with the RxDB 15+ toolchain requirements. If you are still on TypeScript 4.x, stay on `rxdb-hooks@5`.
 
 ## Migration Guide
 
