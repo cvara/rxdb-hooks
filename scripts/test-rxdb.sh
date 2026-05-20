@@ -13,10 +13,26 @@
 #   scripts/test-rxdb.sh 16 7
 #
 # The script installs the requested versions via `yarn add --dev` *without*
-# updating the lockfile (--no-lockfile) so the working tree's recorded
-# devDependency version is not perturbed.
+# updating the lockfile (--no-lockfile). `yarn add` still rewrites
+# package.json, so we snapshot package.json + yarn.lock up-front and restore
+# them on EXIT (success, failure, or interrupt) so the working tree is left
+# clean regardless of how the run terminates.
 
 set -euo pipefail
+
+SNAPSHOT_DIR="$(mktemp -d)"
+cp package.json "$SNAPSHOT_DIR/package.json"
+cp yarn.lock "$SNAPSHOT_DIR/yarn.lock"
+
+restore_manifest() {
+	local exit_code=$?
+	echo "==> Restoring package.json and yarn.lock"
+	cp "$SNAPSHOT_DIR/package.json" package.json
+	cp "$SNAPSHOT_DIR/yarn.lock" yarn.lock
+	rm -rf "$SNAPSHOT_DIR"
+	exit "$exit_code"
+}
+trap restore_manifest EXIT INT TERM
 
 if [ "$#" -lt 1 ]; then
 	echo "Usage: $0 <rxdb-version> [rxjs-version] [-- <extra jest args>]" >&2
