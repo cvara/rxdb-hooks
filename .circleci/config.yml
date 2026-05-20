@@ -12,22 +12,14 @@ orbs:
   codecov: codecov/codecov@3.2.2
 
 jobs:
-  # Below is the definition of your job to build and test your app, you can rename and customize it as you want.
+  # Lint, typecheck, and run the test suite against the recorded
+  # devDependency version of rxdb (currently 14.x).
   test:
-    # These next lines define a Docker executor: https://circleci.com/docs/2.0/executor-types/
-    # You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # A list of available CircleCI Docker Convenience Images are available here: https://circleci.com/developer/images/image/cimg/node
     docker:
-      - image: cimg/node:16.10
-    # Then run your tests!
-    # CircleCI will report the results back to your VCS provider.
+      - image: cimg/node:20.18
     steps:
-      # Checkout the code as the first step.
       - checkout
-      # Next, the node orb's install-packages step will install the dependencies from a package.json.
-      # The orb install-packages step will also automatically cache them for faster future runs.
       - node/install-packages:
-          # If you are using yarn, change the line below from "npm" to "yarn"
           pkg-manager: yarn
       - run:
           name: Run linter
@@ -41,13 +33,29 @@ jobs:
       - codecov/upload:
           file: coverage/lcov.info
 
+  # Run the test suite against an alternative rxdb major. Parametrized so
+  # we can add new majors without copy/pasting the whole job body.
+  test-rxdb-version:
+    parameters:
+      rxdb_version:
+        type: string
+    docker:
+      - image: cimg/node:20.18
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          name: Run tests against rxdb << parameters.rxdb_version >>
+          command: scripts/test-rxdb.sh << parameters.rxdb_version >>
+
 workflows:
-  # Below is the definition of your workflow.
-  # Inside the workflow, you provide the jobs you want to run, e.g this workflow runs the test job above.
-  # CircleCI will run this workflow on every commit.
-  # For more details on extending your workflow, see the configuration docs: https://circleci.com/docs/2.0/configuration-reference/#workflows
-  sample:
+  test-matrix:
     jobs:
       - test
-      # For running simple node tests, you could optionally use the node/test job from the orb to replicate and replace the job above in fewer lines.
-      # - node/test
+      - test-rxdb-version:
+          name: test-rxdb-15
+          rxdb_version: "15"
+      - test-rxdb-version:
+          name: test-rxdb-16
+          rxdb_version: "16"
