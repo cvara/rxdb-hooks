@@ -1,7 +1,6 @@
 import { useEffect, useCallback, useReducer, Reducer } from 'react';
 import { RxQuery, RxDocument } from 'rxdb';
-import { DeepReadonly } from 'rxdb/dist/types/types';
-import { Override } from './type.helpers';
+import { Override, DeepReadonly } from './type.helpers';
 import { isRxQuery } from './helpers';
 
 export type ResultMap<T> = Map<string, RxDocument<T, any>>;
