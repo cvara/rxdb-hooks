@@ -79,7 +79,7 @@
 	"peerDependencies": {
 		"react": ">=16.8",
 		"react-dom": ">=16.8",
-		"rxdb": ">=14",
+		"rxdb": ">=14 <17",
 		"rxjs": ">=7.5.4"
 	},
 	"resolutions": {
