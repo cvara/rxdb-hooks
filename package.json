@@ -1,6 +1,6 @@
 {
 	"name": "rxdb-hooks",
-	"version": "5.0.3",
+	"version": "6.0.0",
 	"description": "React hooks for integrating with RxDB",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
@@ -20,6 +20,10 @@
 		"prettier": "prettier --write \"{src,tests}/**/*.{js,ts,jsx,tsx}\"",
 		"lint": "eslint \"src/**/*.{js,ts,jsx,tsx}\" --ignore-path .gitignore",
 		"test": "yarn jest --no-cache --forceExit --runInBand",
+		"test:rxdb14": "scripts/test-rxdb.sh 14",
+		"test:rxdb15": "scripts/test-rxdb.sh 15",
+		"test:rxdb16": "scripts/test-rxdb.sh 16",
+		"test:rxdb-matrix": "yarn test:rxdb14 && yarn test:rxdb15 && yarn test:rxdb16",
 		"build": "rimraf dist && tsc --project tsconfig.json",
 		"prepack": "yarn build",
 		"typecheck": "tsc --noEmit",
@@ -36,7 +40,8 @@
 		"@testing-library/jest-dom": "^5.16.1",
 		"@testing-library/react": "^12.1.2",
 		"@testing-library/react-hooks": "^7.0.2",
-		"@types/jest": "^25.2.3",
+		"@types/jest": "^29",
+		"@types/node": "^20",
 		"@types/react": "^17.0.38",
 		"@typescript-eslint/eslint-plugin": "^5.9.0",
 		"@typescript-eslint/parser": "^5.9.0",
@@ -50,7 +55,8 @@
 		"fake-indexeddb": "^4.0.1",
 		"html-webpack-plugin": "^5.5.0",
 		"husky": "^4.2.3",
-		"jest": "^26.0.1",
+		"jest": "^29",
+		"jest-environment-jsdom": "^29",
 		"parcel": "^2.8.3",
 		"pouchdb-adapter-memory": "^7.2.1",
 		"prettier": "^2.6.2",
@@ -63,9 +69,9 @@
 		"rxdb": "14.1.1",
 		"rxjs": "^7.5.7",
 		"shelljs": "^0.8.4",
-		"ts-jest": "^26.0.0",
+		"ts-jest": "^29",
 		"ts-loader": "^9.4.2",
-		"typescript": "^4.9.5",
+		"typescript": "^5",
 		"webpack": "^5.75.0",
 		"webpack-cli": "^5.0.1",
 		"webpack-dev-server": "^4.11.1"
@@ -73,10 +79,11 @@
 	"peerDependencies": {
 		"react": ">=16.8",
 		"react-dom": ">=16.8",
-		"rxdb": ">=14",
+		"rxdb": ">=14 <17",
 		"rxjs": ">=7.5.4"
 	},
 	"resolutions": {
 		"minimist": "1.2.5"
-	}
+	},
+	"packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

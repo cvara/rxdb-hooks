@@ -13,14 +13,12 @@ addRxPlugin(RxDBDevModePlugin);
 describe('when RxDBDevModePlugin', () => {
 	let db: MyDatabase;
 
-	beforeAll(async done => {
+	beforeAll(async () => {
 		db = await setup(characters, 'characters');
-		done();
 	});
 
-	afterAll(async done => {
+	afterAll(async () => {
 		await teardown(db);
-		done();
 	});
 
 	describe('useRxDB', () => {

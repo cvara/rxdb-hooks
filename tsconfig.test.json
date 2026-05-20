@@ -1,8 +1,14 @@
 {
 	"extends": "./tsconfig",
 	"compilerOptions": {
-	  "target": "es6",
-	  "types": ["jest"],
-	  "lib": ["ES2016",  "DOM"]
-	}
-  }
+		"target": "ES2019",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"types": ["jest", "node"],
+		"lib": ["ES2019", "DOM"],
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"skipLibCheck": true
+	},
+	"include": ["src", "tests"]
+}

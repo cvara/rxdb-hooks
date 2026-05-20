@@ -1,12 +1,23 @@
 import { Subject } from 'rxjs';
-import { RxCollection, RxPlugin } from 'rxdb';
-import { RxDatabaseBase } from 'rxdb/dist/types/rx-database';
+import { RxCollection, RxDatabase, RxPlugin } from 'rxdb';
 
 type CollectionRecord = Record<string, RxCollection>;
-export type RxDatabaseBaseExtended<
-	Internals = any,
-	Options = any
-> = RxDatabaseBase<Internals, Options> & {
+
+/**
+ * Minimal shape of the `RxDatabase` prototype that the `observeNewCollections`
+ * plugin patches at runtime.
+ *
+ * We intentionally avoid importing `RxDatabaseBase` from `rxdb/dist/types/...`
+ * so the library does not depend on rxdb's internal subpath exports, which
+ * are not part of the public API and have shifted between major versions of
+ * rxdb (14 → 15 → 16).
+ */
+type RxDatabasePrototype = {
+	addCollections: RxDatabase['addCollections'];
+	newCollections$?: Subject<CollectionRecord>;
+};
+
+export type RxDatabaseBaseExtended = RxDatabase & {
 	newCollections$?: Subject<CollectionRecord>;
 };
 
@@ -18,7 +29,7 @@ export const observeNewCollections: RxPlugin = {
 	name: 'new-collection-observer',
 	rxdb: true,
 	prototypes: {
-		RxDatabase: (proto: RxDatabaseBaseExtended) => {
+		RxDatabase: (proto: RxDatabasePrototype) => {
 			const newCollections$ = new Subject<CollectionRecord>();
 			proto.newCollections$ = newCollections$;
 

@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  lint-typecheck:
+    name: Lint & typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile
+      - run: yarn lint
+      - run: yarn typecheck
+
+  test:
+    name: Test (rxdb ${{ matrix.rxdb }})
+    needs: lint-typecheck
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        rxdb: ['14', '15', '16']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile
+      - name: Run tests
+        env:
+          RXDB_VERSION: ${{ matrix.rxdb }}
+        run: |
+          if [ "$RXDB_VERSION" = "14" ]; then
+            yarn test
+          else
+            bash scripts/test-rxdb.sh "$RXDB_VERSION"
+          fi
+      - name: Upload coverage to Codecov
+        if: matrix.rxdb == '14'
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage/lcov.info
+          token: ${{ secrets.CODECOV_TOKEN }}

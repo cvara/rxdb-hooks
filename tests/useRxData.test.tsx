@@ -20,17 +20,15 @@ addRxPlugin(RxDBQueryBuilderPlugin);
 describe('useRxData', () => {
 	let db: MyDatabase;
 
-	beforeAll(async done => {
+	beforeAll(async () => {
 		db = await setup(characters, 'characters');
-		done();
 	});
 
-	afterAll(async done => {
+	afterAll(async () => {
 		await teardown(db);
-		done();
 	});
 
-	it('should read all data from a collection', async done => {
+	it('should read all data from a collection', async () => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
 				(c: RxCollection<Character>) => c.find(),
@@ -117,8 +115,6 @@ describe('useRxData', () => {
 		characters.forEach(doc => {
 			expect(screen.queryByText(doc.name)).toBeInTheDocument();
 		});
-
-		done();
 	});
 
 	it('should support queries based on findByIds()', async () => {
@@ -233,7 +229,7 @@ describe('useRxData', () => {
 		});
 	});
 
-	it('should return data in JSON format', async done => {
+	it('should return data in JSON format', async () => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
 				(c: RxCollection<Character>) => c.find(),
@@ -278,16 +274,17 @@ describe('useRxData', () => {
 			// result should be an array of plain objects
 			expect(screen.getByText('JSON')).toBeInTheDocument();
 		});
-
-		done();
 	});
 
-	it('should support infinite scroll pagination', async done => {
+	it('should support infinite scroll pagination', async () => {
 		const pageSize = 2;
 
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
-				(c: RxCollection<Character>) => c.find(),
+				// explicit sort makes the result order deterministic across
+				// rxdb majors (v16's dexie storage no longer guarantees
+				// insertion-order for unsorted queries when an index exists)
+				(c: RxCollection<Character>) => c.find().sort('id'),
 				[]
 			);
 			const {
@@ -456,16 +453,15 @@ describe('useRxData', () => {
 		characters.slice(pageSize).forEach(doc => {
 			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 		});
-
-		done();
 	});
 
-	it('should support traditional pagination', async done => {
+	it('should support traditional pagination', async () => {
 		const pageSize = 2;
 
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
-				(c: RxCollection<Character>) => c.find(),
+				// see note above re: explicit sort for cross-version determinism
+				(c: RxCollection<Character>) => c.find().sort('id'),
 				[]
 			);
 			const {
@@ -612,11 +608,9 @@ describe('useRxData', () => {
 		// should not be loading and should remain on same page
 		expect(screen.queryByText('loading')).not.toBeInTheDocument();
 		expect(screen.getByText('page count: 3')).toBeInTheDocument();
-
-		done();
 	});
 
-	it('should handle null result during traditional pagination', async done => {
+	it('should handle null result during traditional pagination', async () => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
 				(c: RxCollection<Character>) =>
@@ -657,11 +651,9 @@ describe('useRxData', () => {
 				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 			});
 		});
-
-		done();
 	});
 
-	it('should handle non-array result in traditional pagination', async done => {
+	it('should handle non-array result in traditional pagination', async () => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
 				(c: RxCollection<Character>) =>
@@ -711,11 +703,9 @@ describe('useRxData', () => {
 		await waitFor(async () => {
 			expect(screen.getByText('page count 1')).toBeInTheDocument();
 		});
-
-		done();
 	});
 
-	it('should always convert results to array', async done => {
+	it('should always convert results to array', async () => {
 		const idToSearchFor = '1';
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
@@ -756,11 +746,9 @@ describe('useRxData', () => {
 				}
 			});
 		});
-
-		done();
 	});
 
-	it('should handle missing query', async done => {
+	it('should handle missing query', async () => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(() => undefined, []);
 			const {
@@ -789,11 +777,9 @@ describe('useRxData', () => {
 		expect(screen.getByText('loading')).toBeInTheDocument();
 		await delay(20);
 		expect(screen.getByText('loading')).toBeInTheDocument();
-
-		done();
 	});
 
-	it('should handle missing collection', async done => {
+	it('should handle missing collection', async () => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
 				(c: RxCollection<Character>) => c.find(),
@@ -824,11 +810,9 @@ describe('useRxData', () => {
 		expect(screen.getByText('loading')).toBeInTheDocument();
 		await delay(20);
 		expect(screen.getByText('loading')).toBeInTheDocument();
-
-		done();
 	});
 
-	it('should handle missing database', async done => {
+	it('should handle missing database', async () => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
 				(c: RxCollection<Character>) => c.find(),
@@ -859,11 +843,9 @@ describe('useRxData', () => {
 		expect(screen.getByText('loading')).toBeInTheDocument();
 		await delay(20);
 		expect(screen.getByText('loading')).toBeInTheDocument();
-
-		done();
 	});
 
-	it('should set isFetching to true whenever the query changes', async done => {
+	it('should set isFetching to true whenever the query changes', async () => {
 		const Child: FC = () => {
 			const [name, setName] = useState('');
 			const queryConstructor = useCallback(
@@ -954,7 +936,5 @@ describe('useRxData', () => {
 					).not.toBeInTheDocument();
 				});
 		});
-
-		done();
 	});
 });

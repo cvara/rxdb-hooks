@@ -7,6 +7,12 @@ import {
 	isRxDatabase,
 } from 'rxdb';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
+import { wrappedValidateAjvStorage } from 'rxdb/plugins/validate-ajv';
+
+// rxdb >= 16 enforces a schema validator when the dev-mode plugin is
+// active. Wrapping the storage with the ajv validator unconditionally
+// keeps the helper compatible with rxdb 14/15/16 without per-version
+// branching.
 
 // Mimic typings used in official RxDB docs:
 // https://rxdb.info/tutorials/typescript.html
@@ -25,13 +31,16 @@ export type MyDatabaseCollections = {
 
 export type MyDatabase = RxDatabase<MyDatabaseCollections>;
 
+let dbCounter = 0;
+const nextDbName = (prefix = 'test_database') =>
+	`${prefix}_${Date.now()}_${dbCounter++}`;
+
 export const createDatabase = async (
-	dbName = 'test_database'
+	dbName: string = nextDbName()
 ): Promise<MyDatabase> => {
 	const db: MyDatabase = await createRxDatabase({
 		name: dbName,
-		storage: getRxStorageDexie(),
-		ignoreDuplicate: true,
+		storage: wrappedValidateAjvStorage({ storage: getRxStorageDexie() }),
 	});
 	return db;
 };
@@ -65,6 +74,10 @@ export const setupCollection = async (
 					},
 				},
 				indexes: ['name'],
+				// rxdb 16 + dexie storage requires indexed fields to be in
+				// `required`. Earlier versions accept this too, so we declare
+				// it unconditionally.
+				required: ['id', 'name'],
 			},
 		},
 	});
@@ -84,7 +97,7 @@ export const setup = async (
 
 export const teardown = async (db: MyDatabase): Promise<void> => {
 	if (isRxDatabase(db)) {
-		db.remove();
+		await db.remove();
 	}
 };
 
