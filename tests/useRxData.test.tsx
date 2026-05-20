@@ -283,7 +283,10 @@ describe('useRxData', () => {
 
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
-				(c: RxCollection<Character>) => c.find(),
+				// explicit sort makes the result order deterministic across
+				// rxdb majors (v16's dexie storage no longer guarantees
+				// insertion-order for unsorted queries when an index exists)
+				(c: RxCollection<Character>) => c.find().sort('id'),
 				[]
 			);
 			const {
@@ -460,7 +463,8 @@ describe('useRxData', () => {
 
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
-				(c: RxCollection<Character>) => c.find(),
+				// see note above re: explicit sort for cross-version determinism
+				(c: RxCollection<Character>) => c.find().sort('id'),
 				[]
 			);
 			const {
