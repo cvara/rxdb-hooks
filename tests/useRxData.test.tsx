@@ -115,7 +115,6 @@ describe('useRxData', () => {
 		characters.forEach(doc => {
 			expect(screen.queryByText(doc.name)).toBeInTheDocument();
 		});
-
 	});
 
 	it('should support queries based on findByIds()', async () => {
@@ -275,7 +274,6 @@ describe('useRxData', () => {
 			// result should be an array of plain objects
 			expect(screen.getByText('JSON')).toBeInTheDocument();
 		});
-
 	});
 
 	it('should support infinite scroll pagination', async () => {
@@ -455,7 +453,6 @@ describe('useRxData', () => {
 		characters.slice(pageSize).forEach(doc => {
 			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 		});
-
 	});
 
 	it('should support traditional pagination', async () => {
@@ -611,7 +608,6 @@ describe('useRxData', () => {
 		// should not be loading and should remain on same page
 		expect(screen.queryByText('loading')).not.toBeInTheDocument();
 		expect(screen.getByText('page count: 3')).toBeInTheDocument();
-
 	});
 
 	it('should handle null result during traditional pagination', async () => {
@@ -655,7 +651,6 @@ describe('useRxData', () => {
 				expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 			});
 		});
-
 	});
 
 	it('should handle non-array result in traditional pagination', async () => {
@@ -708,7 +703,6 @@ describe('useRxData', () => {
 		await waitFor(async () => {
 			expect(screen.getByText('page count 1')).toBeInTheDocument();
 		});
-
 	});
 
 	it('should always convert results to array', async () => {
@@ -752,7 +746,6 @@ describe('useRxData', () => {
 				}
 			});
 		});
-
 	});
 
 	it('should handle missing query', async () => {
@@ -784,7 +777,6 @@ describe('useRxData', () => {
 		expect(screen.getByText('loading')).toBeInTheDocument();
 		await delay(20);
 		expect(screen.getByText('loading')).toBeInTheDocument();
-
 	});
 
 	it('should handle missing collection', async () => {
@@ -818,7 +810,6 @@ describe('useRxData', () => {
 		expect(screen.getByText('loading')).toBeInTheDocument();
 		await delay(20);
 		expect(screen.getByText('loading')).toBeInTheDocument();
-
 	});
 
 	it('should handle missing database', async () => {
@@ -852,7 +843,6 @@ describe('useRxData', () => {
 		expect(screen.getByText('loading')).toBeInTheDocument();
 		await delay(20);
 		expect(screen.getByText('loading')).toBeInTheDocument();
-
 	});
 
 	it('should set isFetching to true whenever the query changes', async () => {
@@ -946,6 +936,5 @@ describe('useRxData', () => {
 					).not.toBeInTheDocument();
 				});
 		});
-
 	});
 });

@@ -17,12 +17,9 @@
   <img src="https://img.shields.io/codecov/c/github/cvara/rxdb-hooks?style=flat-square" />
 </a>
 
-
 <a href="https://www.npmjs.com/package/rxdb-hooks">
   <img src="https://img.shields.io/npm/dm/rxdb-hooks?color=%233498db&style=flat-square" alt="downloads">
 </a>
-
-
 
 ## Table of Contents
 

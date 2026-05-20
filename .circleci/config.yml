@@ -55,7 +55,7 @@ workflows:
       - test
       - test-rxdb-version:
           name: test-rxdb-15
-          rxdb_version: "15"
+          rxdb_version: '15'
       - test-rxdb-version:
           name: test-rxdb-16
-          rxdb_version: "16"
+          rxdb_version: '16'
