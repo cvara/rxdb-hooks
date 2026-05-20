@@ -15,17 +15,15 @@ import useRxCollection from '../src/useRxCollection';
 describe('useRxQuery', () => {
 	let db: MyDatabase;
 
-	beforeAll(async done => {
+	beforeAll(async () => {
 		db = await setup(characters, 'characters');
-		done();
 	});
 
-	afterAll(async done => {
+	afterAll(async () => {
 		await teardown(db);
-		done();
 	});
 
-	it('should allow invocation with no options', async done => {
+	it('should allow invocation with no options', async () => {
 		const Child: FC = () => {
 			const collection = useRxCollection<Character>('characters');
 			const query = useMemo(() => {
@@ -73,6 +71,5 @@ describe('useRxQuery', () => {
 			expect(screen.getByText('RxDocument')).toBeInTheDocument();
 		});
 
-		done();
 	});
 });

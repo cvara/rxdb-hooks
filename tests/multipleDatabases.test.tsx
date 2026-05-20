@@ -22,16 +22,14 @@ describe('multiple databases', () => {
 	const characters1 = characters.slice(0, 2);
 	const characters2 = characters.slice(2);
 
-	beforeAll(async done => {
+	beforeAll(async () => {
 		db1 = await setup(characters1, 'characters', 'database_1');
 		db2 = await setup(characters2, 'characters', 'database_2');
-		done();
 	});
 
-	afterAll(async done => {
+	afterAll(async () => {
 		await teardown(db1);
 		await teardown(db2);
-		done();
 	});
 
 	const Child: FC = () => {
@@ -54,7 +52,7 @@ describe('multiple databases', () => {
 		);
 	};
 
-	it('should read data from innermost database', async done => {
+	it('should read data from innermost database', async () => {
 		render(
 			<Provider db={db1}>
 				<Provider db={db2}>
@@ -74,10 +72,9 @@ describe('multiple databases', () => {
 			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 		});
 
-		done();
 	});
 
-	it('should support nesting with repeated databases', async done => {
+	it('should support nesting with repeated databases', async () => {
 		render(
 			<Provider db={db1}>
 				<Provider db={db2}>
@@ -99,6 +96,5 @@ describe('multiple databases', () => {
 			expect(screen.queryByText(doc.name)).not.toBeInTheDocument();
 		});
 
-		done();
 	});
 });

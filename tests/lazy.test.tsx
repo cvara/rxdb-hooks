@@ -20,18 +20,16 @@ addRxPlugin(observeNewCollections);
 describe('useRxData + lazy collection init', () => {
 	let db: MyDatabase;
 
-	beforeEach(async done => {
+	beforeEach(async () => {
 		// create db without collection + data
 		db = await createDatabase();
-		done();
 	});
 
-	afterEach(async done => {
+	afterEach(async () => {
 		await teardown(db);
-		done();
 	});
 
-	it('should read data from lazily created collection', async done => {
+	it('should read data from lazily created collection', async () => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
 				(c: RxCollection<Character>) => c.find(),
@@ -81,10 +79,9 @@ describe('useRxData + lazy collection init', () => {
 			});
 		});
 
-		done();
 	});
 
-	it('should read data from recreated collection', async done => {
+	it('should read data from recreated collection', async () => {
 		const Child: FC = () => {
 			const queryConstructor = useCallback(
 				(c: RxCollection<Character>) => c.find(),
@@ -145,6 +142,5 @@ describe('useRxData + lazy collection init', () => {
 			});
 		});
 
-		done();
 	});
 });
