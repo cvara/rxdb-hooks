@@ -8138,7 +8138,7 @@ mime-db@1.52.0:
   resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.54.0.tgz#cddb3ee4f9c64530dff640236661d42cb6a314f5"
   integrity sha512-aU5EJuIN2WDemCcAp2vFBfp/m4EAhWJnUNSSw0ixs7/kXbd6Pg64EmwJkNdFhB8aWt1sH2CTXrLxo/iAGV3oPQ==
 
-mime-types@^2.1.12, mime-types@^2.1.31, mime-types@^2.1.35, mime-types@~2.1.24, mime-types@~2.1.34, mime-types@~2.1.35:
+mime-types@^2.1.35, mime-types@~2.1.24, mime-types@~2.1.34, mime-types@~2.1.35:
   version "2.1.35"
   resolved "https://registry.yarnpkg.com/mime-types/-/mime-types-2.1.35.tgz#381a871b62a734450660ae3deee44813f70d959a"
   integrity sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==
@@ -10372,9 +10372,9 @@ socket.io-client@4.6.1:
     socket.io-parser "~4.2.1"
 
 socket.io-parser@~4.2.1:
-  version "4.2.6"
-  resolved "https://registry.yarnpkg.com/socket.io-parser/-/socket.io-parser-4.2.6.tgz#19156bf179af3931abd05260cfb1491822578a6f"
-  integrity sha512-asJqbVBDsBCJx0pTqw3WfesSY0iRX+2xzWEWzrpcH7L6fLzrhyF8WPI8UaeM4YCuDfpwA/cgsdugMsmtz8EJeg==
+  version "4.2.7"
+  resolved "https://registry.yarnpkg.com/socket.io-parser/-/socket.io-parser-4.2.7.tgz#679e51fe24d1c81df90fc5f7efe4a5f432fe99c0"
+  integrity sha512-IH/iSeO9T6gz1KkFleGDWkG9N3dl4jXVYUtMhIqH10Md0ttMer8nUNWiP1DKuNrybD2xBrixLJdCC9J6ECoYkg==
   dependencies:
     "@socket.io/component-emitter" "~3.1.0"
     debug "~4.4.1"
